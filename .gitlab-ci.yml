@@ -29,7 +29,6 @@ pylint:
   allow_failure: true
   script:
     - source venv/bin/activate
-    - git ls-files '*.py'
     - flake8 --max-line-length=120 vja/*.py || true
     - pylint -d C0103,C0114,C0115,C0116,C0301 --fail-under=9 vja/*.py
 
