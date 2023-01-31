@@ -20,9 +20,7 @@ class PrintableTask:
 
         self.due_date = None
         if task.due_date and task.due_date > "0001-01-01T00:00:00Z":
-            self.due_date = datetime.fromisoformat(
-                task.due_date.replace("Z", "")
-            ).replace(tzinfo=None)
+            self.due_date = datetime.fromisoformat(task.due_date.replace("Z", "")).replace(tzinfo=None)
 
         self.list_id = task.list_id
         self.label_ids = []

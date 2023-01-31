@@ -69,21 +69,15 @@ class ApiClient:
     def __init__(self, api_url, username=None, password=None):
         """Initialize a new ApiClient w/o auth credentials."""
         # config
-        self._config = dict()
-        self._config['application'] = dict()
+        self._config = {'application': {}}
         self._config['application']['api_url'] = api_url
         self._username = username
         self._password = password
         # OAuth2 tokens and scope
         self._user = None
-        self._token = dict()
-        self._token['access'] = None
+        self._token = {'access': None}
         # caches
-        self._cache = dict()
-        self._cache['lists'] = None
-        self._cache['labels'] = None
-        self._cache['namespaces'] = None
-        self._cache['tasks'] = None
+        self._cache = {'lists': None, 'labels': None, 'namespaces': None, 'tasks': None}
 
     @property
     def user(self):
@@ -114,7 +108,7 @@ class ApiClient:
         """Load the access token from the file."""
         token_path = os.path.join(config.get_dir(), ApiClient._TOKEN_FILE)
         try:
-            with open(token_path) as token_file:
+            with open(token_path, encoding="utf-8") as token_file:
                 data = json.load(token_file)
         except IOError:
             return False
@@ -127,7 +121,7 @@ class ApiClient:
         """Store the access token to the file."""
         token_path = os.path.join(config.get_dir(), ApiClient._TOKEN_FILE)
         data = {'token': self.access_token}
-        with open(token_path, 'w') as token_file:
+        with open(token_path, 'w', encoding="utf-8") as token_file:
             json.dump(data, token_file)
 
     @handle_http_error
@@ -140,7 +134,7 @@ class ApiClient:
         password = self._password or click.prompt("password", hide_input=True)
         payload = {'username': username,
                    'password': password}
-        response = requests.post(login_url, json=payload)
+        response = requests.post(login_url, json=payload, timeout=30)
         response.raise_for_status()
         self._token['access'] = response.json()['token']
         self.store_access_token()
@@ -149,14 +143,14 @@ class ApiClient:
     @handle_http_error
     def get_json(self, url, params=None):
         headers = {'Authorization': f"Bearer {self.access_token}"}
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(url, headers=headers, params=params, timeout=30)
         response.raise_for_status()
         return response.json(object_hook=lambda d: SimpleNamespace(**d))
 
     @handle_http_error
     def put_json(self, url, params=None, payload=None):
         headers = {'Authorization': "Bearer {}".format(self.access_token)}
-        response = requests.put(url, headers=headers, params=params, json=payload)
+        response = requests.put(url, headers=headers, params=params, json=payload, timeout=30)
         response.raise_for_status()
         return response.json(object_hook=lambda d: SimpleNamespace(**d))
 

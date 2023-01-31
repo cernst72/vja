@@ -32,7 +32,7 @@ def store(config):
     """Store the config to the file."""
     if not os.path.exists(get_dir()):
         os.mkdir(get_dir())
-    with open(get_path(), "w") as cfile:
+    with open(get_path(), "w", encoding="utf-8") as cfile:
         config.write(cfile)
 
 

@@ -41,6 +41,11 @@ def report_tasks(list_name, all_size, urgency_sort):
     print_tasks(tasks, urgency_sort)
 
 
+def print_task_list(tasks, items):
+    for item in items:
+        print(f"{str(tasks.index(item) + 1):3}" + " " + item.representation())
+
+
 def print_task(task_id):
     task = get_client().get_task(task_id)
     logger.debug(json.dumps(task, default=vars))
@@ -79,12 +84,12 @@ def add_task(list_id, line):
 
 
 def _get_tasks(day_start, day_end, list_name):
-    start = get_max_time(day_start) if day_start else None
-    end = get_max_time(day_end) if day_end else None
+    start = _get_max_time(day_start) if day_start else None
+    end = _get_max_time(day_end) if day_end else None
 
     raw_tasks = get_client().get_tasks(exclude_completed=True)
 
-    filtered_tasks = [PrintableTask(x) for x in raw_tasks if is_in(x, list_name, start, end)]
+    filtered_tasks = [PrintableTask(x) for x in raw_tasks if _is_in(x, list_name, start, end)]
     filtered_tasks.sort(key=lambda x: ((x.due_date or datetime.max),
                                        -x.priority,
                                        x.list_name().upper(),
@@ -92,7 +97,7 @@ def _get_tasks(day_start, day_end, list_name):
     return filtered_tasks
 
 
-def get_max_time(day='today'):
+def _get_max_time(day='today'):
     timest = pdt.Calendar().parse(day)[0]
     now = datetime.fromtimestamp(mktime(timest), tz.tzlocal())
     daystart = datetime(now.year, now.month, now.day, tzinfo=now.tzinfo)
@@ -101,7 +106,7 @@ def get_max_time(day='today'):
     return utc_dayend
 
 
-def is_in(item, list_name, start_date, end_date):
+def _is_in(item, list_name, start_date, end_date):
     if ((not item.due_date and not start_date and not end_date)
         or (item.due_date and end_date and item.due_date < end_date)
         and (not start_date or (item.due_date and item.due_date > start_date))):
@@ -122,8 +127,3 @@ def print_tasks(tasks, priority_level_sort=False):
             print_task_list(tasks, items)
     else:
         print_task_list(tasks, tasks)
-
-
-def print_task_list(tasks, items):
-    for item in items:
-        print(f"{str(tasks.index(item) + 1):3}" + " " + item.representation())
