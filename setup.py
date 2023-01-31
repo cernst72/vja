@@ -8,12 +8,11 @@ requirements = ["click", "click-aliases", "requests", "parsedatetime", "python-d
 setup(
     name="vja",
     version="0.0.11",
-    author="Christoph Ernst",
-    author_email="christoph.ernst72@googlemail.com",
+    author="ce72",
     description="A simple CLI for Vikunja task manager",
     long_description=readme,
     long_description_content_type="text/markdown",
-    url="https://github.com/ce72/vja/",
+    url="https://gitlab.com/ce72/vja",
     packages=find_packages(),
     include_package_data=True,
     install_requires=requirements,
@@ -22,6 +21,8 @@ setup(
     ]},
     classifiers=[
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     ],
 )

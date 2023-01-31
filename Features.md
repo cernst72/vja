@@ -7,7 +7,7 @@ vja add Learn using vja
 ```
 
 ```shell
-vja add -l 2 Create task in list with index 2
+vja add -l 2 "Create task in list with index 2"
 ```
 
 ```shell
