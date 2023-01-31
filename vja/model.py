@@ -4,11 +4,11 @@ from vja.login import get_client
 
 
 def format_date(timestamp):
-    return timestamp.strftime("%a %d.%m") if timestamp else ""
+    return timestamp.strftime('%a %d.%m') if timestamp else ''
 
 
 def format_time(timestamp):
-    return timestamp.strftime("%H:%M") if timestamp else ""
+    return timestamp.strftime('%H:%M') if timestamp else ''
 
 
 class PrintableTask:
@@ -19,7 +19,7 @@ class PrintableTask:
         self.is_favorite = task.is_favorite
 
         self.due_date = None
-        if task.due_date and task.due_date > "0001-01-01T00:00:00Z":
+        if task.due_date and task.due_date > '0001-01-01T00:00:00Z':
             self.due_date = datetime.fromisoformat(task.due_date.replace("Z", "")).replace(tzinfo=None)
 
         self.list_id = task.list_id
@@ -51,7 +51,7 @@ class PrintableTask:
         else:
             datepoints = 0
         statuspoints = 0
-        if "next" in self.list_name().lower() or "next" in " ".join(self.label_names()).lower():
+        if 'next' in self.list_name().lower() or 'next' in " ".join(self.label_names()).lower():
             statuspoints = 1
         return 2 + statuspoints + datepoints + int(self.priority) + (1 if self.is_favorite else 0)
 
@@ -77,17 +77,17 @@ class PrintableTask:
         all_labels = get_client().get_labels() or []
         label_dict = {x.id: x for x in all_labels}
         label_names = [str(label_dict.get(x).title) for x in self.label_ids]
-        return " ".join(label_names)
+        return ' '.join(label_names)
 
     def representation(self):
-        output = [f"{self.id:4}",
-                  "(%s)" % self.priority,
-                  "%s" % "*" if self.is_favorite else " ",
-                  f"{self.title:50.50}",
-                  f"{self.due_date_format():9.9}",
-                  f"{self.due_time_format():5.5}",
-                  f"{self.namespace_name():15.15}",
-                  f"{self.list_name():15.15}",
-                  f"{self.label_names():15.15}",
-                  f"{self.urgency():3}"]
-        return " ".join(output)
+        output = [f'{self.id:4}',
+                  '(%s)' % self.priority,
+                  '%s' % '*' if self.is_favorite else ' ',
+                  f'{self.title:50.50}',
+                  f'{self.due_date_format():9.9}',
+                  f'{self.due_time_format():5.5}',
+                  f'{self.namespace_name():15.15}',
+                  f'{self.list_name():15.15}',
+                  f'{self.label_names():15.15}',
+                  f'{self.urgency():3}']
+        return ' '.join(output)

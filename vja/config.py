@@ -8,45 +8,29 @@ logger = logging.getLogger(__name__)
 
 _DEFAULT_CONFIGDIR = os.path.expanduser("~/.vjacli")
 
+__parser__ = None
+
 
 def get_path():
-    """Return default config file path."""
-    return os.path.join(get_dir(), "vja.rc")
+    return os.path.join(get_dir(), 'vja.rc')
 
 
 def get_dir():
-    """Return default config file path."""
     return os.environ.get('VJA_CONFIGDIR', _DEFAULT_CONFIGDIR)
 
 
-def load():
-    """Load config file."""
+def _load():
     filepath = get_path()
-    logger.debug(f"Read config from {filepath} ")
-    parser = configparser.SafeConfigParser()
-    parser.read(filepath)
+    logger.debug('Read config from %s', filepath)
+    parser = configparser.ConfigParser()
+    files = parser.read(filepath)
+    if not files:
+        raise VjaError('Could not load config file from ' + filepath)
     return parser
 
 
-def store(config):
-    """Store the config to the file."""
-    if not os.path.exists(get_dir()):
-        os.mkdir(get_dir())
-    with open(get_path(), "w", encoding="utf-8") as cfile:
-        config.write(cfile)
-
-
-def reload(parser):
-    """Reload the config file."""
-    filepath = get_path()
-    parser.read(filepath)
-
-
-__parser__ = load()
-
-
 def get_parser():
-    """Get the config parser."""
+    global __parser__
     if not __parser__:
-        raise VjaError("config file is not loaded.")
+        __parser__ = _load()
     return __parser__

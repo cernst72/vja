@@ -43,7 +43,7 @@ def report_tasks(list_name, all_size, urgency_sort):
 
 def print_task_list(tasks, items):
     for item in items:
-        print(f"{str(tasks.index(item) + 1):3}" + " " + item.representation())
+        print(f'{str(tasks.index(item) + 1):3}' + ' ' + item.representation())
 
 
 def print_task(task_id):
@@ -56,21 +56,21 @@ def print_namespaces():
     namespaces = get_client().get_namespaces()
     logger.debug(json.dumps(namespaces, default=vars))
     for x in namespaces:
-        print("%d %s %s" % (x.id, x.title, x.description))
+        print('%d %s %s' % (x.id, x.title, x.description))
 
 
 def print_lists():
     lists = get_client().get_lists()
     logger.debug(json.dumps(lists, default=vars))
     for x in lists:
-        print("%d %s %s %d" % (x.id, x.title, x.description, x.namespace_id))
+        print('%d %s %s %d' % (x.id, x.title, x.description, x.namespace_id))
 
 
 def print_labels():
     labels = get_client().get_labels()
     logger.debug(json.dumps(labels, default=vars))
     for x in labels:
-        print("%d %s %s" % (x.id, x.title, x.description))
+        print('%d %s %s' % (x.id, x.title, x.description))
 
 
 def add_list(namespace_id, line):
@@ -117,7 +117,7 @@ def _is_in(item, list_name, start_date, end_date):
 
 def print_tasks(tasks, priority_level_sort=False):
     if not tasks:
-        print("No tasks found. Go home early!")
+        print('No tasks found. Go home early!')
     if priority_level_sort:
         tasks_by_prio = defaultdict(list)
         for task in tasks:

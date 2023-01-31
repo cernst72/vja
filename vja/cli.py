@@ -20,15 +20,14 @@ logger = logging.getLogger(__name__)
 def cli(verbose, username=None, password=None):
     if verbose:
         logging.basicConfig(level=logging.DEBUG)
-        logger.setLevel(level=logging.DEBUG)
+        logger.debug('Verbose mode on')
     else:
         logging.basicConfig(level=logging.INFO)
-        logger.setLevel(level=logging.INFO)
     if username or password:
         service.authenticate(username, password)
 
 
-@cli.command("help")
+@cli.command('help')
 @click.argument('subcommand')
 @click.pass_context
 def help_command(ctx, subcommand):
@@ -40,41 +39,41 @@ def help_command(ctx, subcommand):
 
 
 # namespaces
-@cli.group("namespace", help="subcommand: namespace (see help)")
+@cli.group('namespace', help='subcommand: namespace (see help)')
 def namespace_group():
     pass
 
 
-@namespace_group.command("ls", help="print namespaces")
+@namespace_group.command('ls', help='print namespaces')
 def namespace_ls():
     service.print_namespaces()
 
 
 # lists
-@cli.group("list", help="subcommand: list (see help)")
+@cli.group('list', help='subcommand: list (see help)')
 def list_group():
     pass
 
 
-@list_group.command("add", help="add list with title")
+@list_group.command('add', help='add list with title')
 @click.option('namespace_id', '-n', '--namespace-id', help='create list in namespace, default: first list found')
 @click.argument('title', nargs=-1)
 def list_add(title, namespace_id=None):
     service.add_list(namespace_id, " ".join(title))
 
 
-@list_group.command("ls", help="print lists")
+@list_group.command('ls', help='print lists')
 def list_ls():
     service.print_lists()
 
 
 # labels
-@cli.group("label", help="subcommand: label (see help)")
+@cli.group('label', help='subcommand: label (see help)')
 def label_group():
     pass
 
 
-@label_group.command("ls", help="print labels")
+@label_group.command('ls', help='print labels')
 def label_ls():
     service.print_labels()
 
@@ -112,7 +111,7 @@ def task_open(task):
     # TODO restore cache logic
     url = config.get_parser().get('application', 'frontend_url')
     if task and task > 0:
-        url += "/tasks/" + str(task)
+        url += '/tasks/' + str(task)
     webbrowser.open_new_tab(url)
 
 

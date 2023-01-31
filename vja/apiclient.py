@@ -31,10 +31,8 @@ def check_access_token(func):
             self = args[0]
             self.get_access_token()
             return func(*args, **kwargs)
-            # no access_token in kwargs or in class; die
         except KeyError:
-            raise VjaError('need access token to call function %s;'
-                           ' call authenticate()' % func.__name__)
+            raise VjaError('need access token to call function {}; call authenticate()'.format(func.__name__))
 
     return wrapper
 
@@ -49,15 +47,14 @@ def handle_http_error(func):
             return func(*args, **kwargs)
         except requests.HTTPError as error:
             if error.response.status_code == 401 or error.response.status_code == 429:
-                logger.info("HTTP-Error %s, url=%s; trying to retrieve new access token..."
-                            % (error.response.status_code, error.response.url))
+                logger.info('HTTP-Error %s, url=%s; trying to retrieve new access token...',
+                            error.response.status_code, error.response.url)
                 self = args[0]
                 self.get_access_token(force=True)
                 return func(*args, **kwargs)  # try again with new token. Re-raise if failed.
 
-            body = error.response.text
-            logger.warning(
-                f"HTTP-Error {error.response.status_code}, url={error.response.url}, body={body}")
+            logger.warning('HTTP-Error %s, url=%s, body=%s',
+                           error.response.status_code, error.response.url, error.response.text)
             sys.exit(1)
 
     return wrapper
@@ -67,17 +64,22 @@ class ApiClient:
     _TOKEN_FILE = 'token.json'
 
     def __init__(self, api_url, username=None, password=None):
-        """Initialize a new ApiClient w/o auth credentials."""
         # config
-        self._config = {'application': {}}
+        self._config = dict()
+        self._config['application'] = dict()
         self._config['application']['api_url'] = api_url
         self._username = username
         self._password = password
         # OAuth2 tokens and scope
         self._user = None
-        self._token = {'access': None}
+        self._token = dict()
+        self._token['access'] = None
         # caches
-        self._cache = {'lists': None, 'labels': None, 'namespaces': None, 'tasks': None}
+        self._cache = dict()
+        self._cache['lists'] = None
+        self._cache['labels'] = None
+        self._cache['namespaces'] = None
+        self._cache['tasks'] = None
 
     @property
     def user(self):
@@ -96,11 +98,7 @@ class ApiClient:
     def create_url(self, path):
         return self._config['application']['api_url'] + path
 
-    ###
-    # Authentication
-    ###
     def authenticate(self):
-        """Use credentials to get userid and access token."""
         self.get_access_token()
         self._user = self._user if self._user else self.get_user()
 
@@ -108,7 +106,7 @@ class ApiClient:
         """Load the access token from the file."""
         token_path = os.path.join(config.get_dir(), ApiClient._TOKEN_FILE)
         try:
-            with open(token_path, encoding="utf-8") as token_file:
+            with open(token_path, encoding='utf-8') as token_file:
                 data = json.load(token_file)
         except IOError:
             return False
@@ -128,17 +126,17 @@ class ApiClient:
     def get_access_token(self, force=False):
         if self.load_access_token() and not force:
             return
-        login_url = self.create_url("/login")
-        logger.info("Login to %s " % login_url)
-        username = self._username or click.prompt("username")
-        password = self._password or click.prompt("password", hide_input=True)
+        login_url = self.create_url('/login')
+        logger.info("Login to %s ",  login_url)
+        username = self._username or click.prompt('username')
+        password = self._password or click.prompt('password', hide_input=True)
         payload = {'username': username,
                    'password': password}
         response = requests.post(login_url, json=payload, timeout=30)
         response.raise_for_status()
         self._token['access'] = response.json()['token']
         self.store_access_token()
-        logger.info("Login successful.")
+        logger.info('Login successful.')
 
     @handle_http_error
     def get_json(self, url, params=None):
@@ -156,17 +154,17 @@ class ApiClient:
 
     @check_access_token
     def get_user(self):
-        return self.get_json(self.create_url("/user"))
+        return self.get_json(self.create_url('/user'))
 
     @check_access_token
     def get_task(self, task_id):
-        url = self.create_url("/tasks/" + str(task_id))
+        url = self.create_url('/tasks/' + str(task_id))
         return self.get_json(url)
 
     @check_access_token
     def get_tasks(self, exclude_completed=True):
         if self._cache['tasks'] is None:
-            url = self.create_url("/tasks/all")
+            url = self.create_url('/tasks/all')
             params = {'filter_by': 'done', 'filter_value': 'false'} if exclude_completed else None
             self._cache['tasks'] = self.get_json(url, params) or []
         return self._cache['tasks']
@@ -174,27 +172,27 @@ class ApiClient:
     @check_access_token
     def get_namespaces(self):
         if self._cache['namespaces'] is None:
-            self._cache['namespaces'] = self.get_json(self.create_url("/namespaces")) or []
+            self._cache['namespaces'] = self.get_json(self.create_url('/namespaces')) or []
         return self._cache['namespaces']
 
     @check_access_token
     def get_lists(self):
         if self._cache['lists'] is None:
-            self._cache['lists'] = self.get_json(self.create_url("/lists")) or []
+            self._cache['lists'] = self.get_json(self.create_url('/lists')) or []
         return self._cache['lists']
 
     @check_access_token
     def put_list(self, namespace_id, title):
         payload = {'title': title}
-        self.put_json(self.create_url("/namespaces/" + str(namespace_id) + "/lists"), payload=payload)
+        self.put_json(self.create_url('/namespaces/' + str(namespace_id) + '/lists'), payload=payload)
 
     @check_access_token
     def put_task(self, list_id, title):
         payload = {'title': title}
-        self.put_json(self.create_url("/lists/" + str(list_id)), payload=payload)
+        self.put_json(self.create_url('/lists/' + str(list_id)), payload=payload)
 
     @check_access_token
     def get_labels(self):
         if self._cache['labels'] is None:
-            self._cache['labels'] = self.get_json(self.create_url("/labels")) or []
+            self._cache['labels'] = self.get_json(self.create_url('/labels')) or []
         return self._cache['labels']
