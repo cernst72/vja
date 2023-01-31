@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  api:
+    image: vikunja/api:0.20.2
+    ports:
+      - "3456:3456"
+    environment:
+      VIKUNJA_SERVICE_FRONTENDURL: http://localhost:8080/
+  frontend:
+    image: vikunja/frontend:0.20.3
+    ports:
+      - "8080:80"
+    environment:
+      VIKUNJA_API_URL: http://localhost:3456/api/v1

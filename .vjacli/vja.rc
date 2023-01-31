@@ -1,0 +1,3 @@
+[application]
+frontend_url=https://try.vikunja.io/
+api_url=https://try.vikunja.io/api/v1

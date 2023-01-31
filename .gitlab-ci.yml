@@ -1,0 +1,63 @@
+image: python:3.10-slim
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+    - venv/
+
+stages:
+  - build
+  - test
+
+build:
+  stage: build
+  script:
+    - ci/virtual-env.sh
+    - source venv/bin/activate
+    - ci/build-install.sh
+    - pip -V
+    - pip show -f vja
+  artifacts:
+    paths:
+      - dist/*.whl
+
+pylint:
+  stage: test
+  allow_failure: true
+  script:
+    - source venv/bin/activate
+    - flake8 --max-line-length=120 vja/*.py || true
+    - pylint -d C0103,C0114,C0115,C0116,C0301 vja/*.py
+
+integration-test:
+  stage: test
+  image:
+    name: docker:stable
+  services:
+    - name: docker:dind
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+  script:
+    - docker info
+    - apk add --no-cache bash curl python3-dev py3-pip docker-compose
+    - pip3 install wheel
+    - python3 --version
+
+    # TODO install from some repository
+    - pip install dist/*.whl
+    - pip show vja
+
+    - cd test/integration
+    - ./run.sh start docker
+    - ./run.sh test docker
+    - ./run.sh stop
+  cache: { }
+
+#deploy:
+#  stage: deploy
+#  script: echo "Define your deployment script!"
+#  environment: production
