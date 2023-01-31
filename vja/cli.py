@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 @click.group(cls=ClickAliasedGroup)
 @click.version_option(metadata.version("vja"))
-@click.option('-v', '--verbose', default=False, is_flag=True, help='verbose output')
+@click.option('-v', '--verbose', 'verbose', default=False, is_flag=True, help='verbose output')
 @click.option('-u', '--username', 'username', help='username for initial login (optional)')
 @click.option('-p', '--password', 'password', help='password for initial login (optional)')
 def cli(verbose, username=None, password=None):

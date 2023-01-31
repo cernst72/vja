@@ -26,16 +26,15 @@ def check_access_token(func):
         # check if `access_token` is set to a value in kwargs
         if 'access_token' in kwargs and kwargs['access_token'] is not None:
             return func(*args, **kwargs)
-        else:
-            # try to get the access token
-            try:
-                self = args[0]
-                self.get_access_token()
-                return func(*args, **kwargs)
+        # try to get the access token
+        try:
+            self = args[0]
+            self.get_access_token()
+            return func(*args, **kwargs)
             # no access_token in kwargs or in class; die
-            except KeyError:
-                raise VjaError('need access token to call function %s;'
-                               ' call authenticate()' % func.__name__)
+        except KeyError:
+            raise VjaError('need access token to call function %s;'
+                           ' call authenticate()' % func.__name__)
 
     return wrapper
 
@@ -55,17 +54,16 @@ def handle_http_error(func):
                 self = args[0]
                 self.get_access_token(force=True)
                 return func(*args, **kwargs)  # try again with new token. Re-raise if failed.
-            else:
-                body = error.response.text
-                logger.warning("HTTP-Error %s, url=%s, body=%s"
-                               % (error.response.status_code, error.response.url, body))
-                sys.exit(1)
+
+            body = error.response.text
+            logger.warning(
+                f"HTTP-Error {error.response.status_code}, url={error.response.url}, body={body}")
+            sys.exit(1)
 
     return wrapper
 
 
-class ApiClient(object):
-    """Vikunja API client."""
+class ApiClient:
     _TOKEN_FILE = 'token.json'
 
     def __init__(self, api_url, username=None, password=None):
@@ -150,7 +148,7 @@ class ApiClient(object):
 
     @handle_http_error
     def get_json(self, url, params=None):
-        headers = {'Authorization': "Bearer {}".format(self.access_token)}
+        headers = {'Authorization': f"Bearer {self.access_token}"}
         response = requests.get(url, headers=headers, params=params)
         response.raise_for_status()
         return response.json(object_hook=lambda d: SimpleNamespace(**d))
@@ -173,29 +171,23 @@ class ApiClient(object):
 
     @check_access_token
     def get_tasks(self, exclude_completed=True):
-        if self._cache['tasks'] is not None:
-            return self._cache['tasks']
-        else:
+        if self._cache['tasks'] is None:
             url = self.create_url("/tasks/all")
             params = {'filter_by': 'done', 'filter_value': 'false'} if exclude_completed else None
             self._cache['tasks'] = self.get_json(url, params) or []
-            return self._cache['tasks']
+        return self._cache['tasks']
 
     @check_access_token
     def get_namespaces(self):
-        if self._cache['namespaces'] is not None:
-            return self._cache['namespaces']
-        else:
+        if self._cache['namespaces'] is None:
             self._cache['namespaces'] = self.get_json(self.create_url("/namespaces")) or []
-            return self._cache['namespaces']
+        return self._cache['namespaces']
 
     @check_access_token
     def get_lists(self):
-        if self._cache['lists'] is not None:
-            return self._cache['lists']
-        else:
+        if self._cache['lists'] is None:
             self._cache['lists'] = self.get_json(self.create_url("/lists")) or []
-            return self._cache['lists']
+        return self._cache['lists']
 
     @check_access_token
     def put_list(self, namespace_id, title):
@@ -209,8 +201,6 @@ class ApiClient(object):
 
     @check_access_token
     def get_labels(self):
-        if self._cache['labels'] is not None:
-            return self._cache['labels']
-        else:
+        if self._cache['labels'] is None:
             self._cache['labels'] = self.get_json(self.create_url("/labels")) or []
-            return self._cache['labels']
+        return self._cache['labels']

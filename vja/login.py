@@ -1,3 +1,4 @@
+import sys
 from configparser import NoOptionError, NoSectionError
 
 from vja import VjaError
@@ -28,4 +29,4 @@ def get_client(username=None, password=None) -> ApiClient:
         return api_client
     except VjaError as e:
         print(e)
-        exit(1)
+        sys.exit(1)

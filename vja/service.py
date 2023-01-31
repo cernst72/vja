@@ -46,6 +46,7 @@ def print_task(task_id):
     logger.debug(json.dumps(task, default=vars))
     print(PrintableTask(task).representation())
 
+
 def print_namespaces():
     namespaces = get_client().get_namespaces()
     logger.debug(json.dumps(namespaces, default=vars))

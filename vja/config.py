@@ -22,7 +22,7 @@ def get_dir():
 def load():
     """Load config file."""
     filepath = get_path()
-    logger.debug("Read config from %s " % filepath)
+    logger.debug(f"Read config from {filepath} ")
     parser = configparser.SafeConfigParser()
     parser.read(filepath)
     return parser
@@ -49,5 +49,4 @@ def get_parser():
     """Get the config parser."""
     if not __parser__:
         raise VjaError("config file is not loaded.")
-    else:
-        return __parser__
+    return __parser__
