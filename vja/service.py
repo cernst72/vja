@@ -17,6 +17,52 @@ def authenticate(username, password):
     get_client(username, password)
 
 
+# namespace
+def print_namespaces():
+    namespaces_json = get_client().get_namespaces()
+    logger.debug(namespaces_json)
+    for x in namespaces_json:
+        print(Namespace.from_json(x).output())
+
+
+# list
+def print_lists():
+    lists_json = get_client().get_lists()
+    logger.debug(lists_json)
+    for list_json in lists_json:
+        list_object = convert_list_json(list_json)
+        print(list_object.output())
+
+
+def print_list(list_id):
+    list_json = get_client().get_list(list_id)
+    logger.debug(list_json)
+    list_object = convert_list_json(list_json)
+    print(list_object)
+    print(list_object.output())
+
+
+def add_list(namespace_id, title):
+    if not namespace_id:
+        namespaces = get_client().get_namespaces()
+        namespace_id = min(namespace['id'] if namespace['id'] > 0 else 99999 for namespace in namespaces)
+    get_client().put_list(namespace_id, title)
+
+
+# label
+def print_labels():
+    labels_json = get_client().get_labels()
+    logger.debug(labels_json)
+    for label_json in labels_json:
+        label_object = Label.from_json(label_json)
+        print(label_object.output())
+
+
+def add_label(title):
+    get_client().put_label(title)
+
+
+# tasks
 def list_tasks():
     tasks_json = get_client().get_tasks(exclude_completed=True)
     tasks_object = [_convert_task_json(x) for x in tasks_json]
@@ -27,35 +73,26 @@ def list_tasks():
     print_tasks(tasks_object)
 
 
+def print_tasks(tasks, priority_level_sort=False):
+    if not tasks:
+        print('No tasks found. Go home early!')
+    if priority_level_sort:
+        tasks_by_prio = defaultdict(list)
+        for task in tasks:
+            tasks_by_prio[task.urgency()].append(task)
+        for prio, items in tasks_by_prio.items():
+            print()
+            _print_task_list(tasks, items)
+    else:
+        _print_task_list(tasks, tasks)
+
+
 def print_task(task_id):
     task_json = get_client().get_task(task_id)
     logger.debug(task_json)
     task_object = _convert_task_json(task_json)
     print(task_object)
     print(task_object.representation())
-
-
-def print_namespaces():
-    namespaces_json = get_client().get_namespaces()
-    logger.debug(namespaces_json)
-    for x in namespaces_json:
-        print(Namespace.from_json(x).output())
-
-
-def print_lists():
-    lists_json = get_client().get_lists()
-    logger.debug(lists_json)
-    for list_json in lists_json:
-        list_object = convert_list_json(list_json)
-        print(list_object.output())
-
-
-def print_labels():
-    labels_json = get_client().get_labels()
-    logger.debug(labels_json)
-    for label_json in labels_json:
-        label_object = Label.from_json(label_json)
-        print(label_object.output())
 
 
 arg_to_json = {'note': {'field': 'description', 'mapping': (lambda x: x)},
@@ -80,31 +117,6 @@ def add_task(title, args: dict):
         payload[mapper['field']] = mapper['mapping'](arg_value)
     task = get_client().put_task(list_id, label_id, payload)
     logger.info('Created task %s', task['id'])
-
-
-def add_list(namespace_id, title):
-    if not namespace_id:
-        namespaces = get_client().get_namespaces()
-        namespace_id = min(namespace['id'] if namespace['id'] > 0 else 99999 for namespace in namespaces)
-    get_client().put_list(namespace_id, title)
-
-
-def add_label(title):
-    get_client().put_label(title)
-
-
-def print_tasks(tasks, priority_level_sort=False):
-    if not tasks:
-        print('No tasks found. Go home early!')
-    if priority_level_sort:
-        tasks_by_prio = defaultdict(list)
-        for task in tasks:
-            tasks_by_prio[task.urgency()].append(task)
-        for prio, items in tasks_by_prio.items():
-            print()
-            _print_task_list(tasks, items)
-    else:
-        _print_task_list(tasks, tasks)
 
 
 def _get_default_list_id():

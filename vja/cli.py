@@ -67,6 +67,12 @@ def list_ls():
     service.print_lists()
 
 
+@list_group.command('show', help='show list details')
+@click.argument('list_id', required=True, type=click.INT)
+def list_show(list_id):
+    service.print_list(list_id)
+
+
 # labels
 @cli.group('label', help='subcommand: label (see help)')
 def label_group():
@@ -116,14 +122,6 @@ def task_open(task):
     if task and task > 0:
         url += '/tasks/' + str(task)
     webbrowser.open_new_tab(url)
-
-
-@cli.command('edit', help='modify task')
-@click.argument('task', required=True, type=click.INT)
-@click.argument('line', nargs=-1)
-# @click.argument('modification', required=True, type=click.STRING)
-def task_edit(task, line):
-    return
 
 
 @cli.command('complete', help='mark task as complete')

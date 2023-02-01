@@ -57,15 +57,19 @@ vja namespace ls
 ## Manage lists (projects)
 
 ```shell
-vja list ls
-```
-
-```shell
 vja list add New List
 ```
 
 ```shell
 vja list add -n 2 Create list in namespace with index 2
+```
+
+```shell
+vja list ls
+```
+
+```shell
+vja list show 1
 ```
 
 ## Manage labels

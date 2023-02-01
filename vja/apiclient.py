@@ -154,19 +154,6 @@ class ApiClient:
         return self.get_json(self.create_url('/user'))
 
     @check_access_token
-    def get_task(self, task_id):
-        url = self.create_url(f'/tasks/{str(task_id)}')
-        return self.get_json(url)
-
-    @check_access_token
-    def get_tasks(self, exclude_completed=True):
-        if self._cache['tasks'] is None:
-            url = self.create_url('/tasks/all')
-            params = {'filter_by': 'done', 'filter_value': 'false'} if exclude_completed else None
-            self._cache['tasks'] = self.get_json(url, params) or []
-        return self._cache['tasks']
-
-    @check_access_token
     def get_namespaces(self):
         if self._cache['namespaces'] is None:
             self._cache['namespaces'] = self.get_json(self.create_url('/namespaces')) or []
@@ -179,14 +166,37 @@ class ApiClient:
         return self._cache['lists']
 
     @check_access_token
+    def get_list(self, list_id):
+        return self.get_json(self.create_url(f'/lists/{str(list_id)}'))
+
+    @check_access_token
     def put_list(self, namespace_id, title):
         payload = {'title': title}
         self.put_json(self.create_url(f'/namespaces/{str(namespace_id)}/lists'), payload=payload)
 
     @check_access_token
+    def get_labels(self):
+        if self._cache['labels'] is None:
+            self._cache['labels'] = self.get_json(self.create_url('/labels')) or []
+        return self._cache['labels']
+
+    @check_access_token
     def put_label(self, title):
         payload = {'title': title}
         self.put_json(self.create_url('/labels'), payload=payload)
+
+    @check_access_token
+    def get_tasks(self, exclude_completed=True):
+        if self._cache['tasks'] is None:
+            url = self.create_url('/tasks/all')
+            params = {'filter_by': 'done', 'filter_value': 'false'} if exclude_completed else None
+            self._cache['tasks'] = self.get_json(url, params) or []
+        return self._cache['tasks']
+
+    @check_access_token
+    def get_task(self, task_id):
+        url = self.create_url(f'/tasks/{str(task_id)}')
+        return self.get_json(url)
 
     @check_access_token
     def put_task(self, list_id, label_id, payload):
@@ -198,8 +208,3 @@ class ApiClient:
             self.put_json(self.create_url(f'/tasks/{str(task_id)}/labels'), payload=payload)
         return self.get_task(task_id)
 
-    @check_access_token
-    def get_labels(self):
-        if self._cache['labels'] is None:
-            self._cache['labels'] = self.get_json(self.create_url('/labels')) or []
-        return self._cache['labels']

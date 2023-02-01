@@ -8,9 +8,9 @@ run-test () {
   vja --version
   vja --help
   vja -u demo -p demo ls
-  vja -v namespace ls
   vja list add List 1
   vja list ls
+  vja list show 1
   vja label add Label1
   vja label ls
   vja -v add "The first task" --prio=2 --tag="Label1" --note="my note" --due="next monday at 15:00" --favorite=True --reminder="friday 12:00"
@@ -18,6 +18,7 @@ run-test () {
   vja add The third task
   vja ls
   vja -v show 1
+  vja namespace ls
 }
 
 start-vikunja () {
