@@ -1,3 +1,4 @@
+import typing
 from dataclasses import dataclass, field
 from datetime import datetime
 
@@ -56,6 +57,7 @@ class Label:
 
 
 @dataclass(frozen=True)
+# pylint: disable=too-many-instance-attributes
 class Task:
     json: dict = field(repr=False)
     id: int
@@ -66,10 +68,10 @@ class Task:
     due_date: datetime
     created: datetime
     updated: datetime
-    reminder_dates: list[str]
+    reminder_dates: typing.List[str]
     done: bool
     tasklist: List
-    labels: list[Label]
+    labels: typing.List[Label]
 
     @classmethod
     def from_json(cls, json, list_object, labels):
