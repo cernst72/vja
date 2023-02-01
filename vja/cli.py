@@ -108,7 +108,6 @@ def task_show(task):
 @cli.command(name='open', help='open task in browser')
 @click.argument('task', required=False, type=click.INT)
 def task_open(task):
-    # TODO restore cache logic
     url = config.get_parser().get('application', 'frontend_url')
     if task and task > 0:
         url += '/tasks/' + str(task)

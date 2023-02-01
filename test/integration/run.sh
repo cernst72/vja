@@ -8,14 +8,14 @@ run-test () {
   vja --version
   vja --help
   vja -u demo -p demo ls
-  vja ls
   vja namespace ls
-  vja list add My test list
-  vja list ls
-  vja add My first task
-  vja add My second task
+  vja list add List from $(date)
+  vja -v list ls
+  vja label ls
+  vja add Task from $(date)
+  vja add Task from $(date)
   vja ls
-  vja show 1
+  vja -v show 1
 }
 
 start-vikunja () {

@@ -1,4 +1,3 @@
-import json
 import logging
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -7,8 +6,9 @@ from time import mktime
 import parsedatetime as pdt
 from dateutil import tz
 
+from vja.list_service import ListService, convert_list_json
 from vja.login import get_client
-from vja.model import PrintableTask
+from vja.model import Task, Namespace, Label
 
 logger = logging.getLogger(__name__)
 
@@ -18,14 +18,13 @@ def authenticate(username, password):
 
 
 def list_tasks():
-    raw_tasks = get_client().get_tasks(exclude_completed=True)
-
-    filtered_tasks = [PrintableTask(x) for x in raw_tasks]
-    filtered_tasks.sort(key=lambda x: ((x.due_date or datetime.max),
-                                       -x.priority,
-                                       x.list_name().upper(),
-                                       x.title.upper()))
-    print_tasks(filtered_tasks)
+    tasks_json = get_client().get_tasks(exclude_completed=True)
+    tasks_object = [_convert_task_json(x) for x in tasks_json]
+    tasks_object.sort(key=lambda x: ((x.due_date or datetime.max),
+                                     -x.priority,
+                                     x.tasklist.title.upper(),
+                                     x.title.upper()))
+    print_tasks(tasks_object)
 
 
 def report_tasks(list_name, all_size, urgency_sort):
@@ -47,40 +46,50 @@ def print_task_list(tasks, items):
 
 
 def print_task(task_id):
-    task = get_client().get_task(task_id)
-    logger.debug(json.dumps(task, default=vars))
-    print(PrintableTask(task).representation())
+    task_json = get_client().get_task(task_id)
+    logger.debug(task_json)
+    task_object = _convert_task_json(task_json)
+    print(task_object)
 
 
 def print_namespaces():
-    namespaces = get_client().get_namespaces()
-    logger.debug(json.dumps(namespaces, default=vars))
-    for x in namespaces:
-        print('%d %s %s' % (x.id, x.title, x.description))
+    namespaces_json = get_client().get_namespaces()
+    logger.debug(namespaces_json)
+    for x in namespaces_json:
+        print(Namespace.from_json(x).output())
 
 
 def print_lists():
-    lists = get_client().get_lists()
-    logger.debug(json.dumps(lists, default=vars))
-    for x in lists:
-        print('%d %s %s %d' % (x.id, x.title, x.description, x.namespace_id))
+    lists_json = get_client().get_lists()
+    logger.debug(lists_json)
+    for list_json in lists_json:
+        list_object = convert_list_json(list_json)
+        print(list_object.output())
 
 
 def print_labels():
-    labels = get_client().get_labels()
-    logger.debug(json.dumps(labels, default=vars))
-    for x in labels:
-        print('%d %s %s' % (x.id, x.title, x.description))
+    labels_json = get_client().get_labels()
+    logger.debug(labels_json)
+    for label_json in labels_json:
+        label_object = Label.from_json(label_json)
+        print(label_object.output())
 
 
-def add_list(namespace_id, line):
-    namespace_id = namespace_id or get_client().get_namespaces()[0].id
-    get_client().put_list(namespace_id, line)
+def _convert_task_json(task_json):
+    list_object = ListService.find_list_by_id(task_json['list_id'])
+    labels = [Label.from_json(x) for x in task_json['labels'] or []]
+    task_object = Task.from_json(task_json, list_object, labels)
+    return task_object
 
 
 def add_task(list_id, line):
-    list_id = list_id or get_client().get_lists()[0].id
+    list_id = list_id or get_client().get_lists()[0]['id']  # TODO handle empty list_id
     get_client().put_task(list_id, line)
+
+
+def add_list(namespace_id, line):
+    namespace_id = namespace_id or get_client().get_namespaces()[0]['id']
+    get_client().put_list(namespace_id, line)
 
 
 def _get_tasks(day_start, day_end, list_name):
@@ -89,7 +98,7 @@ def _get_tasks(day_start, day_end, list_name):
 
     raw_tasks = get_client().get_tasks(exclude_completed=True)
 
-    filtered_tasks = [PrintableTask(x) for x in raw_tasks if _is_in(x, list_name, start, end)]
+    filtered_tasks = [Task(x) for x in raw_tasks if _is_in(x, list_name, start, end)]
     filtered_tasks.sort(key=lambda x: ((x.due_date or datetime.max),
                                        -x.priority,
                                        x.list_name().upper(),

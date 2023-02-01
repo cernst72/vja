@@ -1,31 +1,89 @@
+from dataclasses import dataclass, field
 from datetime import datetime
 
-from vja.login import get_client
+
+@dataclass(frozen=True)
+class Namespace:
+    json: dict = field(repr=False)
+    id: int
+    title: str
+    description: str
+
+    @classmethod
+    def from_json(cls, json):
+        return cls(json, json['id'], json['title'], json['description'])
+
+    def output(self):
+        return f'{self.id:d} {self.title} {self.description}'
 
 
-def format_date(timestamp):
-    return timestamp.strftime('%a %d.%m') if timestamp else ''
+@dataclass(frozen=True)
+class List:
+    json: dict = field(repr=False)
+    id: int
+    title: str
+    description: str
+    is_favorite: bool
+    namespace: Namespace
+
+    @classmethod
+    def from_json(cls, json, namespace):
+        return cls(json, json['id'], json['title'], json['description'], json['is_favorite'], namespace)
+
+    def output(self):
+        namespace_id = self.namespace.id if self.namespace else 0
+        return f'{self.id:d} {self.title} {self.description} {namespace_id:d}'
+
+    def has_higher_priority(self):
+        return 'next' in self.title.lower()
 
 
-def format_time(timestamp):
-    return timestamp.strftime('%H:%M') if timestamp else ''
+@dataclass(frozen=True)
+class Label:
+    json: dict = field(repr=False)
+    id: int
+    title: str
+
+    @classmethod
+    def from_json(cls, json):
+        return cls(json, json['id'], json['title'])
+
+    def output(self):
+        return f'{self.id:d} {self.title}'
+
+    def has_higher_priority(self):
+        return 'next' in self.title.lower()
 
 
-class PrintableTask:
-    def __init__(self, task):
-        self.id = task.id
-        self.title = task.title
-        self.priority = task.priority
-        self.is_favorite = task.is_favorite
+@dataclass(frozen=True)
+class Task:
+    json: dict = field(repr=False)
+    id: int
+    title: str
+    description: str
+    priority: int
+    is_favorite: bool
+    due_date: datetime
+    created: datetime
+    updated: datetime
+    reminder_dates: list[str]
+    done: bool
+    tasklist: List
+    labels: list[Label]
 
-        self.due_date = None
-        if task.due_date and task.due_date > '0001-01-01T00:00:00Z':
-            self.due_date = datetime.fromisoformat(task.due_date.replace("Z", "")).replace(tzinfo=None)
-
-        self.list_id = task.list_id
-        self.label_ids = []
-        if task.labels:
-            self.label_ids = [x.id for x in task.labels]
+    @classmethod
+    def from_json(cls, json, list_object, labels):
+        return cls(json, json['id'], json['title'], json['description'],
+                   json['priority'],
+                   json['is_favorite'],
+                   _date_from_json(json['due_date']),
+                   _date_from_json(json['created']),
+                   _date_from_json(json['updated']),
+                   json['reminder_dates'],
+                   json['done'],
+                   list_object,
+                   labels
+                   )
 
     def urgency(self):
         today = datetime.today()
@@ -51,43 +109,33 @@ class PrintableTask:
         else:
             datepoints = 0
         statuspoints = 0
-        if 'next' in self.list_name().lower() or 'next' in " ".join(self.label_names()).lower():
+        if self.tasklist.has_higher_priority() or any(label.has_higher_priority() for label in self.labels):
             statuspoints = 1
         return 2 + statuspoints + datepoints + int(self.priority) + (1 if self.is_favorite else 0)
 
-    def due_date_format(self):
-        return format_date(self.due_date)
-
-    def due_time_format(self):
-        return format_time(self.due_date)
-
-    def _list(self):
-        list_dict = {x.id: x for x in get_client().get_lists()}
-        return list_dict.get(self.list_id)
-
-    def list_name(self):
-        return self._list().title
-
-    def namespace_name(self):
-        namespaces_dict = {x.id: x for x in get_client().get_namespaces()}
-        namespace = namespaces_dict.get(self._list().namespace_id)
-        return namespace.title
-
-    def label_names(self):
-        all_labels = get_client().get_labels() or []
-        label_dict = {x.id: x for x in all_labels}
-        label_names = [str(label_dict.get(x).title) for x in self.label_ids]
-        return ' '.join(label_names)
-
     def representation(self):
         output = [f'{self.id:4}',
-                  '(%s)' % self.priority,
-                  '%s' % '*' if self.is_favorite else ' ',
+                  f'({self.priority})',
+                  f'{"*"}' if self.is_favorite else ' ',
                   f'{self.title:50.50}',
-                  f'{self.due_date_format():9.9}',
-                  f'{self.due_time_format():5.5}',
-                  f'{self.namespace_name():15.15}',
-                  f'{self.list_name():15.15}',
-                  f'{self.label_names():15.15}',
+                  f'{format_date(self.due_date) :9.9}',
+                  f'{format_time(self.due_date) :5.5}',
+                  f'{self.tasklist.namespace.title:15.15}',
+                  f'{self.tasklist.title:15.15}',
+                  f'{" ".join(map(lambda label: label.title, self.labels or [])) :15.15}',
                   f'{self.urgency():3}']
         return ' '.join(output)
+
+
+def _date_from_json(json_date):
+    if json_date and json_date > '0001-01-01T00:00:00Z':
+        return datetime.fromisoformat(json_date.replace("Z", "")).replace(tzinfo=None)
+    return None
+
+
+def format_date(timestamp):
+    return timestamp.strftime('%a %d.%m') if timestamp else ''
+
+
+def format_time(timestamp):
+    return timestamp.strftime('%H:%M') if timestamp else ''

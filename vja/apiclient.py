@@ -3,7 +3,6 @@ import logging
 import os
 import sys
 from functools import wraps
-from types import SimpleNamespace
 
 import click
 import requests
@@ -11,8 +10,6 @@ import requests
 from vja import VjaError, config
 
 logger = logging.getLogger(__name__)
-
-__all__ = ['ApiClient']
 
 
 def check_access_token(func):
@@ -127,7 +124,7 @@ class ApiClient:
         if self.load_access_token() and not force:
             return
         login_url = self.create_url('/login')
-        logger.info("Login to %s ",  login_url)
+        logger.info("Login to %s ", login_url)
         username = self._username or click.prompt('username')
         password = self._password or click.prompt('password', hide_input=True)
         payload = {'username': username,
@@ -143,14 +140,14 @@ class ApiClient:
         headers = {'Authorization': f"Bearer {self.access_token}"}
         response = requests.get(url, headers=headers, params=params, timeout=30)
         response.raise_for_status()
-        return response.json(object_hook=lambda d: SimpleNamespace(**d))
+        return response.json()
 
     @handle_http_error
     def put_json(self, url, params=None, payload=None):
         headers = {'Authorization': "Bearer {}".format(self.access_token)}
         response = requests.put(url, headers=headers, params=params, json=payload, timeout=30)
         response.raise_for_status()
-        return response.json(object_hook=lambda d: SimpleNamespace(**d))
+        return response.json()
 
     @check_access_token
     def get_user(self):
