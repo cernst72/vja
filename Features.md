@@ -3,15 +3,15 @@
 ## Create Tasks
 
 ```shell
-vja add Learn using vja
+vja add Create a quick task in any first favorite list
 ```
 
 ```shell
-vja add -l 2 "Create task in list with index 2"
+vja -v add "Another task" --prio=2 --tag="Next Action" --note="my note" --due="next monday at 15:00" --favorite=True --reminder="friday 12:00"
 ```
 
 ```shell
-vja add Create another task
+vja add "One mor task task" --list=1 -p 4 -t "Label1" -n "my note" -d "23:00" -f True
 ```
 
 ## List tasks
@@ -65,10 +65,14 @@ vja list add New List
 ```
 
 ```shell
-vja list -n 2 Create list in namespace with index 2
+vja list add -n 2 Create list in namespace with index 2
 ```
 
 ## Manage labels
+
+```shell
+vja label add Next action
+```
 
 ```shell
 vja label ls

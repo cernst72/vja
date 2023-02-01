@@ -2,6 +2,8 @@ import typing
 from dataclasses import dataclass, field
 from datetime import datetime
 
+from dateutil import tz
+
 
 @dataclass(frozen=True)
 class Namespace:
@@ -88,7 +90,7 @@ class Task:
                    )
 
     def urgency(self):
-        today = datetime.today()
+        today = datetime.today().astimezone(tz.tzlocal())
         if self.due_date:
             duedate = self.due_date
             datediff = (duedate - today).days
@@ -131,7 +133,7 @@ class Task:
 
 def _date_from_json(json_date):
     if json_date and json_date > '0001-01-01T00:00:00Z':
-        return datetime.fromisoformat(json_date.replace("Z", "")).replace(tzinfo=None)
+        return datetime.fromisoformat(json_date)
     return None
 
 

@@ -144,7 +144,7 @@ class ApiClient:
 
     @handle_http_error
     def put_json(self, url, params=None, payload=None):
-        headers = {'Authorization': "Bearer {}".format(self.access_token)}
+        headers = {'Authorization': f'Bearer {self.access_token}'}
         response = requests.put(url, headers=headers, params=params, json=payload, timeout=30)
         response.raise_for_status()
         return response.json()
@@ -155,7 +155,7 @@ class ApiClient:
 
     @check_access_token
     def get_task(self, task_id):
-        url = self.create_url('/tasks/' + str(task_id))
+        url = self.create_url(f'/tasks/{str(task_id)}')
         return self.get_json(url)
 
     @check_access_token
@@ -181,12 +181,22 @@ class ApiClient:
     @check_access_token
     def put_list(self, namespace_id, title):
         payload = {'title': title}
-        self.put_json(self.create_url('/namespaces/' + str(namespace_id) + '/lists'), payload=payload)
+        self.put_json(self.create_url(f'/namespaces/{str(namespace_id)}/lists'), payload=payload)
 
     @check_access_token
-    def put_task(self, list_id, title):
+    def put_label(self, title):
         payload = {'title': title}
-        self.put_json(self.create_url('/lists/' + str(list_id)), payload=payload)
+        self.put_json(self.create_url('/labels'), payload=payload)
+
+    @check_access_token
+    def put_task(self, list_id, label_id, payload):
+        logger.debug('put task to list %d with label %s and fields %s', list_id, label_id, payload)
+        task_response = self.put_json(self.create_url(f'/lists/{str(list_id)}'), payload=payload)
+        task_id = task_response["id"]
+        if label_id:
+            payload = {'label_id': label_id}
+            self.put_json(self.create_url(f'/tasks/{str(task_id)}/labels'), payload=payload)
+        return self.get_task(task_id)
 
     @check_access_token
     def get_labels(self):

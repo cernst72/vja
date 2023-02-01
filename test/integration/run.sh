@@ -8,12 +8,14 @@ run-test () {
   vja --version
   vja --help
   vja -u demo -p demo ls
-  vja namespace ls
-  vja list add List from $(date)
-  vja -v list ls
+  vja -v namespace ls
+  vja list add List 1
+  vja list ls
+  vja label add Label1
   vja label ls
-  vja add Task from $(date)
-  vja add Task from $(date)
+  vja -v add "The first task" --prio=2 --tag="Label1" --note="my note" --due="next monday at 15:00" --favorite=True --reminder="friday 12:00"
+  vja add "Another task" -p 4 -t "Label1" -n "my note" -d "23:00" -f True --list=1
+  vja add The third task
   vja ls
   vja -v show 1
 }

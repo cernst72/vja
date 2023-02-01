@@ -78,12 +78,24 @@ def label_ls():
     service.print_labels()
 
 
+@label_group.command('add', help='add label with title')
+@click.argument('title', nargs=-1)
+def label_add(title):
+    service.add_label(" ".join(title))
+
+
 # tasks
 @cli.command('add', help='add new task')
 @click.argument('line', nargs=-1)
-@click.option('list_id', '-l', '--list-id', type=click.INT, help='create task in list, default: first namespace found')
-def task_add(line, list_id=None):
-    service.add_task(list_id, " ".join(line))
+@click.option('list_id', '-l', '--list', type=click.INT, help='set list index, default: first (favorite) list found')
+@click.option('note', '-n', '--note', help='set description (note)')
+@click.option('prio', '-p', '--prio', help='set priority')
+@click.option('due', '-d', '--due', help='set due date (uses parsedatetime to parse)')
+@click.option('favorite', '-f', '--favorite', type=click.BOOL, help='mark as favorite')
+@click.option('tag', '-t', '--tag', help='set tag (tag must exist on server)')
+@click.option('reminder', '-r', '--reminder', help='set reminder (uses parsedatetime)')
+def task_add(line, **args):
+    service.add_task(" ".join(line), {k: v for k, v in args.items() if v is not None})
 
 
 @cli.command('ls', help='list tasks')
