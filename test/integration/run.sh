@@ -8,14 +8,15 @@ run-test () {
   vja --version
   vja --help
   vja -u demo -p demo ls
-  vja list add List 1
+  vja list add Work
+  vja list add Home
   vja list ls
   vja list show 1
-  vja label add Label1
+  vja label add Next Action
   vja label ls
-  vja -v add "The first task" --prio=2 --tag="Label1" --note="my note" --due="next monday at 15:00" --favorite=True --reminder="friday 12:00"
-  vja add "Another task" -p 4 -t "Label1" -n "my note" -d "23:00" -f True --list=1
-  vja add The third task
+  vja -v add "Look around" --prio=2 --tag="Next Action" --note="my note" --due="next monday at 15:00" --favorite=True --reminder="friday 12:00"
+  vja add "Stay at home" -p 4 -t "Next Action" -n "my note" -d "23:00" -f True --list=2
+  vja add Go home
   vja ls
   vja -v show 1
   vja namespace ls

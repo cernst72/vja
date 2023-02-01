@@ -32,8 +32,8 @@ class List:
         return cls(json, json['id'], json['title'], json['description'], json['is_favorite'], namespace)
 
     def output(self):
-        namespace_id = self.namespace.id if self.namespace else 0
-        return f'{self.id:d} {self.title} {self.description} {namespace_id:d}'
+        namespace_title = self.namespace.title if self.namespace else 0
+        return f'{self.id:d} {self.title} {self.description} {namespace_title}'
 
     def has_higher_priority(self):
         return 'next' in self.title.lower()

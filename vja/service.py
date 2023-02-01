@@ -6,6 +6,7 @@ from datetime import datetime
 from dateutil import tz
 from parsedatetime import parsedatetime
 
+from vja import VjaError
 from vja.list_service import ListService, convert_list_json
 from vja.login import get_client
 from vja.model import Task, Namespace, Label
@@ -104,7 +105,7 @@ arg_to_json = {'note': {'field': 'description', 'mapping': (lambda x: x)},
 
 
 def add_task(title, args: dict):
-    list_id = args.pop('list_id') if args.get('list_id') else None or _get_default_list_id()
+    list_id = args.pop('list_id') if args.get('list_id') else None or _get_default_list().id
     label_id = None
     if args.get('tag'):
         label = _label_from_name(args.pop('tag'))
@@ -116,12 +117,19 @@ def add_task(title, args: dict):
         mapper = arg_to_json[arg_name]
         payload[mapper['field']] = mapper['mapping'](arg_value)
     task = get_client().put_task(list_id, label_id, payload)
-    logger.info('Created task %s', task['id'])
+    logger.info('Created task %s in list %s', task['id'], task['list_id'])
 
 
-def _get_default_list_id():
-    # TODO Filter Favorite list
-    return get_client().get_lists()[0]['id']
+def _get_default_list():
+    list_objects = [convert_list_json(x) for x in get_client().get_lists()]
+    if not list_objects:
+        raise VjaError('No lists exist. Go and create at least one.')
+    list_objects.sort(key=lambda x: x.id)
+    favorite_lists = [x for x in list_objects if x.is_favorite]
+    if favorite_lists:
+        return favorite_lists[0]
+    else:
+        return list_objects[0]
 
 
 def _print_task_list(tasks, items):
