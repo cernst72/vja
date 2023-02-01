@@ -91,14 +91,6 @@ def task_ls():
     service.list_tasks()
 
 
-@cli.command('report', help='list relevant tasks (optionaly with -a)')
-@click.option('-l', '--list', 'list_name', help='filter by list')
-@click.option('-a', '--all', 'all_size', count=True, help='show additional tasks (tomorrow + task without due date)')
-@click.option('-i', '--urgency', 'urgency_sort', is_flag=True, help='sort by priority level')
-def task_report(list_name=None, all_size=0, urgency_sort=False):
-    service.report_tasks(list_name, all_size, urgency_sort)
-
-
 @cli.command('show', help='show task details')
 @click.argument('task', required=True, type=click.INT)
 def task_show(task):
