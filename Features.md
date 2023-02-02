@@ -1,18 +1,26 @@
-# (Planned) Features of vja
+# Features
 
 ## Create Tasks
 
 ```shell
-vja add Create a quick task in any first favorite list
+vja add Just drop a task in any first favorite list
 ```
 
 ```shell
-vja -v add "Another task" --prio=2 --tag="Next Action" --note="my note" --due="next monday at 15:00" --favorite=True --reminder="friday 12:00"
+vja -v add "Another task" --list=1 --prio=2 --tag="Next Action" --note="my note" --due="next monday at 15:00" --favorite=True --reminder="friday 12:00"
 ```
 
 ```shell
-vja add "One mor task task" --list=1 -p 4 -t "Label1" -n "my note" -d "23:00" -f True
+vja add "One mor task task" -l 1 -p 4 -t "Label1" -n "my note" -d "23:00" -f True
 ```
+
+See
+
+```shell
+vja add --help
+```
+
+for more.
 
 ## List tasks
 
@@ -34,6 +42,24 @@ Display single task with full information:
 vja -v show 1
 ```
 
+## Modify task
+
+```shell
+vja edit 1 --title="new title" --due="friday" --favorite=True
+```
+
+```shell
+vja edit 1 --done="true"
+```
+
+See
+
+```shell
+vja edit --help
+```
+
+for more.
+
 ## Open Vikunja in browser
 
 Open starting page
@@ -42,19 +68,21 @@ Open starting page
 vja open
 ```
 
-Open task 42 in browser
+Edit task 42 in browser
 
 ```shell
 vja open 42
 ```
 
-## Manage namespaces
+## Manage lists, namespaces, labels
+
+### Manage namespaces
 
 ```shell
 vja namespace ls
 ```
 
-## Manage lists (projects)
+### Manage lists (projects)
 
 ```shell
 vja list add New List
@@ -72,7 +100,7 @@ vja list ls
 vja list show 1
 ```
 
-## Manage labels
+### Manage labels
 
 ```shell
 vja label add Next action

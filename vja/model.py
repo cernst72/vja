@@ -99,10 +99,6 @@ class Task:
                    labels
                    )
 
-    @classmethod
-    def from_json_array(cls, json_array):
-        return [Task.from_json(x) for x in json_array or []]
-
     def urgency(self):
         today = datetime.today()
         if self.due_date:
