@@ -115,7 +115,7 @@ class Task:
             statuspoints = 1
         return 2 + statuspoints + datepoints + int(self.priority) + (1 if self.is_favorite else 0)
 
-    def representation(self):
+    def output(self):
         output = [f'{self.id:4}',
                   f'({self.priority})',
                   f'{"*"}' if self.is_favorite else ' ',
@@ -124,7 +124,7 @@ class Task:
                   f'{format_time(self.due_date) :5.5}',
                   f'{self.tasklist.namespace.title:15.15}',
                   f'{self.tasklist.title:15.15}',
-                  f'{" ".join(map(lambda label: label.title, self.labels or [])) :15.15}',
+                  f'{",".join(map(lambda label: label.title, self.labels or [])) :15.15}',
                   f'{self.urgency():3}']
         return ' '.join(output)
 

@@ -93,7 +93,7 @@ def print_task(task_id):
     logger.debug(task_json)
     task_object = _convert_task_json(task_json)
     print(task_object)
-    print(task_object.representation())
+    print(task_object.output())
 
 
 arg_to_json = {'note': {'field': 'description', 'mapping': (lambda x: x)},
@@ -128,13 +128,12 @@ def _get_default_list():
     favorite_lists = [x for x in list_objects if x.is_favorite]
     if favorite_lists:
         return favorite_lists[0]
-    else:
-        return list_objects[0]
+    return list_objects[0]
 
 
 def _print_task_list(tasks, items):
     for item in items:
-        print(f'{str(tasks.index(item) + 1):3}' + ' ' + item.representation())
+        print(f'{str(tasks.index(item) + 1):3}' + ' ' + item.output())
 
 
 def _convert_task_json(task_json):

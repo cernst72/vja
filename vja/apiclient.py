@@ -28,8 +28,8 @@ def check_access_token(func):
             self = args[0]
             self.get_access_token()
             return func(*args, **kwargs)
-        except KeyError:
-            raise VjaError('need access token to call function {}; call authenticate()'.format(func.__name__))
+        except KeyError as e:
+            raise VjaError(f'need access token to call function {func.__name__}; call authenticate()') from e
 
     return wrapper
 
@@ -43,7 +43,7 @@ def handle_http_error(func):
         try:
             return func(*args, **kwargs)
         except requests.HTTPError as error:
-            if error.response.status_code == 401 or error.response.status_code == 429:
+            if error.response.status_code in (401, 429):
                 logger.info('HTTP-Error %s, url=%s; trying to retrieve new access token...',
                             error.response.status_code, error.response.url)
                 self = args[0]
@@ -207,4 +207,3 @@ class ApiClient:
             payload = {'label_id': label_id}
             self.put_json(self.create_url(f'/tasks/{str(task_id)}/labels'), payload=payload)
         return self.get_task(task_id)
-

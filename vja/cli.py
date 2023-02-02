@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 @click.option('-v', '--verbose', 'verbose', default=False, is_flag=True, help='verbose output')
 @click.option('-u', '--username', 'username', help='username for initial login (optional)')
 @click.option('-p', '--password', 'password', help='password for initial login (optional)')
-def cli(verbose, username=None, password=None):
+def cli(verbose=None, username=None, password=None):
     if verbose:
         logging.basicConfig(level=logging.DEBUG)
         logger.debug('Verbose mode on')
