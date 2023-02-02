@@ -125,14 +125,14 @@ class ApiClient:
         if self.load_access_token() and not force:
             return
         login_url = self.create_url('/login')
-        logger.info("Login to %s ", login_url)
-        username = self._username or click.prompt('username')
-        password = self._password or click.prompt('password', hide_input=True)
+        click.echo(f'Login to {login_url}')
+        username = self._username or click.prompt('Username')
+        password = self._password or click.prompt('Password', hide_input=True)
         payload = {'username': username,
                    'password': password}
         response = requests.post(login_url, json=payload, timeout=30)
         response.raise_for_status()
-        self._token['access'] = response.json()['token']
+        self._token['access'] = self.to_json(response)['token']
         self.store_access_token()
         logger.info('Login successful.')
 
@@ -142,7 +142,7 @@ class ApiClient:
         headers = {'Authorization': f"Bearer {self.access_token}"}
         response = requests.get(url, headers=headers, params=params, timeout=30)
         response.raise_for_status()
-        return response.json()
+        return self.to_json(response)
 
     @handle_http_error
     @check_access_token
@@ -150,7 +150,7 @@ class ApiClient:
         headers = {'Authorization': f'Bearer {self.access_token}'}
         response = requests.put(url, headers=headers, params=params, json=payload, timeout=30)
         response.raise_for_status()
-        return response.json()
+        return self.to_json(response)
 
     @handle_http_error
     @check_access_token
@@ -158,7 +158,15 @@ class ApiClient:
         headers = {'Authorization': f'Bearer {self.access_token}'}
         response = requests.post(url, headers=headers, params=params, json=payload, timeout=30)
         response.raise_for_status()
-        return response.json()
+        return self.to_json(response)
+
+    @staticmethod
+    def to_json(response: requests.Response):
+        try:
+            return response.json()
+        except Exception as e:
+            logger.error('Expected valid json, but found %s', response.text)
+            raise VjaError('Cannot parse json in response.') from e
 
     def get_user(self):
         return self.get_json(self.create_url('/user'))
