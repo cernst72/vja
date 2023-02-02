@@ -9,7 +9,7 @@ from parsedatetime import parsedatetime
 from vja import VjaError
 from vja.list_service import ListService, convert_list_json
 from vja.login import get_client
-from vja.model import Task, Namespace, Label
+from vja.model import Task, Namespace, Label, List
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +66,7 @@ def add_label(title):
 # tasks
 def list_tasks():
     tasks_json = get_client().get_tasks(exclude_completed=True)
-    tasks_object = [_convert_task_json(x) for x in tasks_json]
+    tasks_object = [task_from_json(x) for x in tasks_json]
     tasks_object.sort(key=lambda x: ((x.due_date or datetime.max),
                                      -x.priority,
                                      x.tasklist.title.upper(),
@@ -88,31 +88,30 @@ def print_tasks(tasks, priority_level_sort=False):
         _print_task_list(tasks, tasks)
 
 
-def print_task(task_id):
+def print_task(task_id: int):
     task_json = get_client().get_task(task_id)
     logger.debug(task_json)
-    task_object = _convert_task_json(task_json)
+    task_object = task_from_json(task_json)
     print(task_object)
     print(task_object.output())
 
 
-arg_to_json = {'note': {'field': 'description', 'mapping': (lambda x: x)},
+arg_to_json = {'title': {'field': 'title', 'mapping': (lambda x: x)},
+               'note': {'field': 'description', 'mapping': (lambda x: x)},
                'prio': {'field': 'priority', 'mapping': (lambda x: int(x))},
                'due': {'field': 'due_date', 'mapping': (lambda x: _parse_date_text(x))},
                'favorite': {'field': 'is_favorite', 'mapping': (lambda x: bool(x))},
+               'completed': {'field': 'done', 'mapping': (lambda x: bool(x))},
                'reminder': {'field': 'reminder_dates', 'mapping': (lambda x: [_parse_date_text(x)])}
                }
 
 
 def add_task(title, args: dict):
+    args.update({'title': title})
     list_id = args.pop('list_id') if args.get('list_id') else None or _get_default_list().id
-    label_id = None
-    if args.get('tag'):
-        label = _label_from_name(args.pop('tag'))
-        if label:
-            label_id = label['id']
+    label_id = _label_id_from_name(args.pop('tag')) if args.get('tag') else None
 
-    payload = {'title': title}
+    payload = {}
     for arg_name, arg_value in args.items():
         mapper = arg_to_json[arg_name]
         payload[mapper['field']] = mapper['mapping'](arg_value)
@@ -120,7 +119,25 @@ def add_task(title, args: dict):
     logger.info('Created task %s in list %s', task['id'], task['list_id'])
 
 
-def _get_default_list():
+def edit_task(task_id: int, args: dict):
+    label_id = _label_id_from_name(args.pop('tag')) if args.get('tag') else None
+
+    payload = {}
+    for arg_name, arg_value in args.items():
+        mapper = arg_to_json[arg_name]
+        payload[mapper['field']] = mapper['mapping'](arg_value)
+    task = get_client().post_task(task_id, label_id, payload)
+    logger.info('Modified task %s in list %s', task['id'], task['list_id'])
+
+
+def task_from_json(task_json: dict) -> Task:
+    list_object = ListService.find_list_by_id(task_json['list_id'])
+    labels = Label.from_json_array(task_json['labels'])
+    task_object = Task.from_json(task_json, list_object, labels)
+    return task_object
+
+
+def _get_default_list() -> List:
     list_objects = [convert_list_json(x) for x in get_client().get_lists()]
     if not list_objects:
         raise VjaError('No lists exist. Go and create at least one.')
@@ -136,20 +153,15 @@ def _print_task_list(tasks, items):
         print(f'{str(tasks.index(item) + 1):3}' + ' ' + item.output())
 
 
-def _convert_task_json(task_json):
-    list_object = ListService.find_list_by_id(task_json['list_id'])
-    labels = [Label.from_json(x) for x in task_json['labels'] or []]
-    task_object = Task.from_json(task_json, list_object, labels)
-    return task_object
-
-
-def _label_from_name(name):
-    labels_json = get_client().get_labels()
-    label_found = [label for label in labels_json if label['title'] == name]
-    if label_found:
-        return label_found[0]
-    logger.warning("Label does not exist on server: %s", name)
-    return None
+def _label_id_from_name(name) -> int:
+    if not name:
+        return None
+    labels_remote = Label.from_json_array(get_client().get_labels())
+    label_found = [label for label in labels_remote if label.title == name]
+    if not label_found:
+        logger.warning("Label does not exist on server: %s", name)
+        return None
+    return label_found[0].id
 
 
 def _parse_date_text(text):

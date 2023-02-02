@@ -18,6 +18,8 @@ run-test () {
   vja add "Stay at home" -p 4 -t "Next Action" -n "my note" -d "23:00" -f True --list=2
   vja add Go home
   vja ls
+  vja -v edit 1 --prio=0 --note="" --due="" --favorite=False --reminder="" --title="empty title" --completed=True
+  vja edit 2 --prio=1 --note="modified note" --due="4.2" --reminder="tomorrow"
   vja -v show 1
   vja namespace ls
 }

@@ -8,6 +8,7 @@ import click
 import requests
 
 from vja import VjaError, config
+from vja.model import Label
 
 logger = logging.getLogger(__name__)
 
@@ -136,6 +137,7 @@ class ApiClient:
         logger.info('Login successful.')
 
     @handle_http_error
+    @check_access_token
     def get_json(self, url, params=None):
         headers = {'Authorization': f"Bearer {self.access_token}"}
         response = requests.get(url, headers=headers, params=params, timeout=30)
@@ -143,49 +145,50 @@ class ApiClient:
         return response.json()
 
     @handle_http_error
+    @check_access_token
     def put_json(self, url, params=None, payload=None):
         headers = {'Authorization': f'Bearer {self.access_token}'}
         response = requests.put(url, headers=headers, params=params, json=payload, timeout=30)
         response.raise_for_status()
         return response.json()
 
+    @handle_http_error
     @check_access_token
+    def post_json(self, url, params=None, payload=None):
+        headers = {'Authorization': f'Bearer {self.access_token}'}
+        response = requests.post(url, headers=headers, params=params, json=payload, timeout=30)
+        response.raise_for_status()
+        return response.json()
+
     def get_user(self):
         return self.get_json(self.create_url('/user'))
 
-    @check_access_token
     def get_namespaces(self):
         if self._cache['namespaces'] is None:
             self._cache['namespaces'] = self.get_json(self.create_url('/namespaces')) or []
         return self._cache['namespaces']
 
-    @check_access_token
     def get_lists(self):
         if self._cache['lists'] is None:
             self._cache['lists'] = self.get_json(self.create_url('/lists')) or []
         return self._cache['lists']
 
-    @check_access_token
     def get_list(self, list_id):
         return self.get_json(self.create_url(f'/lists/{str(list_id)}'))
 
-    @check_access_token
     def put_list(self, namespace_id, title):
         payload = {'title': title}
         self.put_json(self.create_url(f'/namespaces/{str(namespace_id)}/lists'), payload=payload)
 
-    @check_access_token
     def get_labels(self):
         if self._cache['labels'] is None:
             self._cache['labels'] = self.get_json(self.create_url('/labels')) or []
         return self._cache['labels']
 
-    @check_access_token
     def put_label(self, title):
         payload = {'title': title}
         self.put_json(self.create_url('/labels'), payload=payload)
 
-    @check_access_token
     def get_tasks(self, exclude_completed=True):
         if self._cache['tasks'] is None:
             url = self.create_url('/tasks/all')
@@ -193,17 +196,32 @@ class ApiClient:
             self._cache['tasks'] = self.get_json(url, params) or []
         return self._cache['tasks']
 
-    @check_access_token
     def get_task(self, task_id):
         url = self.create_url(f'/tasks/{str(task_id)}')
         return self.get_json(url)
 
-    @check_access_token
     def put_task(self, list_id, label_id, payload):
         logger.debug('put task to list %d with label %s and fields %s', list_id, label_id, payload)
         task_response = self.put_json(self.create_url(f'/lists/{str(list_id)}'), payload=payload)
         task_id = task_response["id"]
         if label_id:
-            payload = {'label_id': label_id}
-            self.put_json(self.create_url(f'/tasks/{str(task_id)}/labels'), payload=payload)
+            self.update_label(task_id, label_id)
         return self.get_task(task_id)
+
+    def post_task(self, task_id, label_id, payload):
+        logger.debug('post task %d with label %s and fields %s', task_id, label_id, payload)
+        task_response = self.post_json(self.create_url(f'/tasks/{str(task_id)}'), payload=payload)
+        task_id = task_response["id"]
+        if label_id:
+            self.update_label(task_id, label_id)
+        return self.get_task(task_id)
+
+    def update_label(self, task_id, label_id):
+        task_label_url = self.create_url(f'/tasks/{str(task_id)}/labels')
+
+        labels_remote = Label.from_json_array(self.get_json(task_label_url) or [])
+        any([label for label in labels_remote if label.id == label_id])
+
+        if not any([label for label in labels_remote if label.id == label_id]):
+            payload = {'label_id': label_id}
+            self.put_json(task_label_url, payload=payload)

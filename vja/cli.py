@@ -57,7 +57,7 @@ def list_group():
 
 @list_group.command('add', help='add list with title')
 @click.option('namespace_id', '-n', '--namespace-id', help='create list in namespace, default: first list found')
-@click.argument('title', nargs=-1)
+@click.argument('title', nargs=-1, required=True)
 def list_add(title, namespace_id=None):
     service.add_list(namespace_id, " ".join(title))
 
@@ -85,23 +85,41 @@ def label_ls():
 
 
 @label_group.command('add', help='add label with title')
-@click.argument('title', nargs=-1)
+@click.argument('title', required=True, nargs=-1)
 def label_add(title):
     service.add_label(" ".join(title))
 
 
 # tasks
 @cli.command('add', help='add new task')
-@click.argument('line', nargs=-1)
-@click.option('list_id', '-l', '--list', type=click.INT, help='set list index, default: first (favorite) list found')
-@click.option('note', '-n', '--note', help='set description (note)')
-@click.option('prio', '-p', '--prio', help='set priority')
-@click.option('due', '-d', '--due', help='set due date (uses parsedatetime to parse)')
-@click.option('favorite', '-f', '--favorite', type=click.BOOL, help='mark as favorite')
-@click.option('tag', '-t', '--tag', help='set tag (tag must exist on server)')
-@click.option('reminder', '-r', '--reminder', help='set reminder (uses parsedatetime)')
-def task_add(line, **args):
-    service.add_task(" ".join(line), {k: v for k, v in args.items() if v is not None})
+@click.argument('title', required=True, nargs=-1)
+@click.option('list_id', '-l', '--list', '--folder', type=click.INT, help='list index, default: first favorite list')
+@click.option('note', '-n', '--note', '--description', help='set description (note)')
+@click.option('prio', '-p', '--prio', '--priority', help='set priority')
+@click.option('due', '-d', '--due', '--duedate', '--due-date', help='set due date (uses parsedatetime to parse)')
+@click.option('favorite', '-f', '--favorite', '--star', type=click.BOOL, help='mark as favorite')
+@click.option('tag', '-t', '--tag', '--label', help='set tag (tag must exist on server)')
+@click.option('reminder', '-r', '--reminder', '--alarm', help='set reminder (uses parsedatetime)')
+def task_add(title, **args):
+    service.add_task(" ".join(title), {k: v for k, v in args.items() if v is not None})
+
+
+@cli.command('edit', aliases=['modify', 'update'], help='modify task (opens browser if no options are given)')
+@click.argument('task_id', required=True, type=click.INT)
+@click.option('title', '-i', '--title', help='set title')
+@click.option('note', '-n', '--note', '--description', help='set description (note)')
+@click.option('prio', '-p', '--prio', '--priority', help='set priority')
+@click.option('due', '-d', '--due', '--duedate', '--due-date', help='set due date (uses parsedatetime to parse)')
+@click.option('favorite', '-f', '--favorite', '--star', type=click.BOOL, help='mark as favorite')
+@click.option('completed', '-c', '--done', '--completed', '--done', type=click.BOOL, help='mark as completed')
+@click.option('tag', '-t', '--tag', '--label', help='set tag (tag must exist on server)')
+@click.option('reminder', '-r', '--reminder', '--alarm', help='set reminder (uses parsedatetime)')
+def task_edit(task_id, **args):
+    args_present = {k: v for k, v in args.items() if v is not None}
+    if not args_present:
+        open_browser(task_id)
+    else:
+        service.edit_task(task_id, args_present)
 
 
 @cli.command('ls', help='list tasks')
@@ -118,16 +136,14 @@ def task_show(task):
 @cli.command(name='open', help='open task in browser')
 @click.argument('task', required=False, type=click.INT)
 def task_open(task):
+    open_browser(task)
+
+
+def open_browser(task):
     url = config.get_parser().get('application', 'frontend_url')
     if task and task > 0:
         url += '/tasks/' + str(task)
     webbrowser.open_new_tab(url)
-
-
-@cli.command('complete', help='mark task as complete')
-@click.argument('task', required=True, type=click.INT)
-def task_complete(task):
-    return
 
 
 if __name__ == '__main__':

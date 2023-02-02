@@ -14,6 +14,10 @@ class Namespace:
     def from_json(cls, json):
         return cls(json, json['id'], json['title'], json['description'])
 
+    @classmethod
+    def from_json_array(cls, json_array):
+        return [Namespace.from_json(x) for x in json_array or []]
+
     def output(self):
         return f'{self.id:d} {self.title} {self.description}'
 
@@ -30,6 +34,10 @@ class List:
     @classmethod
     def from_json(cls, json, namespace):
         return cls(json, json['id'], json['title'], json['description'], json['is_favorite'], namespace)
+
+    @classmethod
+    def from_json_array(cls, json_array, namespace):
+        return [List.from_json(x, namespace) for x in json_array or []]
 
     def output(self):
         namespace_title = self.namespace.title if self.namespace else 0
@@ -48,6 +56,10 @@ class Label:
     @classmethod
     def from_json(cls, json):
         return cls(json, json['id'], json['title'])
+
+    @classmethod
+    def from_json_array(cls, json_array):
+        return [Label.from_json(x) for x in json_array or []]
 
     def output(self):
         return f'{self.id:d} {self.title}'
@@ -87,6 +99,10 @@ class Task:
                    labels
                    )
 
+    @classmethod
+    def from_json_array(cls, json_array):
+        return [Task.from_json(x) for x in json_array or []]
+
     def urgency(self):
         today = datetime.today()
         if self.due_date:
@@ -120,11 +136,11 @@ class Task:
                   f'({self.priority})',
                   f'{"*"}' if self.is_favorite else ' ',
                   f'{self.title:50.50}',
-                  f'{format_date(self.due_date) :9.9}',
-                  f'{format_time(self.due_date) :5.5}',
+                  f'{format_date(self.due_date) :15.15}',
+                  f'{"R" if self.reminder_dates else "" :1}',
                   f'{self.tasklist.namespace.title:15.15}',
                   f'{self.tasklist.title:15.15}',
-                  f'{",".join(map(lambda label: label.title, self.labels or [])) :15.15}',
+                  f'{",".join(map(lambda label: label.title, self.labels or [])) :20.20}',
                   f'{self.urgency():3}']
         return ' '.join(output)
 
@@ -136,8 +152,4 @@ def _date_from_json(json_date):
 
 
 def format_date(timestamp):
-    return timestamp.strftime('%a %d.%m') if timestamp else ''
-
-
-def format_time(timestamp):
-    return timestamp.strftime('%H:%M') if timestamp else ''
+    return timestamp.strftime('%a %d.%m %H:%M') if timestamp else ''

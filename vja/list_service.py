@@ -12,7 +12,7 @@ class ListService:
     list_dict: dict = None
 
     @staticmethod
-    def find_namespace_by_id(namespace_id):
+    def find_namespace_by_id(namespace_id: int) -> Namespace:
         if not ListService.namespace_dict:
             ListService.namespaces_dict = {x['id']: Namespace.from_json(x) for x in get_client().get_namespaces()}
         namespace_object = ListService.namespaces_dict.get(namespace_id)
@@ -23,7 +23,7 @@ class ListService:
         return namespace_object
 
     @staticmethod
-    def find_list_by_id(list_id):
+    def find_list_by_id(list_id: int) -> List:
         if not ListService.list_dict:
             ListService.list_dict = {list_json['id']: convert_list_json(list_json)
                                      for list_json in get_client().get_lists()}
@@ -34,6 +34,6 @@ class ListService:
         return list_object
 
 
-def convert_list_json(list_json):
+def convert_list_json(list_json: dict) -> List:
     namespace = ListService.find_namespace_by_id(list_json['namespace_id'])
     return List.from_json(list_json, namespace)
