@@ -210,7 +210,9 @@ class ApiClient:
 
     def post_task(self, task_id, label_id, payload):
         logger.debug('post task %d with label %s and fields %s', task_id, label_id, payload)
-        task_response = self.post_json(self.create_url(f'/tasks/{str(task_id)}'), payload=payload)
+        task_remote = self.get_task(task_id)
+        task_remote.update(payload)
+        task_response = self.post_json(self.create_url(f'/tasks/{str(task_id)}'), payload=task_remote)
         task_id = task_response["id"]
         if label_id:
             self.update_label(task_id, label_id)
