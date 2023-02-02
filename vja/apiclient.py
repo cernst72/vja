@@ -219,9 +219,9 @@ class ApiClient:
     def update_label(self, task_id, label_id):
         task_label_url = self.create_url(f'/tasks/{str(task_id)}/labels')
 
-        labels_remote = Label.from_json_array(self.get_json(task_label_url) or [])
-        any([label for label in labels_remote if label.id == label_id])
+        labels_remote = Label.from_json_array(self.get_json(task_label_url))
+        any(label for label in labels_remote if label.id == label_id)
 
-        if not any([label for label in labels_remote if label.id == label_id]):
+        if not any(label for label in labels_remote if label.id == label_id):
             payload = {'label_id': label_id}
             self.put_json(task_label_url, payload=payload)
