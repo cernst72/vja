@@ -50,6 +50,7 @@ integration-test:
     # TODO install from some repository
     - pip install dist/*.whl
     - pip show vja
+    - which vja
 
     - cd test/integration
     - ./run.sh start docker

@@ -106,15 +106,20 @@ arg_to_json = {'title': {'field': 'title', 'mapping': (lambda x: x)},
                }
 
 
+def _args_to_payload(args):
+    payload = {}
+    for arg_name, arg_value in args.items():
+        mapper = arg_to_json[arg_name]
+        payload[mapper['field']] = mapper['mapping'](arg_value)
+    return payload
+
+
 def add_task(title, args: dict):
     args.update({'title': title})
     list_id = args.pop('list_id') if args.get('list_id') else None or _get_default_list().id
     label_id = _label_id_from_name(args.pop('tag')) if args.get('tag') else None
 
-    payload = {}
-    for arg_name, arg_value in args.items():
-        mapper = arg_to_json[arg_name]
-        payload[mapper['field']] = mapper['mapping'](arg_value)
+    payload = _args_to_payload(args)
     task = get_client().put_task(list_id, label_id, payload)
     logger.info('Created task %s in list %s', task['id'], task['list_id'])
 
@@ -122,10 +127,7 @@ def add_task(title, args: dict):
 def edit_task(task_id: int, args: dict):
     label_id = _label_id_from_name(args.pop('tag')) if args.get('tag') else None
 
-    payload = {}
-    for arg_name, arg_value in args.items():
-        mapper = arg_to_json[arg_name]
-        payload[mapper['field']] = mapper['mapping'](arg_value)
+    payload = _args_to_payload(args)
     task = get_client().post_task(task_id, label_id, payload)
     logger.info('Modified task %s in list %s', task['id'], task['list_id'])
 

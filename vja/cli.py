@@ -27,17 +27,6 @@ def cli(verbose=None, username=None, password=None):
         service.authenticate(username, password)
 
 
-@cli.command('help')
-@click.argument('subcommand')
-@click.pass_context
-def help_command(ctx, subcommand):
-    subcommand_obj = cli.get_command(ctx, subcommand)
-    if subcommand_obj is None:
-        click.echo("I don't know that command.")
-    else:
-        click.echo(subcommand_obj.get_help(ctx))
-
-
 # namespaces
 @cli.group('namespace', help='subcommand: namespace (see help)')
 def namespace_group():
