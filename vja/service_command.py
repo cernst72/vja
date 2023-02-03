@@ -1,28 +1,30 @@
 import logging
 import time
 from datetime import datetime
+from typing import Optional
 
 from dateutil import tz
 from parsedatetime import parsedatetime
 
 from vja import VjaError
 from vja.apiclient import ApiClient
-from vja.list_service import convert_list_json
-from vja.login import get_client
+from vja.list_service import ListService
 from vja.model import Label, List
 
 logger = logging.getLogger(__name__)
 
 
 class CommandService:
-    def __init__(self, api_client: ApiClient):
+    def __init__(self, list_service: ListService, api_client: ApiClient):
+        self._list_service = list_service
         self._api_client = api_client
 
     def authenticate(self, username, password):
-        get_client(username, password)  # TODO
+        self._api_client.authenticate(username, password)
 
     def logout(self):
         self._api_client.logout()
+        logger.info('Logged out')
 
     # list
     def add_list(self, namespace_id, title):
@@ -69,7 +71,7 @@ class CommandService:
         logger.info('Modified task %s in list %s', task['id'], task['list_id'])
 
     def _get_default_list(self) -> List:
-        list_objects = [convert_list_json(x) for x in self._api_client.get_lists()]
+        list_objects = [self._list_service.convert_list_json(x) for x in self._api_client.get_lists()]
         if not list_objects:
             raise VjaError('No lists exist. Go and create at least one.')
         list_objects.sort(key=lambda x: x.id)
@@ -78,7 +80,7 @@ class CommandService:
             return favorite_lists[0]
         return list_objects[0]
 
-    def _label_id_from_name(self, name) -> int:
+    def _label_id_from_name(self, name) -> Optional[int]:
         if not name:
             return None
         labels_remote = Label.from_json_array(self._api_client.get_labels())

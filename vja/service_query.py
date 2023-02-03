@@ -7,14 +7,15 @@ from dateutil import tz
 from parsedatetime import parsedatetime
 
 from vja.apiclient import ApiClient
-from vja.list_service import ListService, convert_list_json
+from vja.list_service import ListService
 from vja.model import Task, Namespace, Label
 
 logger = logging.getLogger(__name__)
 
 
 class QueryService:
-    def __init__(self, api_client: ApiClient):
+    def __init__(self, list_service: ListService, api_client: ApiClient):
+        self._list_service = list_service
         self._api_client = api_client
 
     # namespace
@@ -29,13 +30,13 @@ class QueryService:
         lists_json = self._api_client.get_lists()
         logger.debug(lists_json)
         for list_json in lists_json:
-            list_object = convert_list_json(list_json)
+            list_object = self._list_service.convert_list_json(list_json)
             print(list_object.output())
 
     def print_list(self, list_id):
         list_json = self._api_client.get_list(list_id)
         logger.debug(list_json)
-        list_object = convert_list_json(list_json)
+        list_object = self._list_service.convert_list_json(list_json)
         print(list_object)
         print(list_object.output())
 
@@ -50,7 +51,7 @@ class QueryService:
     # tasks
     def list_tasks(self):
         tasks_json = self._api_client.get_tasks(exclude_completed=True)
-        tasks_object = [task_from_json(x) for x in tasks_json]
+        tasks_object = [self.task_from_json(x) for x in tasks_json]
         tasks_object.sort(key=lambda x: ((x.due_date or datetime.max),
                                          -x.priority,
                                          x.tasklist.title.upper(),
@@ -73,7 +74,7 @@ class QueryService:
     def print_task(self, task_id: int):
         task_json = self._api_client.get_task(task_id)
         logger.debug(task_json)
-        task_object = task_from_json(task_json)
+        task_object = self.task_from_json(task_json)
         print(task_object)
         print(task_object.output())
 
@@ -86,9 +87,8 @@ class QueryService:
         datetime_date = datetime.fromtimestamp(time.mktime(timetuple))
         return datetime_date.astimezone(tz.tzlocal()).isoformat()
 
-
-def task_from_json(task_json: dict) -> Task:
-    list_object = ListService.find_list_by_id(task_json['list_id'])
-    labels = Label.from_json_array(task_json['labels'])
-    task_object = Task.from_json(task_json, list_object, labels)
-    return task_object
+    def task_from_json(self, task_json: dict) -> Task:
+        list_object = self._list_service.find_list_by_id(task_json['list_id'])
+        labels = Label.from_json_array(task_json['labels'])
+        task_object = Task.from_json(task_json, list_object, labels)
+        return task_object

@@ -10,6 +10,7 @@ from click_aliases import ClickAliasedGroup
 
 from vja import config, VjaError
 from vja.apiclient import ApiClient
+from vja.list_service import ListService
 from vja.service_command import CommandService
 from vja.service_query import QueryService
 
@@ -19,9 +20,10 @@ logger = logging.getLogger(__name__)
 class Application:
     def __init__(self):
         api_url = self._get_service_url()
-        self._api_client = ApiClient(api_url)
-        self._command_service = CommandService(self._api_client)
-        self._query_service = QueryService(self._api_client)
+        api_client = ApiClient(api_url)
+        list_service = ListService(api_client)
+        self._command_service = CommandService(list_service, api_client)
+        self._query_service = QueryService(list_service, api_client)
 
     @property
     def command_service(self):
@@ -169,6 +171,7 @@ def open_browser(task):
     webbrowser.open_new_tab(url)
 
 
+application = Application()
+
 if __name__ == '__main__':
-    application = Application()
     cli()

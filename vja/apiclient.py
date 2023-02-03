@@ -62,27 +62,9 @@ class ApiClient:
     _TOKEN_FILE = 'token.json'
 
     def __init__(self, api_url):
-        # config
-        self._config = dict()
-        self._config['application'] = dict()
-        self._config['application']['api_url'] = api_url
-        # OAuth2 tokens and scope
-        self._user = None
-        self._token = dict()
-        self._token['access'] = None
-        # caches
-        self._cache = dict()
-        self._cache['lists'] = None
-        self._cache['labels'] = None
-        self._cache['namespaces'] = None
-        self._cache['tasks'] = None
-
-    @property
-    def user(self):
-        """Property for accessing the cached user."""
-        if self._user is None:
-            raise KeyError('user not set! call authenticate()')
-        return self._user
+        self._api_url = api_url
+        self._token = {'access': None}
+        self._cache = {'lists': None, 'labels': None, 'namespaces': None, 'tasks': None}
 
     @property
     def access_token(self):
@@ -92,11 +74,10 @@ class ApiClient:
         return self._token['access']
 
     def create_url(self, path):
-        return self._config['application']['api_url'] + path
+        return self._api_url + path
 
     def authenticate(self, username=None, password=None):
-        self.get_access_token()
-        self._user = self._user if self._user else self.get_user()
+        self.get_access_token(True, username, password)
 
     def load_access_token(self):
         """Load the access token from the file."""
