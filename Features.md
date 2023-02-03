@@ -30,9 +30,13 @@ List all active tasks
 vja ls
 vja ls --json
 ```
+Some filters exist like id or title of list, namespace and label
+```shell
+vja ls --label="Next Action"
+```
+See `vja ls --help` for more.
 
-Display single task:
-
+### Show task by id
 ```shell
 vja show 1
 vja show 1 --json

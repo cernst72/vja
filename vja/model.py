@@ -23,7 +23,7 @@ class Namespace:
         return {k: v for k, v in self.__dict__.items() if k != 'json'}
 
     def output(self):
-        return f'{self.id:d} {self.title} {self.description}'
+        return f'{self.id:5} {self.title:15.15} {self.description:20.20}'
 
 
 @dataclass(frozen=True)
@@ -49,8 +49,9 @@ class List:
         return {k: v for k, v in self.__dict__.items() if k != 'json'}
 
     def output(self):
-        namespace_title = self.namespace.title if self.namespace else 0
-        return f'{self.id:d} {self.title} {self.description} {namespace_title}'
+        namespace_title = self.namespace.title if self.namespace else ''
+        namespace_id = self.namespace.id if self.namespace else 0
+        return f'{self.id:5} {self.title:15.15} {self.description:20.20} {namespace_title:15.15}  {namespace_id:5}'
 
     def has_higher_priority(self):
         return 'next' in self.title.lower()
@@ -74,7 +75,7 @@ class Label:
         return {k: v for k, v in self.__dict__.items() if k != 'json'}
 
     def output(self):
-        return f'{self.id:d} {self.title}'
+        return f'{self.id:5} {self.title:15.15}'
 
     def has_higher_priority(self):
         return 'next' in self.title.lower()
@@ -115,7 +116,7 @@ class Task:
         return {k: v for k, v in self.__dict__.items() if k != 'json'}
 
     def output(self):
-        output = [f'{self.id:4}',
+        output = [f'{self.id:5}',
                   f'({self.priority})',
                   f'{"*"}' if self.is_favorite else ' ',
                   f'{self.title:50.50}',
@@ -153,7 +154,7 @@ class Task:
         else:
             statuspoints = 0
 
-        return 2 + statuspoints + datepoints + int(self.priority) + (1 if self.is_favorite else 0)
+        return (2 + statuspoints + datepoints + int(self.priority) + (1 if self.is_favorite else 0)) * (not self.done)
 
 
 def _date_from_json(json_date):

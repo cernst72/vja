@@ -35,14 +35,16 @@ class QueryService:
         self._dump_array(object_array, is_json, is_jsonvja)
 
     # tasks
-    def list_tasks(self, is_json, is_jsonvja):
-        tasks_json = self._api_client.get_tasks(exclude_completed=True)
-        tasks_object = [self.task_from_json(x) for x in tasks_json]
-        tasks_object.sort(key=lambda x: ((x.due_date or datetime.max),
-                                         -x.priority,
-                                         x.tasklist.title.upper(),
-                                         x.title.upper()))
-        self._dump_array(tasks_object, is_json, is_jsonvja)
+    def print_tasks(self, is_json, is_jsonvja, exclude_completed, namespace_filter, list_filter, label_filter):
+        task_object_array = [self.task_from_json(x) for x in
+                             self._api_client.get_tasks(exclude_completed=exclude_completed)]
+        task_object_array = self._filter(task_object_array, namespace_filter, list_filter, label_filter)
+        task_object_array.sort(key=lambda x: (x.done,
+                                              (x.due_date or datetime.max),
+                                              -x.priority,
+                                              x.tasklist.title.upper(),
+                                              x.title.upper()))
+        self._dump_array(task_object_array, is_json, is_jsonvja)
 
     def print_task(self, task_id: int, is_json, is_jsonvja):
         task_json = self._api_client.get_task(task_id)
@@ -74,3 +76,23 @@ class QueryService:
         else:
             print(element.output())
             print(element)
+
+    @staticmethod
+    def _filter(task_object_array, namespace_filter, list_filter, label_filter):
+        filters = []
+        if namespace_filter:
+            if str(namespace_filter).isdigit():
+                filters.append(lambda x: x.tasklist.namespace.id == int(namespace_filter))
+            else:
+                filters.append(lambda x: x.tasklist.namespace.title == namespace_filter)
+        if list_filter:
+            if str(list_filter).isdigit():
+                filters.append(lambda x: x.tasklist.id == int(list_filter))
+            else:
+                filters.append(lambda x: x.tasklist.title == list_filter)
+        if label_filter:
+            if str(label_filter).isdigit():
+                filters.append(lambda x: any(label.id == int(label_filter) for label in x.labels))
+            else:
+                filters.append(lambda x: any(label.title == label_filter for label in x.labels))
+        return list(filter(lambda x: all(f(x) for f in filters), task_object_array))

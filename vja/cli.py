@@ -42,8 +42,8 @@ def namespace_group():
 
 
 @namespace_group.command('ls', help='print namespaces')
-@click.option('is_json', '--json', default=False, is_flag=True, help='export as Vikunja json')
-@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='export in vja application json')
+@click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
+@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
 def namespace_ls(is_json=False, is_jsonvja=False):
     application.query_service.print_namespaces(is_json, is_jsonvja)
 
@@ -62,16 +62,16 @@ def list_add(title, namespace_id=None):
 
 
 @list_group.command('ls', help='print lists')
-@click.option('is_json', '--json',  default=False, is_flag=True, help='export as Vikunja json')
-@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='export in vja application json')
+@click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
+@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
 def list_ls(is_json, is_jsonvja):
     application.query_service.print_lists(is_json, is_jsonvja)
 
 
 @list_group.command('show', help='show list details')
 @click.argument('list_id', required=True, type=click.INT)
-@click.option('is_json', '--json', default=False, is_flag=True, help='export as Vikunja json')
-@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='export in vja application json')
+@click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
+@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
 def list_show(list_id, is_json, is_jsonvja):
     application.query_service.print_list(list_id, is_json, is_jsonvja)
 
@@ -83,8 +83,8 @@ def label_group():
 
 
 @label_group.command('ls', help='print labels')
-@click.option('is_json', '--json', default=False, is_flag=True, help='export as Vikunja json')
-@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='export in vja application json')
+@click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
+@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
 def label_ls(is_json, is_jsonvja):
     application.query_service.print_labels(is_json, is_jsonvja)
 
@@ -128,16 +128,20 @@ def task_edit(task_id, **args):
 
 
 @cli.command('ls', help='list tasks')
-@click.option('is_json', '--json', default=False, is_flag=True, help='export as Vikunja json')
-@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='export in vja application json')
-def task_ls(is_json, is_jsonvja):
-    application.query_service.list_tasks(is_json, is_jsonvja)
+@click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
+@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
+@click.option('exclude_completed', '--exclude-completed', type=click.BOOL, default=True, help='include completed tasks')
+@click.option('namespace_filter', '--namespace',  help='filter by namespace (name or id)')
+@click.option('list_filter', '--list',  help='filter by list (name or id)')
+@click.option('label_filter', '--label',  help='filter by label (name or id)')
+def task_ls(is_json, is_jsonvja, exclude_completed, namespace_filter, list_filter, label_filter):
+    application.query_service.print_tasks(is_json, is_jsonvja, exclude_completed, namespace_filter, list_filter, label_filter)
 
 
 @cli.command('show', help='show task details')
 @click.argument('task', required=True, type=click.INT)
-@click.option('is_json', '--json', default=False, is_flag=True, help='export as Vikunja json')
-@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='export in vja application json')
+@click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
+@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
 def task_show(task, is_json, is_jsonvja):
     application.query_service.print_task(task, is_json, is_jsonvja)
 
@@ -180,7 +184,8 @@ class Application:
     def configuration(self):
         return self._configuration
 
-application : Optional[Application] = None
+
+application: Optional[Application] = None
 
 if __name__ == '__main__':
     cli()
