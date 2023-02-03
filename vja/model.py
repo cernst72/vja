@@ -100,10 +100,8 @@ class Task:
                    )
 
     def urgency(self):
-        today = datetime.today()
         if self.due_date:
-            duedate = self.due_date
-            datediff = (duedate - today).days
+            datediff = (self.due_date - datetime.today()).days
             if datediff < 0:
                 datepoints = 6
             elif datediff == 0:
@@ -122,9 +120,11 @@ class Task:
                 datepoints = 0
         else:
             datepoints = 0
-        statuspoints = 0
         if self.tasklist.has_higher_priority() or any(label.has_higher_priority() for label in self.labels):
             statuspoints = 1
+        else:
+            statuspoints = 0
+
         return 2 + statuspoints + datepoints + int(self.priority) + (1 if self.is_favorite else 0)
 
     def output(self):
