@@ -35,10 +35,12 @@ class QueryService:
         self._dump_array(object_array, is_json, is_jsonvja)
 
     # tasks
-    def print_tasks(self, is_json, is_jsonvja, exclude_completed, namespace_filter, list_filter, label_filter):
+    def print_tasks(self, is_json, is_jsonvja, exclude_completed, namespace_filter, list_filter, label_filter,
+                    favorite_filter):
         task_object_array = [self.task_from_json(x) for x in
                              self._api_client.get_tasks(exclude_completed=exclude_completed)]
-        task_object_array = self._filter(task_object_array, namespace_filter, list_filter, label_filter)
+        task_object_array = self._filter(task_object_array, namespace_filter, list_filter, label_filter,
+                                         favorite_filter)
         task_object_array.sort(key=lambda x: (x.done,
                                               (x.due_date or datetime.max),
                                               -x.priority,
@@ -78,7 +80,7 @@ class QueryService:
             print(element)
 
     @staticmethod
-    def _filter(task_object_array, namespace_filter, list_filter, label_filter):
+    def _filter(task_object_array, namespace_filter, list_filter, label_filter, favorite_filter):
         filters = []
         if namespace_filter:
             if str(namespace_filter).isdigit():
@@ -95,4 +97,6 @@ class QueryService:
                 filters.append(lambda x: any(label.id == int(label_filter) for label in x.labels))
             else:
                 filters.append(lambda x: any(label.title == label_filter for label in x.labels))
+        if favorite_filter is not None:
+            filters.append(lambda x: x.is_favorite == bool(favorite_filter))
         return list(filter(lambda x: all(f(x) for f in filters), task_object_array))

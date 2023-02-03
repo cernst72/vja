@@ -98,27 +98,27 @@ def label_add(title):
 # tasks
 @cli.command('add', help='add new task')
 @click.argument('title', required=True, nargs=-1)
-@click.option('list_id', '-l', '--list', '--folder', type=click.INT, help='list index, default: first favorite list')
+@click.option('list_id', '-l', '--folder', '--list', type=click.INT, help='list index, default: first favorite list')
 @click.option('note', '-n', '--note', '--description', help='set description (note)')
 @click.option('prio', '-p', '--prio', '--priority', help='set priority')
-@click.option('due', '-d', '--due', '--duedate', '--due-date', help='set due date (uses parsedatetime to parse)')
-@click.option('favorite', '-f', '--favorite', '--star', type=click.BOOL, help='mark as favorite')
-@click.option('tag', '-t', '--tag', '--label', help='set tag (tag must exist on server)')
-@click.option('reminder', '-r', '--reminder', '--alarm', help='set reminder (uses parsedatetime)')
+@click.option('due', '-d', '--due', '--duedate', '--due-date', help='set due date (supports parsedatetime expressions)')
+@click.option('favorite', '-f', '--star', '--favorite', type=click.BOOL, help='mark as favorite')
+@click.option('tag', '-t', '--tag', '--label', help='set label (label must exist on server)')
+@click.option('reminder', '-r', '--alarm', '--reminder', help='set reminder (supports parsedatetime expressions)')
 def task_add(title, **args):
     application.command_service.add_task(" ".join(title), {k: v for k, v in args.items() if v is not None})
 
 
-@cli.command('edit', aliases=['modify', 'update'], help='modify task (opens browser if no options are given)')
+@cli.command('edit', aliases=['modify', 'update'], help='modify task (opens task in browser if no options are given)')
 @click.argument('task_id', required=True, type=click.INT)
 @click.option('title', '-i', '--title', help='set title')
 @click.option('note', '-n', '--note', '--description', help='set description (note)')
 @click.option('prio', '-p', '--prio', '--priority', help='set priority')
-@click.option('due', '-d', '--due', '--duedate', '--due-date', help='set due date (uses parsedatetime to parse)')
+@click.option('due', '-d', '--due', '--duedate', '--due-date', help='set due date (supports parsedatetime expressions)')
 @click.option('favorite', '-f', '--favorite', '--star', type=click.BOOL, help='mark as favorite')
 @click.option('completed', '-c', '--done', '--completed', '--done', type=click.BOOL, help='mark as completed')
-@click.option('tag', '-t', '--tag', '--label', help='set tag (tag must exist on server)')
-@click.option('reminder', '-r', '--reminder', '--alarm', help='set reminder (uses parsedatetime)')
+@click.option('tag', '-t', '--tag', '--label', help='set label (label must exist on server)')
+@click.option('reminder', '-r', '--reminder', '--alarm', help='set reminder (supports parsedatetime expressions)')
 def task_edit(task_id, **args):
     args_present = {k: v for k, v in args.items() if v is not None}
     if not args_present:
@@ -131,11 +131,13 @@ def task_edit(task_id, **args):
 @click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
 @click.option('exclude_completed', '--exclude-completed', type=click.BOOL, default=True, help='include completed tasks')
-@click.option('namespace_filter', '--namespace',  help='filter by namespace (name or id)')
-@click.option('list_filter', '--list',  help='filter by list (name or id)')
-@click.option('label_filter', '--label',  help='filter by label (name or id)')
-def task_ls(is_json, is_jsonvja, exclude_completed, namespace_filter, list_filter, label_filter):
-    application.query_service.print_tasks(is_json, is_jsonvja, exclude_completed, namespace_filter, list_filter, label_filter)
+@click.option('namespace_filter', '--namespace', help='filter by namespace (name or id)')
+@click.option('list_filter', '--list', help='filter by list (name or id)')
+@click.option('label_filter', '--label', '--tag', help='filter by label (name or id)')
+@click.option('favorite_filter', '--favorite', '--star', type=click.BOOL, help='filter by favorite flag')
+def task_ls(is_json, is_jsonvja, exclude_completed, namespace_filter, list_filter, label_filter, favorite_filter):
+    application.query_service.print_tasks(is_json, is_jsonvja, exclude_completed, namespace_filter, list_filter,
+                                          label_filter, favorite_filter)
 
 
 @cli.command('show', help='show task details')
