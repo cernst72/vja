@@ -14,14 +14,20 @@ run-test () {
   vja list show 1
   vja label add Next Action
   vja label ls
-  vja -v add "Look around" --prio=2 --tag="Next Action" --note="my note" --due="next monday at 15:00" --favorite=True --reminder="friday 12:00"
+  vja add "Look around" --prio=2 --tag="Next Action" --note="my note" --due="next monday at 15:00" --favorite=True --reminder="friday 12:00"
   vja add "Stay at home" -p 4 -t "Next Action" -n "my note" -d "23:00" -f True --list=2
   vja add Go home
   vja ls
-  vja -v edit 1 --prio=0 --note="" --due="" --favorite=False --reminder="" --title="empty title" --completed=True
+  vja edit 1 --prio=0 --note="" --due="" --favorite=False --reminder="" --title="empty title" --completed=True
   vja edit 2 --prio=1 --note="modified note" --due="4.2" --reminder="tomorrow"
-  vja -v show 1
+  vja show 1
   vja namespace ls
+  vja -v logout
+  vja -v -u demo -p demo ls
+  vja -v list ls
+  vja -v edit 1 --prio=5 --favorite=True
+  vja -v show 1
+  vja -v ls
 }
 
 start-vikunja () {

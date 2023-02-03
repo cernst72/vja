@@ -7,7 +7,7 @@ from functools import wraps
 import click
 import requests
 
-from vja import VjaError, config
+from vja import VjaError
 from vja.model import Label
 
 logger = logging.getLogger(__name__)
@@ -59,10 +59,10 @@ def handle_http_error(func):
 
 
 class ApiClient:
-    _TOKEN_FILE = 'token.json'
-
-    def __init__(self, api_url):
+    def __init__(self, api_url, token_file):
+        logger.debug('Connecting to api_url %s', api_url)
         self._api_url = api_url
+        self._token_file = token_file
         self._token = {'access': None}
         self._cache = {'lists': None, 'labels': None, 'namespaces': None, 'tasks': None}
 
@@ -81,9 +81,8 @@ class ApiClient:
 
     def load_access_token(self):
         """Load the access token from the file."""
-        token_path = os.path.join(config.get_dir(), ApiClient._TOKEN_FILE)
         try:
-            with open(token_path, encoding='utf-8') as token_file:
+            with open(self._token_file, encoding='utf-8') as token_file:
                 data = json.load(token_file)
         except IOError:
             return False
@@ -94,9 +93,8 @@ class ApiClient:
 
     def store_access_token(self):
         """Store the access token to the file."""
-        token_path = os.path.join(config.get_dir(), ApiClient._TOKEN_FILE)
         data = {'token': self.access_token}
-        with open(token_path, 'w', encoding="utf-8") as token_file:
+        with open(self._token_file, 'w', encoding="utf-8") as token_file:
             json.dump(data, token_file)
 
     @handle_http_error
@@ -215,8 +213,6 @@ class ApiClient:
             payload = {'label_id': label_id}
             self.put_json(task_label_url, payload=payload)
 
-    @staticmethod
-    def logout():
-        token_path = os.path.join(config.get_dir(), ApiClient._TOKEN_FILE)
-        if os.path.isfile(token_path):
-            os.remove(token_path)
+    def logout(self):
+        if os.path.isfile(self._token_file):
+            os.remove(self._token_file)

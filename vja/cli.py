@@ -2,45 +2,19 @@
 
 import logging
 import webbrowser
-from configparser import NoSectionError, NoOptionError
 from importlib import metadata
+from typing import Optional
 
 import click
 from click_aliases import ClickAliasedGroup
 
-from vja import config, VjaError
 from vja.apiclient import ApiClient
+from vja.config import VjaConfiguration
 from vja.list_service import ListService
 from vja.service_command import CommandService
 from vja.service_query import QueryService
 
 logger = logging.getLogger(__name__)
-
-
-class Application:
-    def __init__(self):
-        api_url = self._get_service_url()
-        api_client = ApiClient(api_url)
-        list_service = ListService(api_client)
-        self._command_service = CommandService(list_service, api_client)
-        self._query_service = QueryService(list_service, api_client)
-
-    @property
-    def command_service(self):
-        return self._command_service
-
-    @property
-    def query_service(self):
-        return self._query_service
-
-    @staticmethod
-    def _get_service_url():
-        try:
-            api_url = config.get_parser().get('application', 'api_url')
-            logger.debug('Connecting to api_url %s', api_url)
-            return api_url
-        except (NoSectionError, NoOptionError) as ex:
-            raise VjaError(f'Login url not specified in {config.get_path()}.Dying.') from ex
 
 
 @click.group(cls=ClickAliasedGroup)
@@ -54,6 +28,9 @@ def cli(verbose=None, username=None, password=None):
         logger.debug('Verbose mode on')
     else:
         logging.basicConfig(level=logging.INFO)
+        logging.getLogger().setLevel(logging.INFO)
+    global application
+    application = Application()
     if username or password:
         application.command_service.authenticate(username, password)
 
@@ -165,13 +142,33 @@ def logout():
 
 
 def open_browser(task):
-    url = config.get_parser().get('application', 'frontend_url')
+    url = application.configuration.get_frontend_url()
     if task and task > 0:
         url += '/tasks/' + str(task)
     webbrowser.open_new_tab(url)
 
 
-application = Application()
+class Application:
+    def __init__(self):
+        self._configuration = VjaConfiguration()
+        api_client = ApiClient(self.configuration.get_api_url(), self._configuration.get_token_file())
+        list_service = ListService(api_client)
+        self._command_service = CommandService(list_service, api_client)
+        self._query_service = QueryService(list_service, api_client)
+
+    @property
+    def command_service(self):
+        return self._command_service
+
+    @property
+    def query_service(self):
+        return self._query_service
+
+    @property
+    def configuration(self):
+        return self._configuration
+
+application : Optional[Application] = None
 
 if __name__ == '__main__':
     cli()
