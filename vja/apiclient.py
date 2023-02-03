@@ -61,13 +61,11 @@ def handle_http_error(func):
 class ApiClient:
     _TOKEN_FILE = 'token.json'
 
-    def __init__(self, api_url, username=None, password=None):
+    def __init__(self, api_url):
         # config
         self._config = dict()
         self._config['application'] = dict()
         self._config['application']['api_url'] = api_url
-        self._username = username
-        self._password = password
         # OAuth2 tokens and scope
         self._user = None
         self._token = dict()
@@ -96,7 +94,7 @@ class ApiClient:
     def create_url(self, path):
         return self._config['application']['api_url'] + path
 
-    def authenticate(self):
+    def authenticate(self, username=None, password=None):
         self.get_access_token()
         self._user = self._user if self._user else self.get_user()
 
@@ -121,13 +119,13 @@ class ApiClient:
             json.dump(data, token_file)
 
     @handle_http_error
-    def get_access_token(self, force=False):
+    def get_access_token(self, force=False, username=None, password=None):
         if self.load_access_token() and not force:
             return
         login_url = self.create_url('/login')
         click.echo(f'Login to {login_url}')
-        username = self._username or click.prompt('Username')
-        password = self._password or click.prompt('Password', hide_input=True)
+        username = username or click.prompt('Username')
+        password = password or click.prompt('Password', hide_input=True)
         payload = {'username': username,
                    'password': password}
         response = requests.post(login_url, json=payload, timeout=30)

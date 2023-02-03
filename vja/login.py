@@ -29,6 +29,6 @@ def _do_login(username, password) -> ApiClient:
     except (NoSectionError, NoOptionError):
         raise VjaError(f'Login url not specified in {config.get_path()}.Dying.')
 
-    client = ApiClient(api_url=api_url, username=username, password=password)
+    client = ApiClient(api_url=api_url)
     client.authenticate()
     return client
