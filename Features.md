@@ -28,12 +28,14 @@ List all active tasks
 
 ```shell
 vja ls
+vja ls --json
 ```
 
 Display single task:
 
 ```shell
 vja show 1
+vja show 1 --json
 ```
 
 Display single task with full information:
@@ -98,6 +100,7 @@ vja list ls
 
 ```shell
 vja list show 1
+vja list show 1 --json
 ```
 
 ### Manage labels

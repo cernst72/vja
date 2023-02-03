@@ -29,7 +29,7 @@ vja ls
 ```
 (You will be prompted for your account on first usage and any time the access token expires.)
 
-**More on [Features.md](Features.md)**
+**More on [Features.md](https://gitlab.com/ce72/vja/-/blob/main/Features.md)**
 
 ## Development
 

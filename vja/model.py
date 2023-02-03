@@ -9,14 +9,18 @@ class Namespace:
     id: int
     title: str
     description: str
+    is_archived: bool
 
     @classmethod
     def from_json(cls, json):
-        return cls(json, json['id'], json['title'], json['description'])
+        return cls(json, json['id'], json['title'], json['description'], json['is_archived'])
 
     @classmethod
     def from_json_array(cls, json_array):
         return [Namespace.from_json(x) for x in json_array or []]
+
+    def data_dict(self):
+        return {k: v for k, v in self.__dict__.items() if k != 'json'}
 
     def output(self):
         return f'{self.id:d} {self.title} {self.description}'
@@ -29,15 +33,20 @@ class List:
     title: str
     description: str
     is_favorite: bool
+    is_archived: bool
     namespace: Namespace
 
     @classmethod
     def from_json(cls, json, namespace):
-        return cls(json, json['id'], json['title'], json['description'], json['is_favorite'], namespace)
+        return cls(json, json['id'], json['title'], json['description'], json['is_archived'], json['is_favorite'],
+                   namespace)
 
     @classmethod
     def from_json_array(cls, json_array, namespace):
         return [List.from_json(x, namespace) for x in json_array or []]
+
+    def data_dict(self):
+        return {k: v for k, v in self.__dict__.items() if k != 'json'}
 
     def output(self):
         namespace_title = self.namespace.title if self.namespace else 0
@@ -60,6 +69,9 @@ class Label:
     @classmethod
     def from_json_array(cls, json_array):
         return [Label.from_json(x) for x in json_array or []]
+
+    def data_dict(self):
+        return {k: v for k, v in self.__dict__.items() if k != 'json'}
 
     def output(self):
         return f'{self.id:d} {self.title}'
@@ -99,6 +111,22 @@ class Task:
                    labels
                    )
 
+    def data_dict(self):
+        return {k: v for k, v in self.__dict__.items() if k != 'json'}
+
+    def output(self):
+        output = [f'{self.id:4}',
+                  f'({self.priority})',
+                  f'{"*"}' if self.is_favorite else ' ',
+                  f'{self.title:50.50}',
+                  f'{format_date(self.due_date) :15.15}',
+                  f'{"R" if self.reminder_dates else "" :1}',
+                  f'{self.tasklist.namespace.title:15.15}',
+                  f'{self.tasklist.title:15.15}',
+                  f'{",".join(map(lambda label: label.title, self.labels or [])) :20.20}',
+                  f'{self.urgency():3}']
+        return ' '.join(output)
+
     def urgency(self):
         if self.due_date:
             datediff = (self.due_date - datetime.today()).days
@@ -126,19 +154,6 @@ class Task:
             statuspoints = 0
 
         return 2 + statuspoints + datepoints + int(self.priority) + (1 if self.is_favorite else 0)
-
-    def output(self):
-        output = [f'{self.id:4}',
-                  f'({self.priority})',
-                  f'{"*"}' if self.is_favorite else ' ',
-                  f'{self.title:50.50}',
-                  f'{format_date(self.due_date) :15.15}',
-                  f'{"R" if self.reminder_dates else "" :1}',
-                  f'{self.tasklist.namespace.title:15.15}',
-                  f'{self.tasklist.title:15.15}',
-                  f'{",".join(map(lambda label: label.title, self.labels or [])) :20.20}',
-                  f'{self.urgency():3}']
-        return ' '.join(output)
 
 
 def _date_from_json(json_date):
