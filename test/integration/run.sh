@@ -21,6 +21,8 @@ run-test () {
   vja edit 1 --prio=0 --note="" --due="" --favorite=False --reminder="" --title="empty title" --completed=True
   vja edit 2 --prio=1 --note="modified note" --due="4.2" --reminder="tomorrow"
   vja show 1
+  vja show 1 --json
+  vja show 1 --jsonvja
   vja namespace ls
   vja -v logout
   vja -v -u demo -p demo ls

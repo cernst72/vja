@@ -1,10 +1,5 @@
 import logging
-import time
-from collections import defaultdict
 from datetime import datetime
-
-from dateutil import tz
-from parsedatetime import parsedatetime
 
 from vja.apiclient import ApiClient
 from vja.list_service import ListService
@@ -48,34 +43,11 @@ class QueryService:
                                          x.tasklist.title.upper(),
                                          x.title.upper()))
         self._dump_array(tasks_object, is_json, is_jsonvja)
-        # self.print_tasks(tasks_object)
-
-    # def print_tasks(self, tasks, priority_level_sort=False):
-    #     if not tasks:
-    #         print('No tasks found. Go home early!')
-    #     if priority_level_sort:
-    #         tasks_by_prio = defaultdict(list)
-    #         for task in tasks:
-    #             tasks_by_prio[task.urgency()].append(task)
-    #         for prio, items in tasks_by_prio.items():
-    #             print()
-    #             self._print_task_list(tasks, items)
-    #     else:
-    #         self._print_task_list(tasks, tasks)
 
     def print_task(self, task_id: int, is_json, is_jsonvja):
         task_json = self._api_client.get_task(task_id)
         task_object = self.task_from_json(task_json)
         self._dump(task_object, is_json, is_jsonvja)
-
-    # def _print_task_list(self, tasks, items):
-    #     for item in items:
-    #         print(f'{str(tasks.index(item) + 1):3}' + ' ' + item.output())
-    #
-    # def _parse_date_text(self, text):
-    #     timetuple = parsedatetime.Calendar().parse(text)[0]
-    #     datetime_date = datetime.fromtimestamp(time.mktime(timetuple))
-    #     return datetime_date.astimezone(tz.tzlocal()).isoformat()
 
     def task_from_json(self, task_json: dict) -> Task:
         list_object = self._list_service.find_list_by_id(task_json['list_id'])
