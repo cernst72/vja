@@ -128,6 +128,11 @@ def task_open(task):
     open_browser(task)
 
 
+@cli.command('logout', help='remove local access token')
+def logout():
+    service.logout()
+
+
 def open_browser(task):
     url = config.get_parser().get('application', 'frontend_url')
     if task and task > 0:

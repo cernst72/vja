@@ -235,3 +235,9 @@ class ApiClient:
         if not any(label for label in labels_remote if label.id == label_id):
             payload = {'label_id': label_id}
             self.put_json(task_label_url, payload=payload)
+
+    @staticmethod
+    def logout():
+        token_path = os.path.join(config.get_dir(), ApiClient._TOKEN_FILE)
+        if os.path.isfile(token_path):
+            os.remove(token_path)

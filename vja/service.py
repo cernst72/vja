@@ -7,6 +7,7 @@ from dateutil import tz
 from parsedatetime import parsedatetime
 
 from vja import VjaError
+from vja.apiclient import ApiClient
 from vja.list_service import ListService, convert_list_json
 from vja.login import get_client
 from vja.model import Task, Namespace, Label, List
@@ -16,6 +17,10 @@ logger = logging.getLogger(__name__)
 
 def authenticate(username, password):
     get_client(username, password)
+
+
+def logout():
+    ApiClient.logout()
 
 
 # namespace

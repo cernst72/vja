@@ -110,3 +110,12 @@ vja label add Next action
 vja label ls
 ```
 
+## Terminate session
+
+You may remove your traces by logging out. This will remove the local access token so that the subsequent execution of
+vja will prompt you again.
+
+```shell
+vja logout
+```
+
