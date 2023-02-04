@@ -92,6 +92,8 @@ class CommandService:
 
 
 def _parse_date_text(text):
+    if not text:
+        return None
     timetuple = parsedatetime.Calendar().parse(text)[0]
     datetime_date = datetime.fromtimestamp(time.mktime(timetuple))
     return datetime_date.astimezone(tz.tzlocal()).isoformat()
