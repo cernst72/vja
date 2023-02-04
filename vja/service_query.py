@@ -1,3 +1,4 @@
+import json
 import logging
 from datetime import datetime
 
@@ -62,9 +63,9 @@ class QueryService:
     @staticmethod
     def _dump_array(object_array, is_json, is_jsonvja):
         if is_json:
-            print([x.json for x in object_array])
+            print(json.dumps([x.json for x in object_array]))
         elif is_jsonvja:
-            print([x.data_dict() for x in object_array])
+            print(json.dumps([x.data_dict() for x in object_array]))
         else:
             for x in object_array:
                 print(x.output())
@@ -72,9 +73,9 @@ class QueryService:
     @staticmethod
     def _dump(element, is_json, is_jsonvja):
         if is_json:
-            print(element.json)
+            print(json.dumps(element.json))
         elif is_jsonvja:
-            print(element.data_dict())
+            print(json.dumps(element.data_dict()))
         else:
             print(element.output())
             print(element)
