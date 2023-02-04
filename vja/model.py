@@ -2,6 +2,8 @@ import typing
 from dataclasses import dataclass, field
 from datetime import datetime
 
+import dateutil.parser
+
 
 @dataclass(frozen=True)
 class Namespace:
@@ -128,6 +130,9 @@ class Task:
                   f'{self.urgency():3}']
         return ' '.join(output)
 
+    def has_label(self, label):
+        return any(x.id == label.id for x in self.labels)
+
     def urgency(self):
         if self.due_date:
             datediff = (self.due_date - datetime.today()).days
@@ -159,7 +164,7 @@ class Task:
 
 def _date_from_json(json_date):
     if json_date and json_date > '0001-01-01T00:00:00Z':
-        return datetime.fromisoformat(json_date.replace("Z", "")).replace(tzinfo=None)
+        return dateutil.parser.isoparse(json_date).replace(tzinfo=None)
     return None
 
 

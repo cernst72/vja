@@ -1,7 +1,6 @@
 import logging
 import time
 from datetime import datetime
-from typing import Optional
 
 from dateutil import tz
 from parsedatetime import parsedatetime
@@ -9,7 +8,7 @@ from parsedatetime import parsedatetime
 from vja import VjaError
 from vja.apiclient import ApiClient
 from vja.list_service import ListService
-from vja.model import Label, List
+from vja.model import Label, List, Task
 
 logger = logging.getLogger(__name__)
 
@@ -57,18 +56,33 @@ class CommandService:
     def add_task(self, title, args: dict):
         args.update({'title': title})
         list_id = args.pop('list_id') if args.get('list_id') else None or self._get_default_list().id
-        label_id = self._label_id_from_name(args.pop('tag')) if args.get('tag') else None
-
+        tag_name = args.pop('tag') if args.get('tag') else None
         payload = self._args_to_payload(args)
-        task = self._api_client.put_task(list_id, label_id, payload)
-        logger.info('Created task %s in list %s', task['id'], task['list_id'])
+
+        task_json = self._api_client.put_task(list_id, payload)
+        task = Task.from_json(task_json, None, None)
+
+        label = self._label_from_name(tag_name) if tag_name else None
+        if label:
+            self._api_client.add_label_to_task(task.id, label.id)
+
+        logger.info('Created task %s in list %s', task.id, list_id)
 
     def edit_task(self, task_id: int, args: dict):
-        label_id = self._label_id_from_name(args.pop('tag')) if args.get('tag') else None
-
+        tag_name = args.pop('tag') if args.get('tag') else None
         payload = self._args_to_payload(args)
-        task = self._api_client.post_task(task_id, label_id, payload)
-        logger.info('Modified task %s in list %s', task['id'], task['list_id'])
+
+        task_json = self._api_client.post_task(task_id, payload)
+        task = Task.from_json(task_json, None, Label.from_json_array(task_json['labels']))
+
+        label = self._label_from_name(tag_name) if tag_name else None
+        if label:
+            if task.has_label(label):
+                self._api_client.remove_label_from_task(task.id, label.id)
+            else:
+                self._api_client.add_label_to_task(task.id, label.id)
+
+        logger.info('Modified task %s in list %s', task.id, task_json['list_id'])
 
     def _get_default_list(self) -> List:
         list_objects = [self._list_service.convert_list_json(x) for x in self._api_client.get_lists()]
@@ -80,15 +94,15 @@ class CommandService:
             return favorite_lists[0]
         return list_objects[0]
 
-    def _label_id_from_name(self, name) -> Optional[int]:
+    def _label_from_name(self, name):
         if not name:
             return None
         labels_remote = Label.from_json_array(self._api_client.get_labels())
         label_found = [label for label in labels_remote if label.title == name]
         if not label_found:
-            logger.warning("Label does not exist on server: %s", name)
+            logger.warning("Ignoring non existing label [%s]. You may want to execute \"label add\" first.", name)
             return None
-        return label_found[0].id
+        return label_found[0]
 
 
 def _parse_date_text(text):

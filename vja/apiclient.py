@@ -8,7 +8,6 @@ import click
 import requests
 
 from vja import VjaError
-from vja.model import Label
 
 logger = logging.getLogger(__name__)
 
@@ -126,6 +125,7 @@ class ApiClient:
     def put_json(self, url, params=None, payload=None):
         headers = {'Authorization': f'Bearer {self.access_token}'}
         response = requests.put(url, headers=headers, params=params, json=payload, timeout=30)
+        logger.debug("PUT response: %s - %s", response, response.text)
         response.raise_for_status()
         return self.to_json(response)
 
@@ -134,6 +134,16 @@ class ApiClient:
     def post_json(self, url, params=None, payload=None):
         headers = {'Authorization': f'Bearer {self.access_token}'}
         response = requests.post(url, headers=headers, params=params, json=payload, timeout=30)
+        logger.debug("POST response: %s - %s", response, response.text)
+        response.raise_for_status()
+        return self.to_json(response)
+
+    @handle_http_error
+    @check_access_token
+    def delete_json(self, url, params=None, payload=None):
+        headers = {'Authorization': f'Bearer {self.access_token}'}
+        response = requests.delete(url, headers=headers, params=params, json=payload, timeout=30)
+        logger.debug("DELETE response: %s - %s", response, response.text)
         response.raise_for_status()
         return self.to_json(response)
 
@@ -185,33 +195,22 @@ class ApiClient:
         url = self.create_url(f'/tasks/{str(task_id)}')
         return self.get_json(url)
 
-    def put_task(self, list_id, label_id, payload):
-        logger.debug('put task to list %d with label %s and fields %s', list_id, label_id, payload)
-        task_response = self.put_json(self.create_url(f'/lists/{str(list_id)}'), payload=payload)
-        task_id = task_response["id"]
-        if label_id:
-            self.update_label(task_id, label_id)
-        return self.get_task(task_id)
+    def put_task(self, list_id, payload):
+        return self.put_json(self.create_url(f'/lists/{str(list_id)}'), payload=payload)
 
-    def post_task(self, task_id, label_id, payload):
-        logger.debug('post task %d with label %s and fields %s', task_id, label_id, payload)
+    def post_task(self, task_id, payload):
         task_remote = self.get_task(task_id)
         task_remote.update(payload)
-        task_response = self.post_json(self.create_url(f'/tasks/{str(task_id)}'), payload=task_remote)
-        task_id = task_response["id"]
-        if label_id:
-            self.update_label(task_id, label_id)
-        return self.get_task(task_id)
+        return self.post_json(self.create_url(f'/tasks/{str(task_id)}'), payload=task_remote)
 
-    def update_label(self, task_id, label_id):
+    def add_label_to_task(self, task_id, label_id):
         task_label_url = self.create_url(f'/tasks/{str(task_id)}/labels')
+        payload = {'label_id': label_id}
+        self.put_json(task_label_url, payload=payload)
 
-        labels_remote = Label.from_json_array(self.get_json(task_label_url))
-        any(label for label in labels_remote if label.id == label_id)
-
-        if not any(label for label in labels_remote if label.id == label_id):
-            payload = {'label_id': label_id}
-            self.put_json(task_label_url, payload=payload)
+    def remove_label_from_task(self, task_id, label_id):
+        task_label_url = self.create_url(f'/tasks/{str(task_id)}/labels/{str(label_id)}')
+        self.delete_json(task_label_url)
 
     def logout(self):
         if os.path.isfile(self._token_file):

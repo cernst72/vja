@@ -41,7 +41,7 @@ class QueryService:
                              self._api_client.get_tasks(exclude_completed=exclude_completed)]
         task_object_array = self._filter(task_object_array, namespace_filter, list_filter, label_filter,
                                          favorite_filter)
-        task_object_array.sort(key=lambda x: (x.done,
+        task_object_array.sort(key=lambda x: (x.done, -x.urgency(),
                                               (x.due_date or datetime.max),
                                               -x.priority,
                                               x.tasklist.title.upper(),
