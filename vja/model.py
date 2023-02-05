@@ -22,7 +22,8 @@ class Namespace:
         return [Namespace.from_json(x) for x in json_array or []]
 
     def data_dict(self):
-        return {k: v for k, v in self.__dict__.items() if k != 'json'}
+        return {k: v.data_dict() if hasattr(v, 'data_dict') and callable(v.data_dict) else v
+                for k, v in self.__dict__.items() if k != 'json'}
 
     def output(self):
         return f'{self.id:5} {self.title:15.15} {self.description:20.20}'
@@ -48,7 +49,8 @@ class List:
         return [List.from_json(x, namespace) for x in json_array or []]
 
     def data_dict(self):
-        return {k: v for k, v in self.__dict__.items() if k != 'json'}
+        return {k: v.data_dict() if hasattr(v, 'data_dict') and callable(v.data_dict) else v
+                for k, v in self.__dict__.items() if k != 'json'}
 
     def output(self):
         namespace_title = self.namespace.title if self.namespace else ''
@@ -74,7 +76,8 @@ class Label:
         return [Label.from_json(x) for x in json_array or []]
 
     def data_dict(self):
-        return {k: v for k, v in self.__dict__.items() if k != 'json'}
+        return {k: v.data_dict() if hasattr(v, 'data_dict') and callable(v.data_dict) else v
+                for k, v in self.__dict__.items() if k != 'json'}
 
     def output(self):
         return f'{self.id:5} {self.title:15.15}'
@@ -115,7 +118,8 @@ class Task:
                    )
 
     def data_dict(self):
-        return {k: v for k, v in self.__dict__.items() if k != 'json'}
+        return {k: v.data_dict() if hasattr(v, 'data_dict') and callable(v.data_dict) else v
+                for k, v in self.__dict__.items() if k != 'json'}
 
     def output(self):
         output = [f'{self.id:5}',

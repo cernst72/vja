@@ -65,7 +65,7 @@ class QueryService:
         if is_json:
             print(json.dumps([x.json for x in object_array]))
         elif is_jsonvja:
-            print(json.dumps([x.data_dict() for x in object_array]))
+            print(json.dumps([x.data_dict() for x in object_array], default=str))
         else:
             for x in object_array:
                 print(x.output())
@@ -75,7 +75,7 @@ class QueryService:
         if is_json:
             print(json.dumps(element.json))
         elif is_jsonvja:
-            print(json.dumps(element.data_dict()))
+            print(json.dumps(element.data_dict(), default=str))
         else:
             print(element.output())
             print(element)
