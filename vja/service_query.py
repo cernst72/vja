@@ -5,6 +5,7 @@ from datetime import datetime
 from vja.apiclient import ApiClient
 from vja.list_service import ListService
 from vja.model import Task, Namespace, Label
+from vja.urgency import Urgency
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +43,7 @@ class QueryService:
                              self._api_client.get_tasks(exclude_completed=exclude_completed)]
         task_object_array = self._filter(task_object_array, namespace_filter, list_filter, label_filter,
                                          favorite_filter)
-        task_object_array.sort(key=lambda x: (x.done, -x.urgency(),
+        task_object_array.sort(key=lambda x: (x.done, -Urgency.compute(x),
                                               (x.due_date or datetime.max),
                                               -x.priority,
                                               x.tasklist.title.upper(),

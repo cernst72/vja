@@ -57,9 +57,6 @@ class List:
         namespace_id = self.namespace.id if self.namespace else 0
         return f'{self.id:5} {self.title:15.15} {self.description:20.20} {namespace_title:15.15}  {namespace_id:5}'
 
-    def has_higher_priority(self):
-        return 'next' in self.title.lower()
-
 
 @dataclass(frozen=True)
 class Label:
@@ -81,9 +78,6 @@ class Label:
 
     def output(self):
         return f'{self.id:5} {self.title:15.15}'
-
-    def has_higher_priority(self):
-        return 'next' in self.title.lower()
 
 
 @dataclass(frozen=True)
@@ -122,6 +116,7 @@ class Task:
                 for k, v in self.__dict__.items() if k != 'json'}
 
     def output(self):
+        from vja.urgency import Urgency
         output = [f'{self.id:5}',
                   f'({self.priority})',
                   f'{"*"}' if self.is_favorite else ' ',
@@ -131,39 +126,11 @@ class Task:
                   f'{self.tasklist.namespace.title:15.15}',
                   f'{self.tasklist.title:15.15}',
                   f'{",".join(map(lambda label: label.title, self.labels or [])) :20.20}',
-                  f'{self.urgency():3}']
+                  f'{Urgency.compute(self):3}']
         return ' '.join(output)
 
     def has_label(self, label):
         return any(x.id == label.id for x in self.labels)
-
-    def urgency(self):
-        if self.due_date:
-            datediff = (self.due_date - datetime.today()).days
-            if datediff < 0:
-                datepoints = 6
-            elif datediff == 0:
-                datepoints = 5
-            elif datediff == 1:
-                datepoints = 4
-            elif 1 < datediff <= 2:
-                datepoints = 3
-            elif 2 < datediff <= 5:
-                datepoints = 3
-            elif 5 < datediff <= 10:
-                datepoints = 1
-            elif datediff > 10:
-                datepoints = -1
-            else:
-                datepoints = 0
-        else:
-            datepoints = 0
-        if self.tasklist.has_higher_priority() or any(label.has_higher_priority() for label in self.labels):
-            statuspoints = 1
-        else:
-            statuspoints = 0
-
-        return (2 + statuspoints + datepoints + int(self.priority) + (1 if self.is_favorite else 0)) * (not self.done)
 
 
 def _date_from_json(json_date):
