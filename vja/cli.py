@@ -116,7 +116,7 @@ def task_add(title, **args):
 @click.option('prio', '-p', '--prio', '--priority', help='set priority')
 @click.option('due', '-d', '--due', '--duedate', '--due-date', help='set due date (supports parsedatetime expressions)')
 @click.option('favorite', '-f', '--favorite', '--star', type=click.BOOL, help='mark as favorite')
-@click.option('completed', '-c', '--done', '--completed', '--done', type=click.BOOL, help='mark as completed')
+@click.option('completed', '-c', '--completed', '--done', type=click.BOOL, help='mark as completed')
 @click.option('tag', '-t', '--tag', '--label', help='set label (label must exist on server)')
 @click.option('reminder', '-r', '--reminder', '--alarm', help='set reminder (supports parsedatetime expressions)')
 def task_edit(task_id, **args):
@@ -130,13 +130,13 @@ def task_edit(task_id, **args):
 @cli.command('ls', help='list tasks')
 @click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
-@click.option('exclude_completed', '--exclude-completed', type=click.BOOL, default=True, help='include completed tasks')
+@click.option('include_completed', '--include-completed', default=False, is_flag=True, help='include completed tasks')
 @click.option('namespace_filter', '--namespace', help='filter by namespace (name or id)')
 @click.option('list_filter', '--list', help='filter by list (name or id)')
 @click.option('label_filter', '--label', '--tag', help='filter by label (name or id)')
 @click.option('favorite_filter', '--favorite', '--star', type=click.BOOL, help='filter by favorite flag')
-def task_ls(is_json, is_jsonvja, exclude_completed, namespace_filter, list_filter, label_filter, favorite_filter):
-    application.query_service.print_tasks(is_json, is_jsonvja, exclude_completed, namespace_filter, list_filter,
+def task_ls(is_json, is_jsonvja, include_completed, namespace_filter, list_filter, label_filter, favorite_filter):
+    application.query_service.print_tasks(is_json, is_jsonvja, include_completed, namespace_filter, list_filter,
                                           label_filter, favorite_filter)
 
 

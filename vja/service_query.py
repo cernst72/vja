@@ -37,10 +37,10 @@ class QueryService:
         self._dump_array(object_array, is_json, is_jsonvja)
 
     # tasks
-    def print_tasks(self, is_json, is_jsonvja, exclude_completed, namespace_filter, list_filter, label_filter,
+    def print_tasks(self, is_json, is_jsonvja, include_completed, namespace_filter, list_filter, label_filter,
                     favorite_filter):
         task_object_array = [self.task_from_json(x) for x in
-                             self._api_client.get_tasks(exclude_completed=exclude_completed)]
+                             self._api_client.get_tasks(exclude_completed=not include_completed)]
         task_object_array = self._filter(task_object_array, namespace_filter, list_filter, label_filter,
                                          favorite_filter)
         task_object_array.sort(key=lambda x: (x.done, -Urgency.compute(x),
