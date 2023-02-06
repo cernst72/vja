@@ -6,6 +6,26 @@ import dateutil.parser
 
 
 @dataclass(frozen=True)
+class User:
+    json: dict = field(repr=False)
+    id: int
+    username: str
+    name: str
+    default_list_id: int
+
+    @classmethod
+    def from_json(cls, json):
+        return cls(json, json['id'], json['name'], json['username'], json['settings']['default_list_id'])
+
+    def data_dict(self):
+        return {k: v.data_dict() if hasattr(v, 'data_dict') and callable(v.data_dict) else v
+                for k, v in self.__dict__.items() if k != 'json'}
+
+    def output(self):
+        return f'{self.id:5} {self.username:15.15} {self.name:15.15} {self.default_list_id:5}'
+
+
+@dataclass(frozen=True)
 class Namespace:
     json: dict = field(repr=False)
     id: int

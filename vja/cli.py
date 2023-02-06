@@ -35,6 +35,19 @@ def cli(verbose=None, username=None, password=None):
         application.command_service.authenticate(username, password)
 
 
+# user
+@cli.group('user', help='subcommand: user (see help)')
+def user_group():
+    pass
+
+
+@user_group.command('show', help='print current user')
+@click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
+@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
+def user_show(is_json=False, is_jsonvja=False):
+    application.query_service.print_user(is_json, is_jsonvja)
+
+
 # namespaces
 @cli.group('namespace', help='subcommand: namespace (see help)')
 def namespace_group():

@@ -4,7 +4,7 @@ from datetime import datetime
 
 from vja.apiclient import ApiClient
 from vja.list_service import ListService
-from vja.model import Task, Namespace, Label
+from vja.model import Task, Namespace, Label, User
 from vja.urgency import Urgency
 
 logger = logging.getLogger(__name__)
@@ -14,6 +14,11 @@ class QueryService:
     def __init__(self, list_service: ListService, api_client: ApiClient):
         self._list_service = list_service
         self._api_client = api_client
+
+    # user
+    def print_user(self, is_json, is_jsonvja):
+        user = User.from_json(self._api_client.get_user())
+        self._dump(user, is_json, is_jsonvja)
 
     # namespace
     def print_namespaces(self, is_json, is_jsonvja):
@@ -102,3 +107,4 @@ class QueryService:
         if favorite_filter is not None:
             filters.append(lambda x: x.is_favorite == bool(favorite_filter))
         return list(filter(lambda x: all(f(x) for f in filters), task_object_array))
+

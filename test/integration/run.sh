@@ -8,6 +8,7 @@ run-test () {
   vja --version
   vja --help
   vja -u demo -p demo ls
+  vja user show
   vja list add Work
   vja list add Home
   vja list ls
