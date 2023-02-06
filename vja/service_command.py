@@ -57,7 +57,7 @@ class CommandService:
         args.update({'title': title})
         list_id = args.pop('list_id') if args.get('list_id') else None or self._get_default_list().id
         tag_name = args.pop('tag') if args.get('tag') else None
-        is_force = args.pop('force_create') if args.get('force_create') else False
+        is_force = args.pop('force_create') if args.get('force_create') is not None else False
         payload = self._args_to_payload(args)
 
         task_json = self._api_client.put_task(list_id, payload)
@@ -71,7 +71,7 @@ class CommandService:
 
     def edit_task(self, task_id: int, args: dict):
         tag_name = args.pop('tag') if args.get('tag') else None
-        is_force = args.pop('force_create') if args.get('force_create') else False
+        is_force = args.pop('force_create') if args.get('force_create') is not None else False
         payload = self._args_to_payload(args)
 
         task_json = self._api_client.post_task(task_id, payload)
