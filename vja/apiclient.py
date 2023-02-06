@@ -118,6 +118,10 @@ class ApiClient:
         headers = {'Authorization': f"Bearer {self.access_token}"}
         response = requests.get(url, headers=headers, params=params, timeout=30)
         response.raise_for_status()
+        total_pages = response.headers.get('x-pagination-total-pages')
+        if total_pages and int(total_pages) > 1:
+            logger.warning('Pagination not yet implemented. Skipping results! '
+                           'Consider to increase MAXITEMSPERPAGE on your server.')
         return self.to_json(response)
 
     @handle_http_error
