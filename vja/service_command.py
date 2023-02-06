@@ -60,6 +60,8 @@ class CommandService:
         is_force = args.pop('force_create') if args.get('force_create') is not None else False
         payload = self._args_to_payload(args)
 
+        if not is_force:
+            self._validate_add_task(title, tag_name)
         task_json = self._api_client.put_task(list_id, payload)
         task = Task.from_json(task_json, None, None)
 
@@ -107,6 +109,14 @@ class CommandService:
             logger.warning("Ignoring non existing label [%s]. You may want to execute \"label add\" first.", name)
             return None
         return label_found[0]
+
+    def _validate_add_task(self, title, tag_name):
+        tasks_remote = self._api_client.get_tasks(exclude_completed=True)
+        if any(task for task in tasks_remote if task['title'] == title):
+            raise VjaError("Task with title does exist. You may want to run with --force-create.")
+        labels_remote = Label.from_json_array(self._api_client.get_labels())
+        if not any(label for label in labels_remote if label.title == tag_name):
+            raise VjaError("Label does not exist. You may want to execute \"label add\" or run with --force-create.")
 
 
 def _parse_date_text(text):
