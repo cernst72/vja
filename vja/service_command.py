@@ -13,6 +13,14 @@ from vja.model import Label, List, Task
 logger = logging.getLogger(__name__)
 
 
+def _parse_date_text(text):
+    if not text:
+        return None
+    timetuple = parsedatetime.Calendar().parse(text)[0]
+    datetime_date = datetime.fromtimestamp(time.mktime(timetuple))
+    return datetime_date.astimezone(tz.tzlocal()).isoformat()
+
+
 class CommandService:
     def __init__(self, list_service: ListService, api_client: ApiClient):
         self._list_service = list_service
@@ -39,10 +47,10 @@ class CommandService:
     # tasks
     _arg_to_json = {'title': {'field': 'title', 'mapping': (lambda x: x)},
                     'note': {'field': 'description', 'mapping': (lambda x: x)},
-                    'prio': {'field': 'priority', 'mapping': (lambda x: int(x))},
-                    'due': {'field': 'due_date', 'mapping': (lambda x: _parse_date_text(x))},
-                    'favorite': {'field': 'is_favorite', 'mapping': (lambda x: bool(x))},
-                    'completed': {'field': 'done', 'mapping': (lambda x: bool(x))},
+                    'prio': {'field': 'priority', 'mapping': int},
+                    'due': {'field': 'due_date', 'mapping': _parse_date_text},
+                    'favorite': {'field': 'is_favorite', 'mapping': bool},
+                    'completed': {'field': 'done', 'mapping': bool},
                     'reminder': {'field': 'reminder_dates', 'mapping': (lambda x: [_parse_date_text(x)])}
                     }
 
@@ -119,11 +127,3 @@ class CommandService:
             if not any(label for label in labels_remote if label.title == tag_name):
                 raise VjaError(
                     "Label does not exist. You may want to execute \"label add\" or run with --force-create.")
-
-
-def _parse_date_text(text):
-    if not text:
-        return None
-    timetuple = parsedatetime.Calendar().parse(text)[0]
-    datetime_date = datetime.fromtimestamp(time.mktime(timetuple))
-    return datetime_date.astimezone(tz.tzlocal()).isoformat()
