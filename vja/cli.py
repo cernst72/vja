@@ -105,6 +105,7 @@ def label_add(title):
 @click.option('favorite', '-f', '--star', '--favorite', type=click.BOOL, help='mark as favorite')
 @click.option('tag', '-t', '--tag', '--label', help='set label (label must exist on server)')
 @click.option('reminder', '-r', '--alarm', '--reminder', help='set reminder (supports parsedatetime expressions)')
+@click.option('force_create', '--force-create', '--force', is_flag=True, help='force creation of non existing label')
 def task_add(title, **args):
     application.command_service.add_task(" ".join(title), {k: v for k, v in args.items() if v is not None})
 
@@ -119,6 +120,7 @@ def task_add(title, **args):
 @click.option('completed', '-c', '--completed', '--done', type=click.BOOL, help='mark as completed')
 @click.option('tag', '-t', '--tag', '--label', help='set label (label must exist on server)')
 @click.option('reminder', '-r', '--reminder', '--alarm', help='set reminder (supports parsedatetime expressions)')
+@click.option('force_create', '--force-create', '--force', is_flag=True, help='force creation of non existing label')
 def task_edit(task_id, **args):
     args_present = {k: v for k, v in args.items() if v is not None}
     if not args_present:

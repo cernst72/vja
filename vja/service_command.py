@@ -57,12 +57,13 @@ class CommandService:
         args.update({'title': title})
         list_id = args.pop('list_id') if args.get('list_id') else None or self._get_default_list().id
         tag_name = args.pop('tag') if args.get('tag') else None
+        is_force = args.pop('force_create') if args.get('force_create') else False
         payload = self._args_to_payload(args)
 
         task_json = self._api_client.put_task(list_id, payload)
         task = Task.from_json(task_json, None, None)
 
-        label = self._label_from_name(tag_name) if tag_name else None
+        label = self._label_from_name(tag_name, is_force) if tag_name else None
         if label:
             self._api_client.add_label_to_task(task.id, label.id)
 
@@ -70,12 +71,13 @@ class CommandService:
 
     def edit_task(self, task_id: int, args: dict):
         tag_name = args.pop('tag') if args.get('tag') else None
+        is_force = args.pop('force_create') if args.get('force_create') else False
         payload = self._args_to_payload(args)
 
         task_json = self._api_client.post_task(task_id, payload)
         task = Task.from_json(task_json, None, Label.from_json_array(task_json['labels']))
 
-        label = self._label_from_name(tag_name) if tag_name else None
+        label = self._label_from_name(tag_name, is_force) if tag_name else None
         if label:
             if task.has_label(label):
                 self._api_client.remove_label_from_task(task.id, label.id)
@@ -94,12 +96,14 @@ class CommandService:
             return favorite_lists[0]
         return list_objects[0]
 
-    def _label_from_name(self, name):
+    def _label_from_name(self, name, is_force):
         if not name:
             return None
         labels_remote = Label.from_json_array(self._api_client.get_labels())
         label_found = [label for label in labels_remote if label.title == name]
         if not label_found:
+            if is_force:
+                return Label.from_json(self._api_client.put_label(name))
             logger.warning("Ignoring non existing label [%s]. You may want to execute \"label add\" first.", name)
             return None
         return label_found[0]

@@ -173,7 +173,7 @@ class ApiClient:
 
     def put_list(self, namespace_id, title):
         payload = {'title': title}
-        self.put_json(self.create_url(f'/namespaces/{str(namespace_id)}/lists'), payload=payload)
+        return self.put_json(self.create_url(f'/namespaces/{str(namespace_id)}/lists'), payload=payload)
 
     def get_labels(self):
         if self._cache['labels'] is None:
@@ -182,7 +182,7 @@ class ApiClient:
 
     def put_label(self, title):
         payload = {'title': title}
-        self.put_json(self.create_url('/labels'), payload=payload)
+        return self.put_json(self.create_url('/labels'), payload=payload)
 
     def get_tasks(self, exclude_completed=True):
         if self._cache['tasks'] is None:
@@ -206,7 +206,7 @@ class ApiClient:
     def add_label_to_task(self, task_id, label_id):
         task_label_url = self.create_url(f'/tasks/{str(task_id)}/labels')
         payload = {'label_id': label_id}
-        self.put_json(task_label_url, payload=payload)
+        return self.put_json(task_label_url, payload=payload)
 
     def remove_label_from_task(self, task_id, label_id):
         task_label_url = self.create_url(f'/tasks/{str(task_id)}/labels/{str(label_id)}')
