@@ -19,7 +19,7 @@ class Urgency:
         lable_name_score = int(any('next' in label.title.lower() for label in task.labels)) * score_coefficients[
             'label_keyword']
 
-        return 2 + due_date_score + priority_score + favorite_score + list_name_score + lable_name_score
+        return 1 + due_date_score + priority_score + favorite_score + list_name_score + lable_name_score
 
     @staticmethod
     def get_due_date_score(task):
@@ -34,7 +34,7 @@ class Urgency:
             elif 1 < due_days <= 2:
                 result = 3
             elif 2 < due_days <= 5:
-                result = 3
+                result = 2
             elif 5 < due_days <= 10:
                 result = 1
             elif due_days > 10:

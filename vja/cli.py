@@ -150,9 +150,11 @@ def task_edit(task_id, **args):
 @click.option('list_filter', '--list', help='filter by list (name or id)')
 @click.option('label_filter', '--label', '--tag', help='filter by label (name or id)')
 @click.option('favorite_filter', '--favorite', '--star', type=click.BOOL, help='filter by favorite flag')
-def task_ls(is_json, is_jsonvja, include_completed, namespace_filter, list_filter, label_filter, favorite_filter):
+@click.option('urgency_filter', '-u', '--urgency', type=click.INT, help='filter by urgency at least')
+def task_ls(is_json, is_jsonvja, include_completed, namespace_filter, list_filter, label_filter, favorite_filter,
+            urgency_filter):
     application.query_service.print_tasks(is_json, is_jsonvja, include_completed, namespace_filter, list_filter,
-                                          label_filter, favorite_filter)
+                                          label_filter, favorite_filter, urgency_filter)
 
 
 @cli.command('show', help='show task details')
