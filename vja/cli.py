@@ -147,9 +147,9 @@ def task_edit(task_id, **args):
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
 @click.option('include_completed', '--include-completed', default=False, is_flag=True, help='include completed tasks')
 @click.option('namespace_filter', '--namespace', help='filter by namespace (name or id)')
-@click.option('list_filter', '--list', help='filter by list (name or id)')
-@click.option('label_filter', '--label', '--tag', help='filter by label (name or id)')
-@click.option('favorite_filter', '--favorite', '--star', type=click.BOOL, help='filter by favorite flag')
+@click.option('list_filter', '-l', '--list', help='filter by list (name or id)')
+@click.option('label_filter', '-t', '--label', '--tag', help='filter by label (name or id)')
+@click.option('favorite_filter', '-f', '--favorite', '--star', type=click.BOOL, help='filter by favorite flag')
 @click.option('urgency_filter', '-u', '--urgency', type=click.INT, help='filter by urgency at least')
 def task_ls(is_json, is_jsonvja, include_completed, namespace_filter, list_filter, label_filter, favorite_filter,
             urgency_filter):
