@@ -114,9 +114,11 @@ class CommandService:
         tasks_remote = self._api_client.get_tasks(exclude_completed=True)
         if any(task for task in tasks_remote if task['title'] == title):
             raise VjaError("Task with title does exist. You may want to run with --force-create.")
-        labels_remote = Label.from_json_array(self._api_client.get_labels())
-        if not any(label for label in labels_remote if label.title == tag_name):
-            raise VjaError("Label does not exist. You may want to execute \"label add\" or run with --force-create.")
+        if tag_name:
+            labels_remote = Label.from_json_array(self._api_client.get_labels())
+            if not any(label for label in labels_remote if label.title == tag_name):
+                raise VjaError(
+                    "Label does not exist. You may want to execute \"label add\" or run with --force-create.")
 
 
 def _parse_date_text(text):
