@@ -4,8 +4,7 @@ from datetime import datetime
 
 from vja.apiclient import ApiClient
 from vja.list_service import ListService
-from vja.model import Task, Namespace, Label, User
-from vja.urgency import Urgency
+from vja.model import Task, Namespace, Label, User, Urgency
 
 logger = logging.getLogger(__name__)
 
