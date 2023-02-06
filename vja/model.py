@@ -18,7 +18,17 @@ def custom_output(cls):  # Decorator for class.
     return cls
 
 
+def data_dict(cls):  # Decorator for class.
+    def data_dict_function(self):
+        return {k: v.data_dict() if hasattr(v, 'data_dict') and callable(v.data_dict) else v
+                for k, v in self.__dict__.items() if k != 'json'}
+
+    setattr(cls, 'data_dict', data_dict_function)
+    return cls
+
+
 @dataclass(frozen=True)
+@data_dict
 class User:
     json: dict = field(repr=False)
     id: int
@@ -30,15 +40,12 @@ class User:
     def from_json(cls, json):
         return cls(json, json['id'], json['name'], json['username'], json['settings']['default_list_id'])
 
-    def data_dict(self):
-        return {k: v.data_dict() if hasattr(v, 'data_dict') and callable(v.data_dict) else v
-                for k, v in self.__dict__.items() if k != 'json'}
-
     def output(self):
         return f'{self.id:5} {self.username:15.15} {self.name:15.15} {self.default_list_id:5}'
 
 
 @dataclass(frozen=True)
+@data_dict
 class Namespace:
     json: dict = field(repr=False)
     id: int
@@ -54,15 +61,12 @@ class Namespace:
     def from_json_array(cls, json_array):
         return [Namespace.from_json(x) for x in json_array or []]
 
-    def data_dict(self):
-        return {k: v.data_dict() if hasattr(v, 'data_dict') and callable(v.data_dict) else v
-                for k, v in self.__dict__.items() if k != 'json'}
-
     def output(self):
         return f'{self.id:5} {self.title:15.15} {self.description:20.20}'
 
 
 @dataclass(frozen=True)
+@data_dict
 class List:
     json: dict = field(repr=False)
     id: int
@@ -81,10 +85,6 @@ class List:
     def from_json_array(cls, json_array, namespace):
         return [List.from_json(x, namespace) for x in json_array or []]
 
-    def data_dict(self):
-        return {k: v.data_dict() if hasattr(v, 'data_dict') and callable(v.data_dict) else v
-                for k, v in self.__dict__.items() if k != 'json'}
-
     def output(self):
         namespace_title = self.namespace.title if self.namespace else ''
         namespace_id = self.namespace.id if self.namespace else 0
@@ -92,6 +92,7 @@ class List:
 
 
 @dataclass(frozen=True)
+@data_dict
 class Label:
     json: dict = field(repr=False)
     id: int
@@ -105,16 +106,13 @@ class Label:
     def from_json_array(cls, json_array):
         return [Label.from_json(x) for x in json_array or []]
 
-    def data_dict(self):
-        return {k: v.data_dict() if hasattr(v, 'data_dict') and callable(v.data_dict) else v
-                for k, v in self.__dict__.items() if k != 'json'}
-
     def output(self):
         return f'{self.id:5} {self.title:15.15}'
 
 
 @dataclass(frozen=True)
 @custom_output
+@data_dict
 # pylint: disable=too-many-instance-attributes
 class Task:
     json: dict = field(repr=False)
@@ -144,10 +142,6 @@ class Task:
                    list_object,
                    labels
                    )
-
-    def data_dict(self):
-        return {k: v.data_dict() if hasattr(v, 'data_dict') and callable(v.data_dict) else v
-                for k, v in self.__dict__.items() if k != 'json'}
 
     def output(self):
         output = [f'{self.id:5}',
