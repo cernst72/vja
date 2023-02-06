@@ -123,8 +123,8 @@ class Task:
                   f'{self.title:50.50}',
                   f'{format_date(self.due_date) :15.15}',
                   f'{"R" if self.reminder_dates else "" :1}',
-                  f'{self.tasklist.namespace.title:15.15}',
-                  f'{self.tasklist.title:15.15}',
+                  f'{self.tasklist.namespace.title if self.tasklist and self.tasklist.namespace else "":15.15}',
+                  f'{self.tasklist.title if self.tasklist else "":15.15}',
                   f'{",".join(map(lambda label: label.title, self.labels or [])) :20.20}',
                   f'{Urgency.compute(self):3}']
         return ' '.join(output)

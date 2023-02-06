@@ -1,7 +1,6 @@
 import logging
 from typing import Optional
 
-from vja import VjaError
 from vja.apiclient import ApiClient
 from vja.model import Namespace, List
 
@@ -19,9 +18,8 @@ class ListService:
             self._namespace_dict = {x['id']: Namespace.from_json(x) for x in self._api_client.get_namespaces()}
         namespace_object = self._namespace_dict.get(namespace_id)
         if not namespace_object:
-            logger.info(self._namespace_dict)
-            raise VjaError(
-                f'Inconsistent data: namespace_id {str(namespace_id)} is referring to non existing cached Namespace.')
+            logger.warning(
+                'Inconsistent data: namespace_id %s is referring to non existing cached Namespace.', str(namespace_id))
         return namespace_object
 
     def find_list_by_id(self, list_id: int) -> List:
@@ -30,8 +28,8 @@ class ListService:
                                self._api_client.get_lists()}
         list_object = self._list_dict.get(list_id)
         if not list_object:
-            logger.info(self._list_dict)
-            raise VjaError(f'Inconsistent data: list_id {str(list_id)} is referring to non existing cached List.')
+            logger.warning(
+                'Inconsistent data: list_id %s is referring to non existing cached List.', str(list_id))
         return list_object
 
     def convert_list_json(self, list_json: dict) -> List:
