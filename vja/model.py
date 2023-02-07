@@ -93,6 +93,33 @@ class List:
 
 @dataclass(frozen=True)
 @data_dict
+class Bucket:
+    json: dict = field(repr=False)
+    id: int
+    title: str
+    is_done_bucket: bool
+    limit: int
+    position: int
+    count_tasks: int
+
+    @classmethod
+    def from_json(cls, json):
+        return cls(json, json['id'], json['title'],
+                   json['is_done_bucket'],
+                   json['limit'],
+                   json['position'],
+                   len(json['tasks']) if json['tasks'] else 0)
+
+    @classmethod
+    def from_json_array(cls, json_array):
+        return [Bucket.from_json(x) for x in json_array or []]
+
+    def output(self):
+        return f'{self.id:5} {self.title:15.15} {self.is_done_bucket:2} {self.limit:3} {self.count_tasks:5}'
+
+
+@dataclass(frozen=True)
+@data_dict
 class Label:
     json: dict = field(repr=False)
     id: int
@@ -127,6 +154,9 @@ class Task:
     reminder_dates: typing.List[str]
     done: bool
     tasklist: List
+    position: int
+    bucket_id: int
+    kanban_position: int
     labels: typing.List[Label]
 
     @classmethod
@@ -140,6 +170,9 @@ class Task:
                    json['reminder_dates'],
                    json['done'],
                    list_object,
+                   json['position'],
+                   json['bucket_id'],
+                   json['kanban_position'],
                    labels
                    )
 

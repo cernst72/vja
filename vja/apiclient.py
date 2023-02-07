@@ -179,6 +179,9 @@ class ApiClient:
         payload = {'title': title}
         return self.put_json(self.create_url(f'/namespaces/{str(namespace_id)}/lists'), payload=payload)
 
+    def get_buckets(self, list_id):
+        return self.get_json(self.create_url(f'/lists/{str(list_id)}/buckets'))
+
     def get_labels(self):
         if self._cache['labels'] is None:
             self._cache['labels'] = self.get_json(self.create_url('/labels')) or []

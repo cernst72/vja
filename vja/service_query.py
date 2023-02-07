@@ -4,7 +4,7 @@ from datetime import datetime
 
 from vja.apiclient import ApiClient
 from vja.list_service import ListService
-from vja.model import Task, Namespace, Label, User, Urgency
+from vja.model import Task, Namespace, Label, User, Urgency, Bucket
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +34,12 @@ class QueryService:
         list_json = self._api_client.get_list(list_id)
         list_object = self._list_service.convert_list_json(list_json)
         self._dump(list_object, is_json, is_jsonvja)
+
+    # bucket
+    def print_buckets(self, list_id, is_json, is_jsonvja):
+        buckets_json = self._api_client.get_buckets(list_id)
+        bucket_array = Bucket.from_json_array(buckets_json)
+        self._dump_array(bucket_array, is_json, is_jsonvja)
 
     # label
     def print_labels(self, is_json, is_jsonvja):

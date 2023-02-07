@@ -89,6 +89,21 @@ def list_show(list_id, is_json, is_jsonvja):
     application.query_service.print_list(list_id, is_json, is_jsonvja)
 
 
+# buckets
+@cli.group('bucket', help='subcommand: kanban buckets (see help)')
+def bucket_group():
+    pass
+
+
+@bucket_group.command('ls', help='print kanban buckets')
+@click.option('list_id', '-l', '--list', '--list-id', '--list_id', required=True, type=click.INT,
+              help='show buckets in list with id')
+@click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
+@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
+def bucket_ls(list_id, is_json, is_jsonvja):
+    application.query_service.print_buckets(list_id, is_json, is_jsonvja)
+
+
 # labels
 @cli.group('label', help='subcommand: label (see help)')
 def label_group():
@@ -114,7 +129,8 @@ def label_add(title):
 @click.option('list_id', '-l', '--folder', '--list', type=click.INT, help='list index, default: first favorite list')
 @click.option('note', '-n', '--note', '--description', help='set description (note)')
 @click.option('prio', '-p', '--prio', '--priority', help='set priority')
-@click.option('due', '-d', '--due', '--duedate', '--due-date', help='set due date (supports parsedatetime expressions)')
+@click.option('due', '-d', '--due', '--duedate', '--due-date', '--due_date',
+              help='set due date (supports parsedatetime expressions)')
 @click.option('favorite', '-f', '--star', '--favorite', type=click.BOOL, help='mark as favorite')
 @click.option('tag', '-t', '--tag', '--label', help='set label (label must exist on server)')
 @click.option('reminder', '-r', '--alarm', '--reminder', help='set reminder (supports parsedatetime expressions)')
