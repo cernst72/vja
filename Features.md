@@ -33,6 +33,7 @@ vja ls --json
 Some filters exist like id or title of list, namespace and label
 ```shell
 vja ls --label="Next Action"
+vja ls --title="ask"
 ```
 See `vja ls --help` for more.
 
@@ -104,8 +105,14 @@ vja list ls
 
 ```shell
 vja list show 1
-vja list show 1 --json
 ```
+
+### Manage kanban buckets
+
+```shell
+vja bucket ls --list-id=1
+```
+
 
 ### Manage labels
 

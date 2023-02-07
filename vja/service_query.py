@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from datetime import datetime
 
 from vja.apiclient import ApiClient
@@ -48,11 +49,11 @@ class QueryService:
 
     # tasks
     def print_tasks(self, is_json, is_jsonvja, include_completed, namespace_filter, list_filter, label_filter,
-                    favorite_filter, urgency_filter):
+                    favorite_filter, title_filter, urgency_filter):
         task_object_array = [self.task_from_json(x) for x in
                              self._api_client.get_tasks(exclude_completed=not include_completed)]
         task_object_array = self._filter(task_object_array, namespace_filter, list_filter, label_filter,
-                                         favorite_filter, urgency_filter)
+                                         favorite_filter, title_filter, urgency_filter)
         task_object_array.sort(key=lambda x: (x.done, -Urgency.compute(x),
                                               (x.due_date or datetime.max),
                                               -x.priority,
@@ -92,7 +93,8 @@ class QueryService:
             print(element)
 
     @staticmethod
-    def _filter(task_object_array, namespace_filter, list_filter, label_filter, favorite_filter, urgency_filter: int):
+    def _filter(task_object_array, namespace_filter, list_filter, label_filter, favorite_filter, title_filter,
+                urgency_filter: int):
         filters = []
         if namespace_filter:
             if str(namespace_filter).isdigit():
@@ -111,6 +113,8 @@ class QueryService:
                 filters.append(lambda x: any(label.title == label_filter for label in x.labels))
         if favorite_filter is not None:
             filters.append(lambda x: x.is_favorite == bool(favorite_filter))
+        if title_filter is not None:
+            filters.append(lambda x: bool(re.search(re.compile(title_filter), x.title)))
         if urgency_filter is not None:
             filters.append(lambda x: Urgency.compute(x) >= urgency_filter)
         return list(filter(lambda x: all(f(x) for f in filters), task_object_array))

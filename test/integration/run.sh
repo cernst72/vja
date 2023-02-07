@@ -22,6 +22,7 @@ run-test () {
   vja ls --list=1
   vja ls --list=Work
   vja ls --label="Next Action"
+  vja ls --title="home"
   vja edit 1 --prio=0 --note="" --due="" --favorite=False --reminder="" --title="empty title" --completed=True
   vja edit 2 --prio=1 --note="modified note" --due="4.2" --reminder="tomorrow"
   vja show 1

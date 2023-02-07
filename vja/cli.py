@@ -166,11 +166,12 @@ def task_edit(task_id, **args):
 @click.option('list_filter', '-l', '--list', help='filter by list (name or id)')
 @click.option('label_filter', '-t', '--label', '--tag', help='filter by label (name or id)')
 @click.option('favorite_filter', '-f', '--favorite', '--star', type=click.BOOL, help='filter by favorite flag')
+@click.option('title_filter', '-i', '--title', help='filter title (regex)')
 @click.option('urgency_filter', '-u', '--urgency', type=click.INT, help='filter by urgency at least')
 def task_ls(is_json, is_jsonvja, include_completed, namespace_filter, list_filter, label_filter, favorite_filter,
-            urgency_filter):
+            title_filter, urgency_filter):
     application.query_service.print_tasks(is_json, is_jsonvja, include_completed, namespace_filter, list_filter,
-                                          label_filter, favorite_filter, urgency_filter)
+                                          label_filter, favorite_filter, title_filter, urgency_filter)
 
 
 @cli.command('show', help='show task details')

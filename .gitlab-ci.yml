@@ -76,7 +76,7 @@ deploy:
         echo "Version number and git tag do not match!"
         exit 1
       fi
-    - ls dist/*
+    - ls -l dist/*
     - twine upload dist/*
   only:
     - tags

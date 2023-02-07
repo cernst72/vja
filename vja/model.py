@@ -203,7 +203,6 @@ class Urgency:
     def compute(task: Task):
         if task.done:
             return 0
-
         due_date_score = Urgency.get_due_date_score(task) * urgency_score_coefficients['due_date']
         priority_score = task.priority * urgency_score_coefficients['priority']
         favorite_score = int(task.is_favorite) * urgency_score_coefficients['favorite']
