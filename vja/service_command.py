@@ -70,6 +70,10 @@ class CommandService:
         tag_name = args.pop('tag') if args.get('tag') else None
         is_force = args.pop('force_create') if args.get('force_create') is not None else False
         payload = self._args_to_payload(args)
+        # workaround: api server does not seem to set positions. But they should not be 0, because sorting between 0s
+        # does not work.
+        seconds = int(time.time() / 60)
+        payload.update({'position': seconds, 'kanban_position': seconds})
 
         if not is_force:
             self._validate_add_task(title, tag_name)

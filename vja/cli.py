@@ -126,7 +126,8 @@ def label_add(title):
 # tasks
 @cli.command('add', help='add new task')
 @click.argument('title', required=True, nargs=-1)
-@click.option('list_id', '-l', '--folder', '--list', type=click.INT, help='list index, default: first favorite list')
+@click.option('list_id', '-l', '--folder', '--project', '--list', type=click.INT,
+              help='list index, default: first favorite list')
 @click.option('note', '-n', '--note', '--description', help='set description (note)')
 @click.option('prio', '-p', '--prio', '--priority', help='set priority')
 @click.option('due', '-d', '--due', '--duedate', '--due-date', '--due_date',
