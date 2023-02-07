@@ -51,6 +51,9 @@ class CommandService:
                     'due': {'field': 'due_date', 'mapping': _parse_date_text},
                     'favorite': {'field': 'is_favorite', 'mapping': bool},
                     'completed': {'field': 'done', 'mapping': bool},
+                    'position': {'field': 'position', 'mapping': int},
+                    'bucket_id': {'field': 'bucket_id', 'mapping': int},
+                    'kanban_position': {'field': 'kanban_position', 'mapping': int},
                     'reminder': {'field': 'reminder_dates', 'mapping': (lambda x: [_parse_date_text(x)])}
                     }
 
