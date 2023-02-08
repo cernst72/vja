@@ -20,10 +20,10 @@ class VjaConfiguration:
 
     @staticmethod
     def _load(filepath):
-        logger.debug('Read config from %s', filepath)
+        logger.debug('Read config from %s', os.path.abspath(filepath))
         parser = configparser.ConfigParser()
         if not parser.read(filepath):
-            raise VjaError('Could not load config file from ' + filepath)
+            raise VjaError(f'Could not load config file from {os.path.abspath(filepath)}')
         return parser
 
     @property

@@ -39,7 +39,7 @@ class Application:
     def open_browser(self, task):
         url = self.configuration.get_frontend_url()
         if task and task > 0:
-            url += '/tasks/' + str(task)
+            url += f'/tasks/{str(task)}'
         webbrowser.open_new_tab(url)
 
 
