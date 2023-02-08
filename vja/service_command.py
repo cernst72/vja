@@ -103,6 +103,12 @@ class CommandService:
 
         logger.info('Modified task %s in list %s', task.id, task_json['list_id'])
 
+    def toggle_task(self, task_id):
+        task_existing = Task.from_json(self._api_client.get_task(task_id), None, None)
+        payload = {'done': not task_existing.done}
+        task_json = self._api_client.post_task(task_id, payload)
+        logger.info('Modified task %s in list %s', task_json['id'], task_json['list_id'])
+
     def _get_default_list(self) -> List:
         list_objects = [self._list_service.convert_list_json(x) for x in self._api_client.get_lists()]
         if not list_objects:

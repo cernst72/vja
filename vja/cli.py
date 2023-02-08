@@ -162,6 +162,12 @@ def task_edit(task_id, **args):
         application.command_service.edit_task(task_id, args_present)
 
 
+@cli.command('toggle', aliases=['check', 'click', 'done'], help='shortcut for marking / unmarking task as done')
+@click.argument('task_id', required=True, type=click.INT)
+def task_toggle(task_id):
+    application.command_service.toggle_task(task_id)
+
+
 @cli.command('ls', help='list tasks')
 @click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')

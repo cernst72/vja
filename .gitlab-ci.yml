@@ -48,7 +48,6 @@ integration-test:
     - pip3 install wheel
     - python3 --version
 
-    # TODO install from some repository
     - pip install dist/*.whl
     - pip show vja
     - which vja
@@ -81,7 +80,3 @@ deploy:
   only:
     - tags
 
-#deploy:
-#  stage: deploy
-#  script: echo "Define your deployment script!"
-#  environment: production

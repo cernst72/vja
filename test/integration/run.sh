@@ -28,9 +28,10 @@ run-test () {
   vja show 1
   vja show 1 --json
   vja show 1 --jsonvja
+  vja toggle 1
   vja list show 1 --json
   vja bucket ls -l 1
-  vja label ls --json
+  vja label ls
   vja namespace ls
   vja -v logout
   vja -v -u demo -p demo ls
