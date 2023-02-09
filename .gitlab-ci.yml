@@ -55,8 +55,8 @@ integration-test:
     - cd tests
     - docker-compose up -d
     - export VJA_CONFIGDIR=.vjatest_dind
-    - pytest
     - ./run.sh test
+    - python3 -m pytest
     - docker-compose down
   cache: { }
 
