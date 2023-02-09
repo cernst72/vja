@@ -39,7 +39,6 @@ run-test () {
   vja -v ls
 }
 
-export VJA_CONFIGDIR=.vjatest
 run-test
 
 
