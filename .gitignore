@@ -94,4 +94,3 @@ ENV/
 # intellij and co
 .idea/
 tasks.json
-.vjatest/

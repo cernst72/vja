@@ -18,14 +18,6 @@ class VjaConfiguration:
         self._file = os.path.join(self._directory, _FILENAME)
         self._parser = self._load(self._file)
 
-    @staticmethod
-    def _load(filepath):
-        logger.debug('Read config from %s', os.path.abspath(filepath))
-        parser = configparser.ConfigParser()
-        if not parser.read(filepath):
-            raise VjaError(f'Could not load config file from {os.path.abspath(filepath)}')
-        return parser
-
     @property
     def file(self):
         return self._file
@@ -38,6 +30,14 @@ class VjaConfiguration:
 
     def get_token_file(self):
         return os.path.join(self._directory, _TOKEN_JSON)
+
+    @staticmethod
+    def _load(filepath):
+        logger.debug('Read config from %s', os.path.abspath(filepath))
+        parser = configparser.ConfigParser()
+        if not parser.read(filepath):
+            raise VjaError(f'Could not load config file from {os.path.abspath(filepath)}')
+        return parser
 
     def _get(self, section, option):
         try:

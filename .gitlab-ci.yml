@@ -52,10 +52,12 @@ integration-test:
     - pip show vja
     - which vja
 
-    - cd test/integration
-    - ./run.sh start docker
-    - ./run.sh test docker
-    - ./run.sh stop
+    - cd tests
+    - docker-compose up -d
+    - export VJA_CONFIGDIR=.vjatest_dind
+    - pytest
+    - ./run.sh test
+    - docker-compose down
   cache: { }
 
 deploy:
