@@ -66,9 +66,19 @@ class CommandService:
 
     def add_task(self, title, args: dict):
         args.update({'title': title})
-        list_id = args.pop('list_id') if args.get('list_id') else None or self._get_default_list().id
+        if args.get('list_id'):
+            list_arg = args.pop('list_id')
+            if str(list_arg).isdigit():
+                list_id = list_arg
+            else:
+                list_id = self._find_list_by_title(list_arg).id
+        else:
+            list_id = self._get_default_list().id
+
         tag_name = args.pop('tag') if args.get('tag') else None
         is_force = args.pop('force_create') if args.get('force_create') is not None else False
+        if args.get('reminder') == 'due':
+            args.update({'reminder': args.get('due') or 'tomorrow'})
         payload = self._args_to_payload(args)
         # workaround: api server does not seem to set positions. But they should not be 0, because sorting between 0s
         # does not work.
@@ -84,7 +94,7 @@ class CommandService:
         if label:
             self._api_client.add_label_to_task(task.id, label.id)
 
-        logger.info('Created task %s in list %s', task.id, list_id)
+        print(f'Created task {task.id} in list {list_id}')
 
     def edit_task(self, task_id: int, args: dict):
         tag_name = args.pop('tag') if args.get('tag') else None
@@ -101,13 +111,13 @@ class CommandService:
             else:
                 self._api_client.add_label_to_task(task.id, label.id)
 
-        logger.info('Modified task %s in list %s', task.id, task_json['list_id'])
+        print(f'Modified task {task.id} in list {task_json["list_id"]}')
 
     def toggle_task(self, task_id):
         task_existing = Task.from_json(self._api_client.get_task(task_id), None, None)
         payload = {'done': not task_existing.done}
         task_json = self._api_client.post_task(task_id, payload)
-        logger.info('Modified task %s in list %s', task_json['id'], task_json['list_id'])
+        print(f'Modified task {task_json["id"]} in list {task_json["list_id"]}')
 
     def _get_default_list(self) -> List:
         list_objects = [self._list_service.convert_list_json(x) for x in self._api_client.get_lists()]
@@ -140,3 +150,12 @@ class CommandService:
             if not any(label for label in labels_remote if label.title == tag_name):
                 raise VjaError(
                     "Label does not exist. You may want to execute \"label add\" or run with --force-create.")
+
+    def _find_list_by_title(self, list_arg):
+        list_objects = [self._list_service.convert_list_json(x) for x in self._api_client.get_lists()]
+        if not list_objects:
+            raise VjaError('No lists exist. Go and create at least one.')
+        list_found = [list for list in list_objects if list.title == list_arg]
+        if not list_found:
+            raise VjaError(f'List with title {list_arg} does not exist.')
+        return list_found[0]

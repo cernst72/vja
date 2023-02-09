@@ -94,3 +94,4 @@ ENV/
 # intellij and co
 .idea/
 tasks.json
+token.json

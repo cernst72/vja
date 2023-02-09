@@ -164,15 +164,16 @@ def label_add(application, title):
 # tasks
 @cli.command('add', help='add new task')
 @click.argument('title', required=True, nargs=-1)
-@click.option('list_id', '-l', '--folder', '--project', '--list', type=click.INT,
-              help='list index, default: first favorite list')
+@click.option('list_id', '-l', '--folder', '--project', '--list',
+              help='list (id or name), default: first favorite list')
 @click.option('note', '-n', '--note', '--description', help='set description (note)')
 @click.option('prio', '-p', '--prio', '--priority', help='set priority')
 @click.option('due', '-d', '--due', '--duedate', '--due-date', '--due_date',
               help='set due date (supports parsedatetime expressions)')
 @click.option('favorite', '-f', '--star', '--favorite', type=click.BOOL, help='mark as favorite')
 @click.option('tag', '-t', '--tag', '--label', help='set label (label must exist on server)')
-@click.option('reminder', '-r', '--alarm', '--reminder', help='set reminder (supports parsedatetime expressions)')
+@click.option('reminder', '-r', '--alarm', '--remind', '--reminder', is_flag=False, flag_value='due',
+              help='set reminder (supports parsedatetime expressions)')
 @click.option('force_create', '--force-create', '--force', is_flag=True, help='force creation of non existing label')
 @with_application
 def task_add(application, title, **args):
@@ -191,7 +192,8 @@ def task_add(application, title, **args):
 @click.option('favorite', '-f', '--favorite', '--star', type=click.BOOL, help='mark as favorite')
 @click.option('completed', '-c', '--completed', '--done', type=click.BOOL, help='mark as completed')
 @click.option('tag', '-t', '--tag', '--label', help='set label (label must exist on server)')
-@click.option('reminder', '-r', '--reminder', '--alarm', help='set reminder (supports parsedatetime expressions)')
+@click.option('reminder', '-r', '--alarm', '--remind', '--reminder', is_flag=False, flag_value='due',
+              help='set reminder (supports parsedatetime expressions)')
 @click.option('force_create', '--force-create', '--force', is_flag=True, help='force creation of non existing label')
 @with_application
 def task_edit(application, task_id, **args):
@@ -218,7 +220,8 @@ def task_toggle(application, task_id):
 @click.option('label_filter', '-t', '--label', '--tag', help='filter by label (name or id)')
 @click.option('favorite_filter', '-f', '--favorite', '--star', type=click.BOOL, help='filter by favorite flag')
 @click.option('title_filter', '-i', '--title', help='filter title (regex)')
-@click.option('urgency_filter', '-u', '--urgency', flag_value=3, type=click.INT, help='filter by urgency at least')
+@click.option('urgency_filter', '-u', '--urgency', is_flag=False, flag_value=3, type=click.INT,
+              help='filter by urgency at least')
 @with_application
 def task_ls(application,
             is_json, is_jsonvja, include_completed, namespace_filter, list_filter, label_filter, favorite_filter,

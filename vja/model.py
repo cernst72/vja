@@ -151,7 +151,7 @@ class Task:
     due_date: datetime
     created: datetime
     updated: datetime
-    reminder_dates: typing.List[str]
+    reminder_dates: typing.List[datetime]
     done: bool
     tasklist: List
     position: int
@@ -167,7 +167,7 @@ class Task:
                    _date_from_json(json['due_date']),
                    _date_from_json(json['created']),
                    _date_from_json(json['updated']),
-                   json['reminder_dates'],
+                   [_date_from_json(reminder) for reminder in json['reminder_dates'] or []],
                    json['done'],
                    list_object,
                    json['position'],
