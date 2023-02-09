@@ -38,11 +38,13 @@ class CommandService:
         if not namespace_id:
             namespaces = self._api_client.get_namespaces()
             namespace_id = min(namespace['id'] if namespace['id'] > 0 else 99999 for namespace in namespaces)
-        self._api_client.put_list(namespace_id, title)
+        list_json = self._api_client.put_list(namespace_id, title)
+        print(f'Created list {list_json["id"]}')
 
     # label
     def add_label(self, title):
-        self._api_client.put_label(title)
+        label_json = self._api_client.put_label(title)
+        print(f'Created label {label_json["id"]}')
 
     # tasks
     _arg_to_json = {'title': {'field': 'title', 'mapping': (lambda x: x)},
@@ -94,7 +96,6 @@ class CommandService:
         label = self._label_from_name(tag_name, is_force) if tag_name else None
         if label:
             self._api_client.add_label_to_task(task.id, label.id)
-
         print(f'Created task {task.id} in list {list_id}')
 
     def edit_task(self, task_id: int, args: dict):
@@ -112,7 +113,6 @@ class CommandService:
                 self._api_client.remove_label_from_task(task.id, label.id)
             else:
                 self._api_client.add_label_to_task(task.id, label.id)
-
         print(f'Modified task {task.id} in list {task_json["list_id"]}')
 
     def toggle_task(self, task_id):
