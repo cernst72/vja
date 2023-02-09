@@ -118,11 +118,17 @@ class ApiClient:
         headers = {'Authorization': f"Bearer {self.access_token}"}
         response = requests.get(url, headers=headers, params=params, timeout=30)
         response.raise_for_status()
-        total_pages = response.headers.get('x-pagination-total-pages')
-        if total_pages and int(total_pages) > 1:
-            logger.warning('Pagination not yet implemented. Skipping results! '
-                           'Consider to increase MAXITEMSPERPAGE on your server.')
-        return self.to_json(response)
+        json_result = self.to_json(response)
+        total_pages = int(response.headers.get('x-pagination-total-pages', 1))
+        if total_pages > 1:
+            logger.debug('Trying to load all pages. Consider to increase MAXITEMSPERPAGE on your server instead.')
+            for page in range(2, total_pages + 1):
+                logger.debug('load page %s', page)
+                params.update({'page': page})
+                response = requests.get(url, headers=headers, params=params, timeout=30)
+                response.raise_for_status()
+                json_result = json_result + self.to_json(response)
+        return json_result
 
     @handle_http_error
     @check_access_token
