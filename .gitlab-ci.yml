@@ -46,6 +46,7 @@ integration-test:
     - docker info
     - apk add --no-cache bash curl python3-dev py3-pip docker-compose
     - pip3 install wheel
+    - pip3 install pytest
     - python3 --version
 
     - pip install dist/*.whl
@@ -55,7 +56,7 @@ integration-test:
     - cd tests
     - docker-compose up -d
     - export VJA_CONFIGDIR=.vjatest_dind
-    - python3 -m pytest
+    - pytest
     - ./run.sh test
     - docker-compose down
   cache: { }
