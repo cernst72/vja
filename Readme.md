@@ -67,8 +67,10 @@ pip uninstall -y vja;rm -rf build dist vja.egg-info; python setup.py sdist bdist
 Run integration test (requires docker and docker-compose)
 
 ```shell
-test/integration/run.sh start localhost test/integration/docker-compose.yml
-test/integration/run.sh test
-test/integration/run.sh stop localhost test/integration/docker-compose.yml
+cd tests
+docker-compose up
+./run.sh
+VJA_CONFIGDIR=.vjatest pytest
+docker-composer down
 ```
 
