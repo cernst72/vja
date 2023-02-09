@@ -87,6 +87,7 @@ class CommandService:
 
         if not is_force:
             self._validate_add_task(title, tag_name)
+        logger.debug('put task: %s', payload)
         task_json = self._api_client.put_task(list_id, payload)
         task = Task.from_json(task_json, None, None)
 
@@ -101,6 +102,7 @@ class CommandService:
         is_force = args.pop('force_create') if args.get('force_create') is not None else False
         payload = self._args_to_payload(args)
 
+        logger.debug('post task: %s', payload)
         task_json = self._api_client.post_task(task_id, payload)
         task = Task.from_json(task_json, None, Label.from_json_array(task_json['labels']))
 
