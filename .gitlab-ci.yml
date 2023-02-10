@@ -43,7 +43,7 @@ integration-test:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
   script:
-    - docker info
+    - docker --version
     - apk add --no-cache bash curl python3-dev py3-pip docker-compose
     - pip3 install wheel
     - pip3 install pytest
