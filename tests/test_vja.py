@@ -120,11 +120,22 @@ class TestEditTask:
         assert after['due_date'] is None
         assert after['updated'] >= before['updated']
 
-    def test_label(self, runner):
-        execute(runner, 'edit 1 --tag="" --force-create')
+    def test_toggle_label(self, runner):
+        tags_0 = json_for_task_id(runner, 1)['labels']
         execute(runner, 'edit 1 --tag=tag1 --force-create')
-        after = json_for_task_id(runner, 1)
-        assert 'tag1' in after['labels']
+        tags_1 = json_for_task_id(runner, 1)['labels']
+        execute(runner, 'edit 1 --tag=tag1')
+        tags_2 = json_for_task_id(runner, 1)['labels']
+
+        assert tags_0 != tags_1
+        assert tags_0 == tags_2
+        assert self._has_label_with_title(tags_0, 'tag1') or self._has_label_with_title(tags_1, 'tag1')
+
+    @staticmethod
+    def _has_label_with_title(labels, title):
+        label_titles = [x['title'] for x in labels]
+        return title in label_titles
+
 
 # set reminder to due-date of task
 # unset reminder
