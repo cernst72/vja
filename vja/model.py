@@ -20,8 +20,17 @@ def custom_output(cls):  # Decorator for class.
 
 def data_dict(cls):  # Decorator for class.
     def data_dict_function(self):
-        return {k: v.data_dict() if hasattr(v, 'data_dict') and callable(v.data_dict) else v
-                for k, v in self.__dict__.items() if k != 'json'}
+        return {k: _transform_value(v) for k, v in self.__dict__.items() if k != 'json'}
+
+    def _transform_value(v):
+        if _is_data_dict(v):
+            return v.data_dict()
+        if isinstance(v, list):
+            return [_transform_value(x) for x in v]
+        return v
+
+    def _is_data_dict(v):
+        return hasattr(v, 'data_dict') and callable(v.data_dict)
 
     setattr(cls, 'data_dict', data_dict_function)
     return cls
