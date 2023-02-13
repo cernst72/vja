@@ -190,6 +190,8 @@ def task_add(ctx, application, title, **args):
 @click.argument('task_ids', required=True, type=click.INT, nargs=-1)
 @click.option('title', '-i', '--title', help='set title')
 @click.option('note', '-n', '--note', '--description', help='set description (note)')
+@click.option('note_append', '-a', '--note-append', '--append-note', '--description-append', '--append-description',
+              help='append description to existing note separated by new line')
 @click.option('prio', '-p', '--prio', '--priority', type=click.INT, help='set priority')
 @click.option('position', '--position', type=click.INT, help='set list position')
 @click.option('bucket_id', '--bucket-id', '--bucket_id', type=click.INT, help='set bucket id')

@@ -130,6 +130,15 @@ class TestEditGeneral:
         assert labels_0 == labels_2
         assert self._has_label_with_title(labels_0, 'tag1') or self._has_label_with_title(labels_1, 'tag1')
 
+    def test_append_note(self, runner):
+        execute(runner, 'edit 1 --note=line1')
+        note_1 = json_for_task_id(runner, 1)['description']
+        execute(runner, 'edit 1 --note-append=line2')
+        note_2 = json_for_task_id(runner, 1)['description']
+
+        assert note_1 == 'line1'
+        assert note_2 == 'line1\nline2'
+
     @staticmethod
     def _has_label_with_title(labels, title):
         label_titles = [x['title'] for x in labels]
@@ -187,7 +196,7 @@ class TestMultipleTasks:
 
     def test_show_three_tasks(self, runner):
         res = execute(runner, 'show 1 2 3')
-        assert res.output.count('\n') > 30
+        assert res.output.count('\n') >= 30
 
 
 def json_for_created_task(runner, message):

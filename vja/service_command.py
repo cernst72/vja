@@ -111,6 +111,11 @@ class CommandService:
                 args.update({'reminder': args.get('due')})
             else:
                 args.update({'reminder': task_remote['due_date'] if task_remote['due_date'] else 'tomorrow'})
+        if args.get('note_append'):
+            append_note = args.pop('note_append')
+            args.update({
+                'note': task_remote['description'] + '\n' + append_note if task_remote['description'] else append_note
+            })
         payload = self._args_to_payload(args)
         logger.debug('post task: %s', payload)
 

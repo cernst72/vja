@@ -26,7 +26,6 @@ def _create_default_list():
 
 
 def pytest_configure():
-    print('Configure test')
     if 'VJA_CONFIGDIR' not in os.environ:
         print('!!! Precondition not met. You must set VJA_CONFIGDIR in environment variables !!!')
         sys.exit(1)

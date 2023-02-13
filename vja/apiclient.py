@@ -67,7 +67,6 @@ class ApiClient:
 
     @property
     def access_token(self):
-        """Property for accessing the cached access token."""
         if not self._token['access']:
             raise KeyError('access token not set! call authenticate()')
         return self._token['access']
@@ -79,7 +78,6 @@ class ApiClient:
         self.get_access_token(True, username, password)
 
     def load_access_token(self):
-        """Load the access token from the file."""
         try:
             with open(self._token_file, encoding='utf-8') as token_file:
                 data = json.load(token_file)
@@ -91,7 +89,6 @@ class ApiClient:
         return True
 
     def store_access_token(self):
-        """Store the access token to the file."""
         data = {'token': self.access_token}
         with open(self._token_file, 'w', encoding="utf-8") as token_file:
             json.dump(data, token_file)
