@@ -68,9 +68,9 @@ Run integration test (requires docker and docker-compose)
 
 ```shell
 cd tests
-docker-compose up
+docker-compose up -d
 ./run.sh
 VJA_CONFIGDIR=.vjatest pytest
-docker-composer down
+docker-compose down
 ```
 

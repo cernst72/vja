@@ -23,7 +23,6 @@ def execute(runner, command, return_code=0):
 
 @pytest.fixture(name='runner', scope='session')
 def setup_runner():
-    print("setup_runner---------------------------")
     return CliRunner()
 
 

@@ -18,7 +18,7 @@ def _parse_date_text(text: str):
         return None
     if len(text) > 10:
         text = text[:10] + text[10].replace("T", " ") + text[11:]
-    timetuple = parsedatetime.Calendar().parse(text)[0]
+    timetuple = parsedatetime.Calendar(version=parsedatetime.VERSION_CONTEXT_STYLE).parse(text)[0]
     datetime_date = datetime.fromtimestamp(time.mktime(timetuple))
     return datetime_date.astimezone(tz.tzlocal()).isoformat()
 
