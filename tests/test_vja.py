@@ -177,6 +177,19 @@ class TestToggleDoneTask:
         assert done_0 == done_2
 
 
+class TestMultipleTasks:
+    def test_edit_three_tasks(self, runner):
+        execute(runner, 'edit 1 2 3 --priority=4')
+        for i in range(1, 4):
+            after = json_for_task_id(runner, i)
+            assert after['priority'] == 4
+            assert after['updated'][:10] == TODAY_ISO[:10]
+
+    def test_show_three_tasks(self, runner):
+        res = execute(runner, 'show 1 2 3')
+        assert res.output.count('\n') > 30
+
+
 def json_for_created_task(runner, message):
     assert re.match(ADD_SUCCESS_PATTERN, message), message
     task_id = ADD_SUCCESS_PATTERN.findall(message)[0]

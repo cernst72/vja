@@ -127,7 +127,7 @@ class CommandService:
                 self._api_client.add_label_to_task(task.id, label.id)
         return task
 
-    def toggle_task(self, task_id):
+    def toggle_task_done(self, task_id):
         task_existing = Task.from_json(self._api_client.get_task(task_id), None, None)
         payload = {'done': not task_existing.done}
         task_json = self._api_client.post_task(task_id, payload)
@@ -169,7 +169,7 @@ class CommandService:
         list_objects = [self._list_service.convert_list_json(x) for x in self._api_client.get_lists()]
         if not list_objects:
             raise VjaError('No lists exist. Go and create at least one.')
-        list_found = [list for list in list_objects if list.title == list_arg]
+        list_found = [x for x in list_objects if x.title == list_arg]
         if not list_found:
             raise VjaError(f'List with title {list_arg} does not exist.')
         return list_found[0]

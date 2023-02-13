@@ -182,11 +182,12 @@ def label_add(application, title):
 def task_add(ctx, application, title, **args):
     task = application.command_service.add_task(" ".join(title), {k: v for k, v in args.items() if v is not None})
     click.echo(f'Created task {task.id} in list {task.tasklist.id}')
-    ctx.invoke(task_show, task=task.id)
+    ctx.invoke(task_show, tasks=[task.id])
 
 
-@cli.command('edit', aliases=['modify', 'update'], help='modify task (opens task in browser if no options are given)')
-@click.argument('task_id', required=True, type=click.INT)
+@cli.command('edit', aliases=['modify', 'update'],
+             help='modify task/tasks (opens task in browser if no options are given)')
+@click.argument('task_ids', required=True, type=click.INT, nargs=-1)
 @click.option('title', '-i', '--title', help='set title')
 @click.option('note', '-n', '--note', '--description', help='set description (note)')
 @click.option('prio', '-p', '--prio', '--priority', type=click.INT, help='set priority')
@@ -202,14 +203,15 @@ def task_add(ctx, application, title, **args):
 @click.option('force_create', '--force-create', '--force', is_flag=True, help='force creation of non existing label')
 @with_application
 @click.pass_context
-def task_edit(ctx, application, task_id, **args):
+def task_edit(ctx, application, task_ids, **args):
     args_present = {k: v for k, v in args.items() if v is not None}
-    if not args_present:
-        application.open_browser(task_id)
-    else:
-        task = application.command_service.edit_task(task_id, args_present)
-        click.echo(f'Modified task {task.id} in list {task.tasklist.id}')
-        ctx.invoke(task_show, task=task.id)
+    for task_id in task_ids:
+        if not args_present:
+            application.open_browser(task_id)
+        else:
+            task = application.command_service.edit_task(task_id, args_present)
+            click.echo(f'Modified task {task.id} in list {task.tasklist.id}')
+            ctx.invoke(task_show, tasks=[task.id])
 
 
 @cli.command('toggle', aliases=['check', 'click', 'done'], help='shortcut for marking / unmarking task as done')
@@ -217,9 +219,9 @@ def task_edit(ctx, application, task_id, **args):
 @with_application
 @click.pass_context
 def task_toggle(ctx, application, task_id):
-    task = application.command_service.toggle_task(task_id)
+    task = application.command_service.toggle_task_done(task_id)
     click.echo(f'Modified task {task.id} in list {task.tasklist.id}')
-    ctx.invoke(task_show, task=task_id)
+    ctx.invoke(task_show, tasks=[task_id])
 
 
 @cli.command('ls', help='list tasks')
@@ -241,13 +243,14 @@ def task_ls(application,
                                           label_filter, favorite_filter, title_filter, urgency_filter)
 
 
-@cli.command('show', help='show task details')
-@click.argument('task', required=True, type=click.INT)
+@cli.command('show', help='show task details. Multiple task ids may be given')
+@click.argument('tasks', type=click.INT, nargs=-1)
 @click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
 @with_application
-def task_show(application, task, is_json, is_jsonvja):
-    application.query_service.print_task(task, is_json, is_jsonvja)
+def task_show(application, tasks, is_json, is_jsonvja):
+    for task in tasks:
+        application.query_service.print_task(task, is_json, is_jsonvja)
 
 
 @cli.command(name='open', help='open task in browser')
