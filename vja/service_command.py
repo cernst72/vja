@@ -8,7 +8,7 @@ from parsedatetime import parsedatetime
 from vja import VjaError
 from vja.apiclient import ApiClient
 from vja.list_service import ListService
-from vja.model import Label, List, Task
+from vja.model import Label, List
 
 logger = logging.getLogger(__name__)
 
@@ -133,9 +133,9 @@ class CommandService:
         return task
 
     def toggle_task_done(self, task_id):
-        task_existing = Task.from_json(self._api_client.get_task(task_id), None, None)
-        payload = {'done': not task_existing.done}
-        task_json = self._api_client.post_task(task_id, payload)
+        task_remote = self._api_client.get_task(task_id)
+        task_remote.update({'done': not task_remote['done']})
+        task_json = self._api_client.post_task(task_id, task_remote)
         return self._list_service.task_from_json(task_json)
 
     def _get_default_list(self) -> List:
