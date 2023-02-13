@@ -16,6 +16,8 @@ logger = logging.getLogger(__name__)
 def _parse_date_text(text: str):
     if not text:
         return None
+    if isinstance(text, datetime):
+        return text
     if len(text) > 10:
         text = text[:10] + text[10].replace("T", " ") + text[11:]
     timetuple = parsedatetime.Calendar(version=parsedatetime.VERSION_CONTEXT_STYLE).parse(text)[0]
@@ -41,12 +43,12 @@ class CommandService:
             namespaces = self._api_client.get_namespaces()
             namespace_id = min(namespace['id'] if namespace['id'] > 0 else 99999 for namespace in namespaces)
         list_json = self._api_client.put_list(namespace_id, title)
-        print(f'Created list {list_json["id"]}')
+        return self._list_service.convert_list_json(list_json)
 
     # label
     def add_label(self, title):
         label_json = self._api_client.put_label(title)
-        print(f'Created label {label_json["id"]}')
+        return Label.from_json(label_json)
 
     # tasks
     _arg_to_json = {'title': {'field': 'title', 'mapping': (lambda x: x)},
@@ -93,12 +95,12 @@ class CommandService:
             self._validate_add_task(title, tag_name)
         logger.debug('put task: %s', payload)
         task_json = self._api_client.put_task(list_id, payload)
-        task = Task.from_json(task_json, None, None)
+        task = self._list_service.task_from_json(task_json)
 
         label = self._label_from_name(tag_name, is_force) if tag_name else None
         if label:
             self._api_client.add_label_to_task(task.id, label.id)
-        print(f'Created task {task.id} in list {list_id}')
+        return task
 
     def edit_task(self, task_id: int, args: dict):
         task_remote = self._api_client.get_task(task_id)
@@ -115,7 +117,7 @@ class CommandService:
         task_remote.update(payload)
 
         task_json = self._api_client.post_task(task_id, task_remote)
-        task = Task.from_json(task_json, None, Label.from_json_array(task_json['labels']))
+        task = self._list_service.task_from_json(task_json)
 
         label = self._label_from_name(tag_name, is_force) if tag_name else None
         if label:
@@ -123,13 +125,13 @@ class CommandService:
                 self._api_client.remove_label_from_task(task.id, label.id)
             else:
                 self._api_client.add_label_to_task(task.id, label.id)
-        print(f'Modified task {task.id} in list {task_json["list_id"]}')
+        return task
 
     def toggle_task(self, task_id):
         task_existing = Task.from_json(self._api_client.get_task(task_id), None, None)
         payload = {'done': not task_existing.done}
         task_json = self._api_client.post_task(task_id, payload)
-        print(f'Modified task {task_json["id"]} in list {task_json["list_id"]}')
+        return self._list_service.task_from_json(task_json)
 
     def _get_default_list(self) -> List:
         list_objects = [self._list_service.convert_list_json(x) for x in self._api_client.get_lists()]

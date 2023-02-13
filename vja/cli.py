@@ -104,7 +104,8 @@ def list_group():
 @click.argument('title', nargs=-1, required=True)
 @with_application
 def list_add(application, title, namespace_id=None):
-    application.command_service.add_list(namespace_id, " ".join(title))
+    tasklist = application.command_service.add_list(namespace_id, " ".join(title))
+    click.echo(f'Created list {tasklist.id}')
 
 
 @list_group.command('ls', help='print lists')
@@ -158,7 +159,8 @@ def label_ls(application, is_json, is_jsonvja):
 @click.argument('title', required=True, nargs=-1)
 @with_application
 def label_add(application, title):
-    application.command_service.add_label(" ".join(title))
+    label = application.command_service.add_label(" ".join(title))
+    click.echo(f'Created label {label.id}')
 
 
 # tasks
@@ -176,8 +178,11 @@ def label_add(application, title):
               help='set reminder (supports parsedatetime expressions)')
 @click.option('force_create', '--force-create', '--force', is_flag=True, help='force creation of non existing label')
 @with_application
-def task_add(application, title, **args):
-    application.command_service.add_task(" ".join(title), {k: v for k, v in args.items() if v is not None})
+@click.pass_context
+def task_add(ctx, application, title, **args):
+    task = application.command_service.add_task(" ".join(title), {k: v for k, v in args.items() if v is not None})
+    click.echo(f'Created task {task.id} in list {task.tasklist.id}')
+    ctx.invoke(task_show, task=task.id)
 
 
 @cli.command('edit', aliases=['modify', 'update'], help='modify task (opens task in browser if no options are given)')
@@ -196,19 +201,25 @@ def task_add(application, title, **args):
               help='set reminder (supports parsedatetime expressions)')
 @click.option('force_create', '--force-create', '--force', is_flag=True, help='force creation of non existing label')
 @with_application
-def task_edit(application, task_id, **args):
+@click.pass_context
+def task_edit(ctx, application, task_id, **args):
     args_present = {k: v for k, v in args.items() if v is not None}
     if not args_present:
         application.open_browser(task_id)
     else:
-        application.command_service.edit_task(task_id, args_present)
+        task = application.command_service.edit_task(task_id, args_present)
+        click.echo(f'Modified task {task.id} in list {task.tasklist.id}')
+        ctx.invoke(task_show, task=task.id)
 
 
 @cli.command('toggle', aliases=['check', 'click', 'done'], help='shortcut for marking / unmarking task as done')
 @click.argument('task_id', required=True, type=click.INT)
 @with_application
-def task_toggle(application, task_id):
-    application.command_service.toggle_task(task_id)
+@click.pass_context
+def task_toggle(ctx, application, task_id):
+    task = application.command_service.toggle_task(task_id)
+    click.echo(f'Modified task {task.id} in list {task.tasklist.id}')
+    ctx.invoke(task_show, task=task_id)
 
 
 @cli.command('ls', help='list tasks')

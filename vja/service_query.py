@@ -5,7 +5,7 @@ from datetime import datetime
 
 from vja.apiclient import ApiClient
 from vja.list_service import ListService
-from vja.model import Task, Namespace, Label, User, Urgency, Bucket
+from vja.model import Namespace, Label, User, Urgency, Bucket
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ class QueryService:
     # tasks
     def print_tasks(self, is_json, is_jsonvja, include_completed, namespace_filter, list_filter, label_filter,
                     favorite_filter, title_filter, urgency_filter):
-        task_object_array = [self.task_from_json(x) for x in
+        task_object_array = [self._list_service.task_from_json(x) for x in
                              self._api_client.get_tasks(exclude_completed=not include_completed)]
         task_object_array = self._filter(task_object_array, namespace_filter, list_filter, label_filter,
                                          favorite_filter, title_filter, urgency_filter)
@@ -63,14 +63,8 @@ class QueryService:
 
     def print_task(self, task_id: int, is_json, is_jsonvja):
         task_json = self._api_client.get_task(task_id)
-        task_object = self.task_from_json(task_json)
+        task_object = self._list_service.task_from_json(task_json)
         self._dump(task_object, is_json, is_jsonvja)
-
-    def task_from_json(self, task_json: dict) -> Task:
-        list_object = self._list_service.find_list_by_id(task_json['list_id'])
-        labels = Label.from_json_array(task_json['labels'])
-        task_object = Task.from_json(task_json, list_object, labels)
-        return task_object
 
     @staticmethod
     def _dump_array(object_array, is_json, is_jsonvja):

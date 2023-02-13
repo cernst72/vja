@@ -2,7 +2,7 @@ import logging
 from typing import Optional
 
 from vja.apiclient import ApiClient
-from vja.model import Namespace, List
+from vja.model import Namespace, List, Task, Label
 
 logger = logging.getLogger(__name__)
 
@@ -35,3 +35,8 @@ class ListService:
     def convert_list_json(self, list_json: dict) -> List:
         namespace = self.find_namespace_by_id(list_json['namespace_id'])
         return List.from_json(list_json, namespace)
+
+    def task_from_json(self, task_json: dict) -> Task:
+        list_object = self.find_list_by_id(task_json['list_id'])
+        labels = Label.from_json_array(task_json['labels'])
+        return Task.from_json(task_json, list_object, labels)
