@@ -212,9 +212,7 @@ class ApiClient:
         return self.put_json(self.create_url(f'/lists/{str(list_id)}'), payload=payload)
 
     def post_task(self, task_id, payload):
-        task_remote = self.get_task(task_id)
-        task_remote.update(payload)
-        return self.post_json(self.create_url(f'/tasks/{str(task_id)}'), payload=task_remote)
+        return self.post_json(self.create_url(f'/tasks/{str(task_id)}'), payload=payload)
 
     def add_label_to_task(self, task_id, label_id):
         task_label_url = self.create_url(f'/tasks/{str(task_id)}/labels')

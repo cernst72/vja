@@ -9,6 +9,10 @@ from click.testing import CliRunner
 from vja.cli import cli
 
 ADD_SUCCESS_PATTERN = re.compile(r'.*Created task (\d+) in list .*')
+TODAY = datetime.datetime.now()
+TOMORROW = (datetime.datetime.now() + datetime.timedelta(days=1))
+TODAY_ISO = TODAY.isoformat()
+TOMORROW_ISO = TOMORROW.isoformat()
 
 
 def execute(runner, command, return_code=0):
@@ -77,29 +81,25 @@ class TestAddTask:
         res = execute(runner, 'add "title of new task" --force --list=test-list --reminder')
         after = json_for_created_task(runner, res.output)
         assert after['due_date'] is None
-        assert self._tomorrow()[0:10] in after['reminder_dates'][0]
-
-    @staticmethod
-    def _tomorrow():
-        return (datetime.date.today() + datetime.timedelta(days=1)).isoformat()
+        assert TOMORROW_ISO[0:10] in after['reminder_dates'][0]
 
 
-class TestEditTask:
+class TestEditGeneral:
     def test_edit_title(self, runner):
         before = json_for_task_id(runner, 1)
         new_title = f'{before["title"]}42'
-        # execute(runner, f'edit 1 -i "new')
         res = runner.invoke(cli, ['edit', '1', '-i', f'{new_title}'])
         assert res.exit_code == 0, res
 
         after = json_for_task_id(runner, 1)
         assert after['title'] == new_title
+        assert after['updated'] > before['updated']
         # other attributes remain in place
         assert after['due_date'] == before['due_date']
+        assert after['reminder_dates'] == before['reminder_dates']
         assert after['position'] == before['position']
         assert after['tasklist']['id'] == before['tasklist']['id']
         assert after['created'] == before['created']
-        assert after['updated'] >= before['updated']
 
     def test_edit_due_date(self, runner):
         before = json_for_task_id(runner, 1)
@@ -121,15 +121,15 @@ class TestEditTask:
         assert after['updated'] >= before['updated']
 
     def test_toggle_label(self, runner):
-        tags_0 = json_for_task_id(runner, 1)['labels']
+        labels_0 = json_for_task_id(runner, 1)['labels']
         execute(runner, 'edit 1 --tag=tag1 --force-create')
-        tags_1 = json_for_task_id(runner, 1)['labels']
+        labels_1 = json_for_task_id(runner, 1)['labels']
         execute(runner, 'edit 1 --tag=tag1')
-        tags_2 = json_for_task_id(runner, 1)['labels']
+        labels_2 = json_for_task_id(runner, 1)['labels']
 
-        assert tags_0 != tags_1
-        assert tags_0 == tags_2
-        assert self._has_label_with_title(tags_0, 'tag1') or self._has_label_with_title(tags_1, 'tag1')
+        assert labels_0 != labels_1
+        assert labels_0 == labels_2
+        assert self._has_label_with_title(labels_0, 'tag1') or self._has_label_with_title(labels_1, 'tag1')
 
     @staticmethod
     def _has_label_with_title(labels, title):
@@ -137,12 +137,46 @@ class TestEditTask:
         return title in label_titles
 
 
-# set reminder to due-date of task
-# unset reminder
-# set reminder to new value
-# set reminder to given due-date
-# add label
-# remove label
+class TestEditReminder:
+    def test_set_reminder_to_task(self, runner):
+        execute(runner, f'edit 2 --due-date={TOMORROW_ISO}')
+        execute(runner, f'edit 2 --reminder={TODAY_ISO}')
+        before = json_for_task_id(runner, 2)
+
+        execute(runner, 'edit 2 --reminder')
+        after = json_for_task_id(runner, 2)
+        assert before['reminder_dates'][0][:10] == TODAY.date().isoformat()
+        assert after['reminder_dates'][0][:10] == TOMORROW.date().isoformat()
+
+    def test_unset_reminder(self, runner):
+        execute(runner, f'edit 2 --reminder={TODAY_ISO}')
+        before = json_for_task_id(runner, 2)
+
+        execute(runner, 'edit 2 --reminder=')
+        after = json_for_task_id(runner, 2)
+        assert before['reminder_dates'][0][:10] == TODAY.date().isoformat()
+        assert after['reminder_dates'][0] is None
+
+    def test_set_reminder_to_due(self, runner):
+        execute(runner, f'edit 2 --reminder={TODAY_ISO}')
+        before = json_for_task_id(runner, 2)
+
+        execute(runner, f'edit 2 --due={TOMORROW_ISO} --reminder=due')
+        after = json_for_task_id(runner, 2)
+        assert before['reminder_dates'][0][:10] == TODAY.date().isoformat()
+        assert after['reminder_dates'][0][:10] == TOMORROW.date().isoformat()
+
+
+class TestToggleDoneTask:
+    def test_toggle_done(self, runner):
+        done_0 = json_for_task_id(runner, 1)['done']
+        execute(runner, 'check 1')
+        done_1 = json_for_task_id(runner, 1)['done']
+        execute(runner, 'check 1')
+        done_2 = json_for_task_id(runner, 1)['done']
+        assert done_0 != done_1
+        assert done_0 == done_2
+
 
 def json_for_created_task(runner, message):
     assert re.match(ADD_SUCCESS_PATTERN, message), message

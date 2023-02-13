@@ -13,9 +13,11 @@ from vja.model import Label, List, Task
 logger = logging.getLogger(__name__)
 
 
-def _parse_date_text(text):
+def _parse_date_text(text: str):
     if not text:
         return None
+    if len(text) > 10:
+        text = text[:10] + text[10].replace("T", " ") + text[11:]
     timetuple = parsedatetime.Calendar().parse(text)[0]
     datetime_date = datetime.fromtimestamp(time.mktime(timetuple))
     return datetime_date.astimezone(tz.tzlocal()).isoformat()
@@ -99,12 +101,20 @@ class CommandService:
         print(f'Created task {task.id} in list {list_id}')
 
     def edit_task(self, task_id: int, args: dict):
+        task_remote = self._api_client.get_task(task_id)
         tag_name = args.pop('tag') if args.get('tag') else None
         is_force = args.pop('force_create') if args.get('force_create') is not None else False
+        if args.get('reminder') == 'due':
+            if args.get('due'):
+                args.update({'reminder': args.get('due')})
+            else:
+                args.update({'reminder': task_remote['due_date'] if task_remote['due_date'] else 'tomorrow'})
         payload = self._args_to_payload(args)
-
         logger.debug('post task: %s', payload)
-        task_json = self._api_client.post_task(task_id, payload)
+
+        task_remote.update(payload)
+
+        task_json = self._api_client.post_task(task_id, task_remote)
         task = Task.from_json(task_json, None, Label.from_json_array(task_json['labels']))
 
         label = self._label_from_name(tag_name, is_force) if tag_name else None
