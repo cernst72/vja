@@ -175,7 +175,7 @@ def label_add(application, title):
 @click.option('favorite', '-f', '--star', '--favorite', type=click.BOOL, help='mark as favorite')
 @click.option('tag', '-t', '--tag', '--label', help='set label (label must exist on server)')
 @click.option('reminder', '-r', '--alarm', '--remind', '--reminder', is_flag=False, flag_value='due',
-              help='set reminder (supports parsedatetime expressions)')
+              help='set reminder (supports parsedatetime expressions). Leave empty to set to due date.')
 @click.option('force_create', '--force-create', '--force', is_flag=True, help='force creation of non existing label')
 @with_application
 @click.pass_context
@@ -201,7 +201,7 @@ def task_add(ctx, application, title, **args):
 @click.option('completed', '-c', '--completed', '--done', type=click.BOOL, help='mark as completed')
 @click.option('tag', '-t', '--tag', '--label', help='set label (label must exist on server)')
 @click.option('reminder', '-r', '--alarm', '--remind', '--reminder', is_flag=False, flag_value='due',
-              help='set reminder (supports parsedatetime expressions)')
+              help='set reminder (supports parsedatetime expressions). Leave empty to set to due date.')
 @click.option('force_create', '--force-create', '--force', is_flag=True, help='force creation of non existing label')
 @with_application
 @click.pass_context
