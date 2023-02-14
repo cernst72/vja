@@ -9,7 +9,7 @@ from parsedatetime import parsedatetime
 from vja import VjaError
 from vja.apiclient import ApiClient
 from vja.list_service import ListService
-from vja.model import Label, List
+from vja.model import Label
 
 logger = logging.getLogger(__name__)
 
@@ -77,9 +77,9 @@ class CommandService:
             if str(list_arg).isdigit():
                 list_id = list_arg
             else:
-                list_id = self._find_list_by_title(list_arg).id
+                list_id = self._list_service.find_list_by_title(list_arg).id
         else:
-            list_id = self._get_default_list().id
+            list_id = self._list_service.get_default_list().id
 
         tag_name = args.pop('tag') if args.get('tag') else None
         is_force = args.pop('force_create') if args.get('force_create') is not None else False
@@ -138,16 +138,6 @@ class CommandService:
         task_json = self._api_client.post_task(task_id, task_remote)
         return self._list_service.task_from_json(task_json)
 
-    def _get_default_list(self) -> List:
-        list_objects = [self._list_service.convert_list_json(x) for x in self._api_client.get_lists()]
-        if not list_objects:
-            raise VjaError('No lists exist. Go and create at least one.')
-        list_objects.sort(key=lambda x: x.id)
-        favorite_lists = [x for x in list_objects if x.is_favorite]
-        if favorite_lists:
-            return favorite_lists[0]
-        return list_objects[0]
-
     def _label_from_name(self, name, is_force):
         if not name:
             return None
@@ -169,12 +159,3 @@ class CommandService:
             if not any(label for label in labels_remote if label.title == tag_name):
                 raise VjaError(
                     "Label does not exist. You may want to execute \"label add\" or run with --force-create.")
-
-    def _find_list_by_title(self, list_arg):
-        list_objects = [self._list_service.convert_list_json(x) for x in self._api_client.get_lists()]
-        if not list_objects:
-            raise VjaError('No lists exist. Go and create at least one.')
-        list_found = [x for x in list_objects if x.title == list_arg]
-        if not list_found:
-            raise VjaError(f'List with title {list_arg} does not exist.')
-        return list_found[0]
