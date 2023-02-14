@@ -237,7 +237,7 @@ class Urgency:
                 result = 2
             elif 5 < due_days <= 10:
                 result = 1
-            elif due_days > 10:
+            elif due_days > 14:
                 result = -1
             else:
                 result = 0

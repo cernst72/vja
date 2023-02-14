@@ -38,7 +38,7 @@ class Application:
 
     def open_browser(self, task):
         url = self.configuration.get_frontend_url()
-        if task and task > 0:
+        if task:
             url += f'/tasks/{str(task)}'
         webbrowser.open_new_tab(url)
 
@@ -208,12 +208,12 @@ def task_add(ctx, application, title, **args):
 def task_edit(ctx, application, task_ids, **args):
     args_present = {k: v for k, v in args.items() if v is not None}
     for task_id in task_ids:
-        if not args_present:
-            application.open_browser(task_id)
-        else:
+        if args_present:
             task = application.command_service.edit_task(task_id, args_present)
             click.echo(f'Modified task {task.id} in list {task.tasklist.id}')
             ctx.invoke(task_show, tasks=[task.id])
+        else:
+            application.open_browser(task_id)
 
 
 @cli.command('toggle', aliases=['check', 'click', 'done'], help='shortcut for marking / unmarking task as done')

@@ -17,9 +17,6 @@ def check_access_token(func):
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-        """Provide decorated function with `access_token` provided as a keword
-        argument.
-        """
         # check if `access_token` is set to a value in kwargs
         if 'access_token' in kwargs and kwargs['access_token'] is not None:
             return func(*args, **kwargs)
