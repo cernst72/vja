@@ -1,24 +1,26 @@
 import dataclasses
 import typing
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import dateutil.parser
 
 
-def custom_output(cls):  # Decorator for class.
-    def __str__(self):
-        """Returns a string containing only the non-default attribute values."""
-        s = '\n'.join(f'{attribute.name}: {getattr(self, attribute.name)}'
-                      for attribute in dataclasses.fields(self)
-                      if attribute.name != 'json' and getattr(self, attribute.name))
-        return f'{s}'
+def custom_output(cls):
+    def str_function(self):
+        """Returns a string containing only the non-null attribute values, excluding json attribute ."""
+        return '\n'.join(f'{attribute.name}: {_str_value(getattr(self, attribute.name))}'
+                         for attribute in dataclasses.fields(self)
+                         if attribute.name != 'json' and getattr(self, attribute.name))
 
-    setattr(cls, '__str__', __str__)
+    def _str_value(attribute_value):
+        return [_str_value(x) for x in attribute_value] if isinstance(attribute_value, list) else str(attribute_value)
+
+    setattr(cls, '__str__', str_function)
     return cls
 
 
-def data_dict(cls):  # Decorator for class.
+def data_dict(cls):
     def data_dict_function(self):
         return {k: _transform_value(v) for k, v in self.__dict__.items() if k != 'json'}
 
@@ -158,15 +160,20 @@ class Task:
     priority: int
     is_favorite: bool
     due_date: datetime
-    created: datetime
-    updated: datetime
     reminder_dates: typing.List[datetime]
+    repeat_mode: int
+    repeat_after: timedelta
+    start_date: datetime
+    end_date: datetime
+    percent_done: float
     done: bool
+    labels: typing.List[Label]
     tasklist: List
     position: int
     bucket_id: int
     kanban_position: int
-    labels: typing.List[Label]
+    created: datetime
+    updated: datetime
 
     @classmethod
     def from_json(cls, json, list_object, labels):
@@ -174,15 +181,20 @@ class Task:
                    json['priority'],
                    json['is_favorite'],
                    _date_from_json(json['due_date']),
-                   _date_from_json(json['created']),
-                   _date_from_json(json['updated']),
                    [_date_from_json(reminder) for reminder in json['reminder_dates'] or []],
+                   json['repeat_mode'],
+                   timedelta(seconds=json['repeat_after']),
+                   _date_from_json(json['start_date']),
+                   _date_from_json(json['end_date']),
+                   json['percent_done'],
                    json['done'],
+                   labels,
                    list_object,
                    json['position'],
                    json['bucket_id'],
                    json['kanban_position'],
-                   labels
+                   _date_from_json(json['created']),
+                   _date_from_json(json['updated']),
                    )
 
     def output(self):
