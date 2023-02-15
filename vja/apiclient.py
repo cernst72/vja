@@ -88,7 +88,7 @@ class ApiClient:
             json.dump(data, token_file)
 
     @handle_http_error
-    def validate_access_token(self, force=False, username=None, password=None):
+    def validate_access_token(self, force=False, username=None, password=None, totp_passcode=None):
         if self._load_access_token() and not force:
             return
         login_url = self._create_url('/login')
@@ -96,7 +96,8 @@ class ApiClient:
         username = username or click.prompt('Username')
         password = password or click.prompt('Password', hide_input=True)
         payload = {'username': username,
-                   'password': password}
+                   'password': password,
+                   'totp_passcode': totp_passcode}
         response = requests.post(login_url, json=payload, timeout=30)
         response.raise_for_status()
         self._token['access'] = self._to_json(response)['token']
@@ -156,8 +157,8 @@ class ApiClient:
             logger.error('Expected valid json, but found %s', response.text)
             raise VjaError('Cannot parse json in response.') from e
 
-    def authenticate(self, username=None, password=None):
-        self.validate_access_token(True, username, password)
+    def authenticate(self, username=None, password=None, totp_passcode=None):
+        self.validate_access_token(True, username, password, totp_passcode)
 
     def get_user(self):
         return self._get_json(self._create_url('/user'))
