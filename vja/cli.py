@@ -64,7 +64,7 @@ def cli(ctx=None, verbose=None, username=None, password=None, totp_passcode=None
     application = Application()
     ctx.obj = application
     if username:
-        application.command_service.authenticate(username, password, totp_passcode)
+        application.command_service.login(username, password, totp_passcode)
 
 
 # user
