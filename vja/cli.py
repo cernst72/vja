@@ -170,15 +170,20 @@ def label_add(application, title):
 @click.argument('title', required=True, nargs=-1)
 @click.option('list_id', '-l', '--folder', '--project', '--list',
               help='list (id or name), default: first favorite list')
-@click.option('note', '-n', '--note', '--description', help='set description (note)')
-@click.option('prio', '-p', '--prio', '--priority', help='set priority')
+@click.option('note', '-n', '--note', '--description',
+              help='set description (note)')
+@click.option('prio', '-p', '--prio', '--priority',
+              help='set priority')
 @click.option('due', '-d', '--due', '--duedate', '--due-date', '--due_date',
               help='set due date (supports parsedatetime expressions)')
-@click.option('favorite', '-f', '--star', '--favorite', type=click.BOOL, help='mark as favorite')
-@click.option('tag', '-t', '--tag', '--label', help='set label (label must exist on server)')
+@click.option('favorite', '-f', '--star', '--favorite', type=click.BOOL,
+              help='mark as favorite')
+@click.option('tag', '-t', '--tag', '--label',
+              help='set label (label must exist on server)')
 @click.option('reminder', '-r', '--alarm', '--remind', '--reminder', is_flag=False, flag_value='due',
               help='set reminder (supports parsedatetime expressions). Leave empty to set to due date.')
-@click.option('force_create', '--force-create', '--force', is_flag=True, help='force creation of non existing label')
+@click.option('force_create', '--force-create', '--force', is_flag=True,
+              help='force creation of non existing label')
 @with_application
 @click.pass_context
 def task_add(ctx, application, title, **args):
@@ -190,21 +195,34 @@ def task_add(ctx, application, title, **args):
 @cli.command('edit', aliases=['modify', 'update'],
              help='modify task/tasks (opens task in browser if no options are given)')
 @click.argument('task_ids', required=True, type=click.INT, nargs=-1)
-@click.option('title', '-i', '--title', help='set title')
-@click.option('note', '-n', '--note', '--description', help='set description (note)')
+@click.option('title', '-i', '--title',
+              help='set title')
+@click.option('note', '-n', '--note', '--description',
+              help='set description (note)')
 @click.option('note_append', '-a', '--note-append', '--append-note', '--description-append', '--append-description',
               help='append description to existing note separated by new line')
-@click.option('prio', '-p', '--prio', '--priority', type=click.INT, help='set priority')
-@click.option('position', '--position', type=click.INT, help='set list position')
-@click.option('bucket_id', '--bucket-id', '--bucket_id', type=click.INT, help='set bucket id')
-@click.option('kanban_position', '--kanban-position', '--kanban_position', type=click.INT, help='set kanban position')
-@click.option('due', '-d', '--due', '--duedate', '--due-date', help='set due date (supports parsedatetime expressions)')
-@click.option('favorite', '-f', '--favorite', '--star', type=click.BOOL, help='mark as favorite')
-@click.option('completed', '-c', '--completed', '--done', type=click.BOOL, help='mark as completed')
-@click.option('tag', '-t', '--tag', '--label', help='set label (label must exist on server)')
+@click.option('prio', '-p', '--prio', '--priority', type=click.INT,
+              help='set priority')
+@click.option('list_id', '-l', '--folder-id', '--project-id', '--list-id', '--list_id', type=click.INT,
+              help='move to list id')
+@click.option('position', '--position', type=click.INT,
+              help='set list position')
+@click.option('bucket_id', '--bucket-id', '--bucket_id', type=click.INT,
+              help='set bucket id')
+@click.option('kanban_position', '--kanban-position', '--kanban_position', type=click.INT,
+              help='set kanban position')
+@click.option('due', '-d', '--due', '--duedate', '--due-date',
+              help='set due date (supports parsedatetime expressions)')
+@click.option('favorite', '-f', '--favorite', '--star', type=click.BOOL,
+              help='mark as favorite')
+@click.option('completed', '-c', '--completed', '--done', type=click.BOOL,
+              help='mark as completed')
+@click.option('tag', '-t', '--tag', '--label',
+              help='set label (label must exist on server unless called with --force-create)')
 @click.option('reminder', '-r', '--alarm', '--remind', '--reminder', is_flag=False, flag_value='due',
               help='set reminder (supports parsedatetime expressions). Leave empty to set to due date.')
-@click.option('force_create', '--force-create', '--force', is_flag=True, help='force creation of non existing label')
+@click.option('force_create', '--force-create', '--force', is_flag=True,
+              help='force creation of non existing label')
 @with_application
 @click.pass_context
 def task_edit(ctx, application, task_ids, **args):
@@ -230,14 +248,22 @@ def task_toggle(ctx, application, task_id):
 
 @cli.command('ls', help='list tasks ... (task-id; priority; is_favorite; title; due_date; '
                         'has reminder; namespace; list; labels; urgency)')
-@click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
-@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
-@click.option('include_completed', '--include-completed', default=False, is_flag=True, help='include completed tasks')
-@click.option('namespace_filter', '-n', '--namespace', help='filter by namespace (name or id)')
-@click.option('list_filter', '-l', '--list', help='filter by list (name or id)')
-@click.option('label_filter', '-t', '--label', '--tag', help='filter by label (name or id)')
-@click.option('favorite_filter', '-f', '--favorite', '--star', type=click.BOOL, help='filter by favorite flag')
-@click.option('title_filter', '-i', '--title', help='filter title (regex)')
+@click.option('is_json', '--json', default=False, is_flag=True,
+              help='print as Vikunja json')
+@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True,
+              help='print as vja application json')
+@click.option('include_completed', '--include-completed', default=False, is_flag=True,
+              help='include completed tasks')
+@click.option('namespace_filter', '-n', '--namespace',
+              help='filter by namespace (name or id)')
+@click.option('list_filter', '-l', '--list',
+              help='filter by list (name or id)')
+@click.option('label_filter', '-t', '--label', '--tag',
+              help='filter by label (name or id)')
+@click.option('favorite_filter', '-f', '--favorite', '--star', type=click.BOOL,
+              help='filter by favorite flag')
+@click.option('title_filter', '-i', '--title',
+              help='filter title (regex)')
 @click.option('urgency_filter', '-u', '--urgency', is_flag=False, flag_value=3, type=click.INT,
               help='filter by urgency at least')
 @with_application

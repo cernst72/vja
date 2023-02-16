@@ -138,6 +138,16 @@ class TestEditGeneral:
         assert note_1 == 'line1'
         assert note_2 == 'line1\nline2'
 
+    def test_edit_list(self, runner):
+        execute(runner, 'list add another list')
+        execute(runner, 'edit 1 --list-id=1')
+        list_1 = json_for_task_id(runner, 1)['tasklist']['id']
+        execute(runner, 'edit 1 -l 2')
+        list_2 = json_for_task_id(runner, 1)['tasklist']['id']
+
+        assert list_1 == 1
+        assert list_2 == 2
+
     @staticmethod
     def _has_label_with_title(labels, title):
         label_titles = [x['title'] for x in labels]

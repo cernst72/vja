@@ -58,6 +58,7 @@ class CommandService:
                     'favorite': {'field': 'is_favorite', 'mapping': bool},
                     'completed': {'field': 'done', 'mapping': bool},
                     'position': {'field': 'position', 'mapping': int},
+                    'list_id': {'field': 'list_id', 'mapping': int},
                     'bucket_id': {'field': 'bucket_id', 'mapping': int},
                     'kanban_position': {'field': 'kanban_position', 'mapping': int},
                     'reminder': {'field': 'reminder_dates', 'mapping': (lambda x: [_parse_date_arg(x)])}
@@ -80,7 +81,6 @@ class CommandService:
                 list_id = self._list_service.find_list_by_title(list_arg).id
         else:
             list_id = self._list_service.get_default_list().id
-
         tag_name = args.pop('tag') if args.get('tag') else None
         is_force = args.pop('force_create') if args.get('force_create') is not None else False
         if args.get('reminder') == 'due':
