@@ -52,18 +52,23 @@ class Login:
     def validate_access_token(self, force=False, username=None, password=None, totp_passcode=None):
         if self._load_access_token() and not force:
             return
-        login_url = self._create_url('/login')
-        click.echo(f'Login to {login_url}')
         username = username or click.prompt('Username')
         password = password or click.prompt('Password', hide_input=True)
-        payload = {'username': username,
-                   'password': password,
-                   'totp_passcode': totp_passcode}
-        response = requests.post(login_url, json=payload, timeout=30)
+        response = self.post_login(username, password, totp_passcode)
+        if response.status_code == 412 and self._to_json(response)['message'] == 'Invalid totp passcode.':
+            totp_passcode = totp_passcode or click.prompt('One-time password')
+            response = self.post_login(username, password, totp_passcode)
         response.raise_for_status()
         self._token['access'] = self._to_json(response)['token']
         self._store_access_token()
         logger.info('Login successful.')
+
+    def post_login(self, username, password, totp_passcode):
+        login_url = self._create_url('/login')
+        payload = {'username': username,
+                   'password': password,
+                   'totp_passcode': totp_passcode}
+        return requests.post(login_url, json=payload, timeout=30)
 
     def get_auth_header(self):
         return {'Authorization': f'Bearer {self._access_token}'}
