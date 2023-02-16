@@ -35,7 +35,7 @@ class Login:
 
     def _store_access_token(self):
         data = {'token': self._access_token}
-        with open(self._token_file, 'w', encoding="utf-8") as token_file:
+        with open(self._token_file, 'w', encoding='utf-8') as token_file:
             json.dump(data, token_file)
 
     def _create_url(self, path):

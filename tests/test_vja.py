@@ -7,6 +7,7 @@ import pytest
 from click.testing import CliRunner
 
 from vja.cli import cli
+from vja.config import VjaConfiguration
 
 ADD_SUCCESS_PATTERN = re.compile(r'.*Created task (\d+) in list .*')
 TODAY = datetime.datetime.now()
@@ -234,9 +235,21 @@ class TestLoginLogout:
             assert '412 Client Error' in exception.value
         execute(runner, '-u test -p test user show')
 
+    def test_prompt_when_invalid_token(self, runner, caplog):
+        self._invalidate_token()
+        execute(runner, 'user show', user_input='test\ntest\n')
+        assert 'trying to retrieve new access token' in caplog.text
+        assert 'Login successful' in caplog.text
+
     def test_http_error(self, runner, caplog):
         execute(runner, 'show 9999', return_code=1)
         assert 'HTTP-Error 404' in caplog.text
+
+    @staticmethod
+    def _invalidate_token():
+        config = VjaConfiguration()
+        with open(config.get_token_file(), 'w', encoding='utf-8') as token_file:
+            json.dump({'token': 'slightly outdated...'}, token_file)
 
 
 def json_for_created_task(runner, message):
