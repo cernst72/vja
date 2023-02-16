@@ -15,8 +15,8 @@ TODAY_ISO = TODAY.isoformat()
 TOMORROW_ISO = TOMORROW.isoformat()
 
 
-def execute(runner, command, return_code=0):
-    res = runner.invoke(cli, command.split())
+def execute(runner, command, return_code=0, user_input=None, catch_exceptions=True):
+    res = runner.invoke(cli, command.split(), input=user_input, catch_exceptions=catch_exceptions)
     assert res.exit_code == return_code, res
     return res
 
@@ -45,39 +45,37 @@ class TestBasicOptions:
     def test_verbose_logging(self, runner, caplog):
         caplog.set_level(logging.DEBUG)
         execute(runner, '-v ls')
-        print(caplog.text)
         assert 'Read config from' in caplog.text
         assert 'Connecting to api_url' in caplog.text
 
 
 class TestAddTask:
     def test_list_id(self, runner):
-        res = execute(runner, 'add "title of new task" --force --list=1')
+        res = execute(runner, 'add title of new task --force --list=1')
         after = json_for_created_task(runner, res.output)
         assert after['tasklist']['id'] == 1
 
     def test_list_title(self, runner):
-        res = execute(runner, 'add "title of new task" --force --list=test-list')
+        res = execute(runner, 'add title of new task --force --list=test-list')
         after = json_for_created_task(runner, res.output)
         assert after['tasklist']['title'] == 'test-list'
 
     def test_duplicate_task_title_rejected(self, runner):
-        res = execute(runner, 'add "title of new task"', 1)
-        assert res.exit_code > 0, res
+        execute(runner, 'add title of new task', 1)
 
     def test_positions_not_null(self, runner):
-        res = execute(runner, 'add "any other new task" --force')
+        res = execute(runner, 'add any other new task --force')
         after = json_for_created_task(runner, res.output)
         assert after['kanban_position'] > 0
         assert after['position'] > 0
 
     def test_default_reminder_uses_due(self, runner):
-        res = execute(runner, 'add "title of new task" --force --list=test-list --due=today --reminder')
+        res = execute(runner, 'add title of new task --force --list=test-list --due=today --reminder')
         after = json_for_created_task(runner, res.output)
         assert after['due_date'] == after['reminder_dates'][0]
 
     def test_default_reminder_with_missing_due_uses_tomorrow(self, runner):
-        res = execute(runner, 'add "title of new task" --force --list=test-list --reminder')
+        res = execute(runner, 'add title of new task --force --list=test-list --reminder')
         after = json_for_created_task(runner, res.output)
         assert after['due_date'] is None
         assert TOMORROW_ISO[0:10] in after['reminder_dates'][0]
@@ -206,6 +204,39 @@ class TestMultipleTasks:
     def test_show_three_tasks(self, runner):
         res = execute(runner, 'show 1 2 3')
         assert res.output.count('\n') >= 30
+
+
+class TestLoginLogout:
+    def test_logout_login_given_password(self, runner, caplog):
+        execute(runner, 'logout')
+        assert 'Logged out' in caplog.text
+        execute(runner, '-u test -p test user show')
+
+    def test_logout_login_wrong_given_password(self, runner, caplog):
+        execute(runner, 'logout')
+        assert 'Logged out' in caplog.text
+        with pytest.raises(Exception) as exception:
+            execute(runner, '-u testxx -p testxx user show', return_code=1)
+            assert '412 Client Error' in exception.value
+        execute(runner, '-u test -p test user show')
+
+    def test_logout_login_password_from_stdin(self, runner, caplog):
+        execute(runner, 'logout')
+        assert 'Logged out' in caplog.text
+        execute(runner, 'user show', user_input='test\ntest\n')
+        assert 'Login successful' in caplog.text
+
+    def test_logout_login_wrong_password_from_stdin(self, runner, caplog):
+        execute(runner, 'logout')
+        assert 'Logged out' in caplog.text
+        with pytest.raises(Exception) as exception:
+            execute(runner, 'user show', user_input='testy\ntesty\n')
+            assert '412 Client Error' in exception.value
+        execute(runner, '-u test -p test user show')
+
+    def test_http_error(self, runner, caplog):
+        execute(runner, 'show 9999', return_code=1)
+        assert 'HTTP-Error 404' in caplog.text
 
 
 def json_for_created_task(runner, message):
