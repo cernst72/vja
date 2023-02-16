@@ -29,7 +29,7 @@ def handle_http_error(func):
                 logger.info('HTTP-Error %s, url=%s; trying to retrieve new access token...',
                             error.response.status_code, error.response.url)
                 self.authenticate(force_login=True)
-                return func(self, *args, **kwargs)  # try again with new token. Re-raise if failed.
+                return func(self, *args, **kwargs)
             logger.warning('HTTP-Error %s, url=%s, body=%s',
                            error.response.status_code, error.response.url, error.response.text)
             sys.exit(1)
@@ -97,8 +97,13 @@ class ApiClient:
             raise VjaError('Cannot parse json in response.') from e
 
     def authenticate(self, force_login=True, username=None, password=None, totp_passcode=None):
-        self._login.validate_access_token(force_login, username, password, totp_passcode)
-        return self._login.get_auth_header()
+        try:
+            self._login.validate_access_token(force_login, username, password, totp_passcode)
+            return self._login.get_auth_header()
+        except requests.HTTPError as error:
+            logger.warning('HTTP-Error %s, url=%s, body=%s',
+                           error.response.status_code, error.response.url, error.response.text)
+            sys.exit(1)
 
     def logout(self):
         self._login.logout()

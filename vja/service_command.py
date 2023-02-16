@@ -31,7 +31,7 @@ class CommandService:
         self._api_client = api_client
 
     def login(self, username, password, totp_passcode):
-        self._api_client.authenticate(False, username, password, totp_passcode)
+        self._api_client.authenticate(True, username, password, totp_passcode)
 
     def logout(self):
         self._api_client.logout()
