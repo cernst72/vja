@@ -87,7 +87,7 @@ def namespace_group():
     pass
 
 
-@namespace_group.command('ls', help='print namespaces')
+@namespace_group.command('ls', help='print namespaces ... (id; title; description)')
 @click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
 @with_application
@@ -110,7 +110,7 @@ def list_add(application, title, namespace_id=None):
     click.echo(f'Created list {tasklist.id}')
 
 
-@list_group.command('ls', help='print lists')
+@list_group.command('ls', help='print lists ... (id; title; description; namespace; namespace_id)')
 @click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
 @with_application
@@ -133,7 +133,7 @@ def bucket_group():
     pass
 
 
-@bucket_group.command('ls', help='print kanban buckets of given list')
+@bucket_group.command('ls', help='print kanban buckets of given list ... (id; title; is_done; limit; count tasks)')
 @click.option('list_id', '-l', '--list', '--list-id', '--list_id', required=True, type=click.INT,
               help='show buckets of list with id')
 @click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
@@ -149,7 +149,7 @@ def label_group():
     pass
 
 
-@label_group.command('ls', help='print labels')
+@label_group.command('ls', help='print labels ... (id; title)')
 @click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
 @with_application
@@ -228,7 +228,8 @@ def task_toggle(ctx, application, task_id):
     ctx.invoke(task_show, tasks=[task_id])
 
 
-@cli.command('ls', help='list tasks')
+@cli.command('ls', help='list tasks ... (task-id; priority; is_favorite; title; due_date; '
+                        'has reminder; namespace; list; labels; urgency)')
 @click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
 @click.option('include_completed', '--include-completed', default=False, is_flag=True, help='include completed tasks')
