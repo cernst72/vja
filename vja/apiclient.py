@@ -9,6 +9,34 @@ from vja.authenticate import Login
 logger = logging.getLogger(__name__)
 
 
+def inject_access_token(func):
+    def wrapper(self, *args, **kwargs):
+        try:
+            headers = self.authenticate(force_login=False)
+            return func(self, headers=headers, *args, **kwargs)
+        except KeyError as e:
+            raise VjaError(f'need access token to call function {func.__name__}; call authenticate()') from e
+
+    return wrapper
+
+
+def handle_http_error(func):
+    def wrapper(self, *args, **kwargs):
+        try:
+            return func(self, *args, **kwargs)
+        except requests.HTTPError as error:
+            if error.response.status_code == 401:
+                logger.info('HTTP-Error %s, url=%s; trying to retrieve new access token...',
+                            error.response.status_code, error.response.url)
+                self.authenticate(force_login=True)
+                return func(self, *args, **kwargs)  # try again with new token. Re-raise if failed.
+            logger.warning('HTTP-Error %s, url=%s, body=%s',
+                           error.response.status_code, error.response.url, error.response.text)
+            sys.exit(1)
+
+    return wrapper
+
+
 class ApiClient:
     def __init__(self, api_url, token_file):
         logger.debug('Connecting to api_url %s', api_url)
@@ -16,38 +44,11 @@ class ApiClient:
         self._cache = {'lists': None, 'labels': None, 'namespaces': None, 'tasks': None}
         self._login = Login(api_url, token_file)
 
-    def _inject_access_token(func):
-        def wrapper(self, *args, **kwargs):
-            try:
-                self.authenticate(force_login=False)
-                headers = self._login.get_auth_header()
-                return func(self, headers=headers, *args, **kwargs)
-            except KeyError as e:
-                raise VjaError(f'need access token to call function {func.__name__}; call authenticate()') from e
-
-        return wrapper
-
-    def _handle_http_error(func):
-        def wrapper(self, *args, **kwargs):
-            try:
-                return func(self, *args, **kwargs)
-            except requests.HTTPError as error:
-                if error.response.status_code == 401:
-                    logger.info('HTTP-Error %s, url=%s; trying to retrieve new access token...',
-                                error.response.status_code, error.response.url)
-                    self.authenticate(force_login=True)
-                    return func(self, *args, **kwargs)  # try again with new token. Re-raise if failed.
-                logger.warning('HTTP-Error %s, url=%s, body=%s',
-                               error.response.status_code, error.response.url, error.response.text)
-                sys.exit(1)
-
-        return wrapper
-
     def _create_url(self, path):
         return self._api_url + path
 
-    @_handle_http_error
-    @_inject_access_token
+    @handle_http_error
+    @inject_access_token
     def _get_json(self, url, params=None, headers=None):
         response = requests.get(url, headers=headers, params=params, timeout=30)
         response.raise_for_status()
@@ -63,24 +64,24 @@ class ApiClient:
                 json_result = json_result + self._to_json(response)
         return json_result
 
-    @_handle_http_error
-    @_inject_access_token
+    @handle_http_error
+    @inject_access_token
     def _put_json(self, url, params=None, payload=None, headers=None):
         response = requests.put(url, headers=headers, params=params, json=payload, timeout=30)
         logger.debug("PUT response: %s - %s", response, response.text)
         response.raise_for_status()
         return self._to_json(response)
 
-    @_handle_http_error
-    @_inject_access_token
+    @handle_http_error
+    @inject_access_token
     def _post_json(self, url, params=None, payload=None, headers=None):
         response = requests.post(url, headers=headers, params=params, json=payload, timeout=30)
         logger.debug("POST response: %s - %s", response, response.text)
         response.raise_for_status()
         return self._to_json(response)
 
-    @_handle_http_error
-    @_inject_access_token
+    @handle_http_error
+    @inject_access_token
     def _delete_json(self, url, params=None, payload=None, headers=None):
         response = requests.delete(url, headers=headers, params=params, json=payload, timeout=30)
         logger.debug("DELETE response: %s - %s", response, response.text)
@@ -97,6 +98,7 @@ class ApiClient:
 
     def authenticate(self, force_login=True, username=None, password=None, totp_passcode=None):
         self._login.validate_access_token(force_login, username, password, totp_passcode)
+        return self._login.get_auth_header()
 
     def logout(self):
         self._login.logout()
