@@ -54,7 +54,7 @@ integration-test:
     - which vja
 
     - cd tests
-    - docker-compose up -d
+    - docker-compose up -d api
     - export VJA_CONFIGDIR=.vjatest_dind
     - ./run.sh test
     - pytest

@@ -52,7 +52,9 @@ with_application = click.make_pass_decorator(Application, ensure=True)
 @click.option('-v', '--verbose', 'verbose', default=False, is_flag=True, help='verbose output')
 @click.option('-u', '--username', 'username', help='username for initial login (optional)')
 @click.option('-p', '--password', 'password', help='password for initial login (optional)')
-def cli(ctx=None, verbose=None, username=None, password=None):
+@click.option('-t', '--totp-passcode', '--totp_passcode', 'totp_passcode',
+              help='time-based one-time passcode from your authenticator app if TOTP is enabled (optional)')
+def cli(ctx=None, verbose=None, username=None, password=None, totp_passcode=None):
     if verbose:
         logging.basicConfig(level=logging.DEBUG)
         logger.debug('Verbose mode on')
@@ -61,8 +63,8 @@ def cli(ctx=None, verbose=None, username=None, password=None):
         logging.getLogger().setLevel(logging.INFO)
     application = Application()
     ctx.obj = application
-    if username or password:
-        application.command_service.authenticate(username, password)
+    if username:
+        application.command_service.login(username, password, totp_passcode)
 
 
 # user
@@ -131,9 +133,9 @@ def bucket_group():
     pass
 
 
-@bucket_group.command('ls', help='print kanban buckets')
+@bucket_group.command('ls', help='print kanban buckets of given list')
 @click.option('list_id', '-l', '--list', '--list-id', '--list_id', required=True, type=click.INT,
-              help='show buckets in list with id')
+              help='show buckets of list with id')
 @click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
 @with_application

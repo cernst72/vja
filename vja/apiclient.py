@@ -1,30 +1,19 @@
-import json
 import logging
-import os
 import sys
-from functools import wraps
 
-import click
 import requests
 
 from vja import VjaError
+from vja.authenticate import Login
 
 logger = logging.getLogger(__name__)
 
 
-def check_access_token(func):
-    """ A decorator that makes the decorated function check for access token."""
-
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        # check if `access_token` is set to a value in kwargs
-        if 'access_token' in kwargs and kwargs['access_token'] is not None:
-            return func(*args, **kwargs)
-        # try to get the access token
+def inject_access_token(func):
+    def wrapper(self, *args, **kwargs):
         try:
-            self = args[0]
-            self.validate_access_token()
-            return func(*args, **kwargs)
+            headers = self.authenticate(force_login=False)
+            return func(self, headers=headers, *args, **kwargs)
         except KeyError as e:
             raise VjaError(f'need access token to call function {func.__name__}; call authenticate()') from e
 
@@ -32,21 +21,15 @@ def check_access_token(func):
 
 
 def handle_http_error(func):
-    """A decorator to handle some HTTP errors raised in decorated function f."""
-
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        """Handle the HTTPError exceptions raised in f."""
+    def wrapper(self, *args, **kwargs):
         try:
-            return func(*args, **kwargs)
+            return func(self, *args, **kwargs)
         except requests.HTTPError as error:
-            if error.response.status_code in (401, 429):
+            if error.response.status_code == 401:
                 logger.info('HTTP-Error %s, url=%s; trying to retrieve new access token...',
                             error.response.status_code, error.response.url)
-                self = args[0]
-                self.validate_access_token(force=True)
-                return func(*args, **kwargs)  # try again with new token. Re-raise if failed.
-
+                self.authenticate(force_login=True)
+                return func(self, *args, **kwargs)
             logger.warning('HTTP-Error %s, url=%s, body=%s',
                            error.response.status_code, error.response.url, error.response.text)
             sys.exit(1)
@@ -58,55 +41,15 @@ class ApiClient:
     def __init__(self, api_url, token_file):
         logger.debug('Connecting to api_url %s', api_url)
         self._api_url = api_url
-        self._token_file = token_file
-        self._token = {'access': None}
         self._cache = {'lists': None, 'labels': None, 'namespaces': None, 'tasks': None}
-
-    @property
-    def _access_token(self):
-        if not self._token['access']:
-            raise KeyError('access token not set! call authenticate()')
-        return self._token['access']
+        self._login = Login(api_url, token_file)
 
     def _create_url(self, path):
         return self._api_url + path
 
-    def _load_access_token(self):
-        try:
-            with open(self._token_file, encoding='utf-8') as token_file:
-                data = json.load(token_file)
-        except IOError:
-            return False
-        self._token['access'] = data['token']
-        if not self._token['access']:
-            return False
-        return True
-
-    def _store_access_token(self):
-        data = {'token': self._access_token}
-        with open(self._token_file, 'w', encoding="utf-8") as token_file:
-            json.dump(data, token_file)
-
     @handle_http_error
-    def validate_access_token(self, force=False, username=None, password=None):
-        if self._load_access_token() and not force:
-            return
-        login_url = self._create_url('/login')
-        click.echo(f'Login to {login_url}')
-        username = username or click.prompt('Username')
-        password = password or click.prompt('Password', hide_input=True)
-        payload = {'username': username,
-                   'password': password}
-        response = requests.post(login_url, json=payload, timeout=30)
-        response.raise_for_status()
-        self._token['access'] = self._to_json(response)['token']
-        self._store_access_token()
-        logger.info('Login successful.')
-
-    @handle_http_error
-    @check_access_token
-    def _get_json(self, url, params=None):
-        headers = {'Authorization': f"Bearer {self._access_token}"}
+    @inject_access_token
+    def _get_json(self, url, params=None, headers=None):
         response = requests.get(url, headers=headers, params=params, timeout=30)
         response.raise_for_status()
         json_result = self._to_json(response)
@@ -122,27 +65,24 @@ class ApiClient:
         return json_result
 
     @handle_http_error
-    @check_access_token
-    def _put_json(self, url, params=None, payload=None):
-        headers = {'Authorization': f'Bearer {self._access_token}'}
+    @inject_access_token
+    def _put_json(self, url, params=None, payload=None, headers=None):
         response = requests.put(url, headers=headers, params=params, json=payload, timeout=30)
         logger.debug("PUT response: %s - %s", response, response.text)
         response.raise_for_status()
         return self._to_json(response)
 
     @handle_http_error
-    @check_access_token
-    def _post_json(self, url, params=None, payload=None):
-        headers = {'Authorization': f'Bearer {self._access_token}'}
+    @inject_access_token
+    def _post_json(self, url, params=None, payload=None, headers=None):
         response = requests.post(url, headers=headers, params=params, json=payload, timeout=30)
         logger.debug("POST response: %s - %s", response, response.text)
         response.raise_for_status()
         return self._to_json(response)
 
     @handle_http_error
-    @check_access_token
-    def _delete_json(self, url, params=None, payload=None):
-        headers = {'Authorization': f'Bearer {self._access_token}'}
+    @inject_access_token
+    def _delete_json(self, url, params=None, payload=None, headers=None):
         response = requests.delete(url, headers=headers, params=params, json=payload, timeout=30)
         logger.debug("DELETE response: %s - %s", response, response.text)
         response.raise_for_status()
@@ -156,8 +96,17 @@ class ApiClient:
             logger.error('Expected valid json, but found %s', response.text)
             raise VjaError('Cannot parse json in response.') from e
 
-    def authenticate(self, username=None, password=None):
-        self.validate_access_token(True, username, password)
+    def authenticate(self, force_login=True, username=None, password=None, totp_passcode=None):
+        try:
+            self._login.validate_access_token(force_login, username, password, totp_passcode)
+            return self._login.get_auth_header()
+        except requests.HTTPError as error:
+            logger.warning('HTTP-Error %s, url=%s, body=%s',
+                           error.response.status_code, error.response.url, error.response.text)
+            sys.exit(1)
+
+    def logout(self):
+        self._login.logout()
 
     def get_user(self):
         return self._get_json(self._create_url('/user'))
@@ -216,7 +165,3 @@ class ApiClient:
     def remove_label_from_task(self, task_id, label_id):
         task_label_url = self._create_url(f'/tasks/{str(task_id)}/labels/{str(label_id)}')
         self._delete_json(task_label_url)
-
-    def logout(self):
-        if os.path.isfile(self._token_file):
-            os.remove(self._token_file)
