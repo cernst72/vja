@@ -2,6 +2,22 @@ import os
 import subprocess
 import sys
 
+import pytest
+from click.testing import CliRunner
+
+from vja.cli import cli
+
+
+@pytest.fixture(name='runner', scope='session')
+def setup_runner():
+    return CliRunner()
+
+
+def invoke(runner, command, return_code=0, user_input=None, catch_exceptions=True):
+    res = runner.invoke(cli, command.split(), input=user_input, catch_exceptions=catch_exceptions)
+    assert res.exit_code == return_code, res
+    return res
+
 
 def _login_as_test_user():
     result = subprocess.run('vja logout'.split(), check=False)
