@@ -5,7 +5,7 @@ from datetime import datetime
 
 from vja.apiclient import ApiClient
 from vja.list_service import ListService
-from vja.model import Namespace, Label, User, Urgency, Bucket
+from vja.model import Namespace, Label, User, Bucket
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +54,7 @@ class QueryService:
                              self._api_client.get_tasks(exclude_completed=not include_completed)]
         task_object_array = self._filter(task_object_array, namespace_filter, list_filter, label_filter,
                                          favorite_filter, title_filter, urgency_filter)
-        task_object_array.sort(key=lambda x: (x.done, -Urgency.compute(x),
+        task_object_array.sort(key=lambda x: (x.done, -x.urgency,
                                               (x.due_date or datetime.max),
                                               -x.priority,
                                               x.tasklist.title.upper(),
@@ -67,16 +67,6 @@ class QueryService:
         self._dump(task_object, is_json, is_jsonvja)
 
     @staticmethod
-    def _dump_array(object_array, is_json, is_jsonvja):
-        if is_json:
-            print(json.dumps([x.json for x in object_array]))
-        elif is_jsonvja:
-            print(json.dumps([x.data_dict() for x in object_array], default=str))
-        else:
-            for x in object_array:
-                print(x.output())
-
-    @staticmethod
     def _dump(element, is_json, is_jsonvja):
         if is_json:
             print(json.dumps(element.json))
@@ -85,6 +75,16 @@ class QueryService:
         else:
             print(element.output())
             print(element)
+
+    @staticmethod
+    def _dump_array(object_array, is_json, is_jsonvja):
+        if is_json:
+            print(json.dumps([x.json for x in object_array]))
+        elif is_jsonvja:
+            print(json.dumps([x.data_dict() for x in object_array], default=str))
+        else:
+            for x in object_array:
+                print(x.output())
 
     @staticmethod
     def _filter(task_object_array, namespace_filter, list_filter, label_filter, favorite_filter, title_filter,
@@ -110,5 +110,5 @@ class QueryService:
         if title_filter is not None:
             filters.append(lambda x: bool(re.search(re.compile(title_filter), x.title)))
         if urgency_filter is not None:
-            filters.append(lambda x: Urgency.compute(x) >= urgency_filter)
+            filters.append(lambda x: x.urgency >= urgency_filter)
         return list(filter(lambda x: all(f(x) for f in filters), task_object_array))

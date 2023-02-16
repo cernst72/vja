@@ -148,7 +148,7 @@ class Label:
         return f'{self.id:5} {self.title:15.15}'
 
 
-@dataclass(frozen=True)
+@dataclass
 @custom_output
 @data_dict
 # pylint: disable=too-many-instance-attributes
@@ -174,6 +174,10 @@ class Task:
     kanban_position: int
     created: datetime
     updated: datetime
+    urgency: float = field(init=False)
+
+    def __post_init__(self):
+        self.urgency = Urgency.compute(self)
 
     @classmethod
     def from_json(cls, json, list_object, labels):
