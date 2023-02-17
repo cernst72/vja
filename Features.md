@@ -34,7 +34,7 @@ Some filters exist like id or title of list, namespace and label
 vja ls --label="@work"
 vja ls --title="ask"
 vja ls -u   # show Tasks with minimum urgency
-vja ls -u 6 # show quite urgen tasks
+vja ls -u 6 # show quite urgent tasks
 
 ```
 

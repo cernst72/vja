@@ -54,14 +54,13 @@ integration-test:
     - pip show vja
     - which vja
 
-    - cd tests
-    - docker-compose up -d api
-    - export VJA_CONFIGDIR=.vjatest_dind
-    - ./run.sh test
+    - docker-compose up -f tests/docker-compose.yml -d api
+    - export VJA_CONFIGDIR=tests/.vjatest_dind
+    - tests/run.sh test
     - coverage run --omit='*test*' -m pytest
     - coverage report --omit='*test*'
     - coverage xml --omit='*test*'
-    - docker-compose down
+    - docker-compose -f tests/docker-compose.yml down
     - ls -l
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   cache: { }
