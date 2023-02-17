@@ -47,6 +47,7 @@ integration-test:
     - apk add --no-cache bash curl python3-dev py3-pip docker-compose
     - pip3 install wheel
     - pip3 install pytest
+    - pip3 install coverage
     - python3 --version
 
     - pip install dist/*.whl
@@ -57,9 +58,17 @@ integration-test:
     - docker-compose up -d api
     - export VJA_CONFIGDIR=.vjatest_dind
     - ./run.sh test
-    - pytest
+    - coverage run -m pytest
+    - coverage report
+    - coverage xml
     - docker-compose down
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   cache: { }
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
 
 deploy:
   stage: deploy
