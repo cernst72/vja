@@ -51,9 +51,6 @@ class User:
     def from_json(cls, json):
         return cls(json, json['id'], json['name'], json['username'], json['settings']['default_list_id'])
 
-    def output(self):
-        return f'{self.id:5} {self.username:15.15} {self.name:15.15} {self.default_list_id:5}'
-
 
 @dataclass(frozen=True)
 @data_dict
@@ -71,9 +68,6 @@ class Namespace:
     @classmethod
     def from_json_array(cls, json_array):
         return [Namespace.from_json(x) for x in json_array or []]
-
-    def output(self):
-        return f'{self.id:5} {self.title:15.15} {self.description:20.20}'
 
 
 @dataclass(frozen=True)
@@ -95,11 +89,6 @@ class List:
     @classmethod
     def from_json_array(cls, json_array, namespace):
         return [List.from_json(x, namespace) for x in json_array or []]
-
-    def output(self):
-        namespace_title = self.namespace.title if self.namespace else ''
-        namespace_id = self.namespace.id if self.namespace else 0
-        return f'{self.id:5} {self.title:15.15} {self.description:20.20} {namespace_title:15.15}  {namespace_id:5}'
 
 
 @dataclass(frozen=True)
@@ -125,9 +114,6 @@ class Bucket:
     def from_json_array(cls, json_array):
         return [Bucket.from_json(x) for x in json_array or []]
 
-    def output(self):
-        return f'{self.id:5} {self.title:15.15} {self.is_done_bucket:2} {self.limit:3} {self.count_tasks:5}'
-
 
 @dataclass(frozen=True)
 @data_dict
@@ -143,9 +129,6 @@ class Label:
     @classmethod
     def from_json_array(cls, json_array):
         return [Label.from_json(x) for x in json_array or []]
-
-    def output(self):
-        return f'{self.id:5} {self.title:15.15}'
 
 
 @dataclass
@@ -179,6 +162,10 @@ class Task:
     def __post_init__(self):
         self.urgency = Urgency.compute(self)
 
+    @property
+    def label_titles(self):
+        return ",".join(map(lambda label: label.title, self.labels or []))
+
     @classmethod
     def from_json(cls, json, list_object, labels):
         return cls(json, json['id'], json['title'], json['description'],
@@ -200,19 +187,6 @@ class Task:
                    _date_from_json(json['created']),
                    _date_from_json(json['updated']),
                    )
-
-    def output(self):
-        output = [f'{self.id:5}',
-                  f'({self.priority})',
-                  f'{"*"}' if self.is_favorite else ' ',
-                  f'{self.title:50.50}',
-                  f'{format_date(self.due_date) :15.15}',
-                  f'{"R" if self.reminder_dates else "" :1}',
-                  f'{self.tasklist.namespace.title if self.tasklist and self.tasklist.namespace else "":15.15}',
-                  f'{self.tasklist.title if self.tasklist else "":15.15}',
-                  f'{",".join(map(lambda label: label.title, self.labels or [])) :20.20}',
-                  f'{Urgency.compute(self):3}']
-        return ' '.join(output)
 
     def has_label(self, label):
         return any(x.id == label.id for x in self.labels)
@@ -266,7 +240,3 @@ def _date_from_json(json_date):
     if json_date and json_date > '0001-01-01T00:00:00Z':
         return dateutil.parser.isoparse(json_date).replace(tzinfo=None)
     return None
-
-
-def format_date(timestamp):
-    return timestamp.strftime('%a %d.%m %H:%M') if timestamp else ''

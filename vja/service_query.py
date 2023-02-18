@@ -1,4 +1,3 @@
-import json
 import logging
 import re
 from datetime import datetime
@@ -16,40 +15,31 @@ class QueryService:
         self._api_client = api_client
 
     # user
-    def print_user(self, is_json, is_jsonvja):
-        user = User.from_json(self._api_client.get_user())
-        self._dump(user, is_json, is_jsonvja)
+    def find_current_user(self):
+        return User.from_json(self._api_client.get_user())
 
     # namespace
-    def print_namespaces(self, is_json, is_jsonvja):
-        object_array = Namespace.from_json_array(self._api_client.get_namespaces())
-        self._dump_array(object_array, is_json, is_jsonvja)
+    def find_all_namespaces(self):
+        return Namespace.from_json_array(self._api_client.get_namespaces())
 
     # list
-    def print_lists(self, is_json, is_jsonvja):
-        lists_json = self._api_client.get_lists()
-        object_array = [self._list_service.convert_list_json(list_json) for list_json in lists_json]
-        self._dump_array(object_array, is_json, is_jsonvja)
+    def find_all_lists(self):
+        return [self._list_service.convert_list_json(list_json) for list_json in (self._api_client.get_lists())]
 
-    def print_list(self, list_id, is_json, is_jsonvja):
-        list_json = self._api_client.get_list(list_id)
-        list_object = self._list_service.convert_list_json(list_json)
-        self._dump(list_object, is_json, is_jsonvja)
+    def find_list_by_id(self, list_id):
+        return self._list_service.convert_list_json(self._api_client.get_list(list_id))
 
     # bucket
-    def print_buckets(self, list_id, is_json, is_jsonvja):
-        buckets_json = self._api_client.get_buckets(list_id)
-        bucket_array = Bucket.from_json_array(buckets_json)
-        self._dump_array(bucket_array, is_json, is_jsonvja)
+    def find_all_buckets_in_list(self, list_id):
+        return Bucket.from_json_array(self._api_client.get_buckets(list_id))
 
     # label
-    def print_labels(self, is_json, is_jsonvja):
-        object_array = Label.from_json_array(self._api_client.get_labels())
-        self._dump_array(object_array, is_json, is_jsonvja)
+    def find_all_labels(self):
+        return Label.from_json_array(self._api_client.get_labels())
 
     # tasks
-    def print_tasks(self, is_json, is_jsonvja, include_completed, namespace_filter, list_filter, label_filter,
-                    favorite_filter, title_filter, urgency_filter):
+    def find_filtered_tasks(self, include_completed, namespace_filter, list_filter, label_filter,
+                            favorite_filter, title_filter, urgency_filter):
         task_object_array = [self._list_service.task_from_json(x) for x in
                              self._api_client.get_tasks(exclude_completed=not include_completed)]
         task_object_array = self._filter(task_object_array, namespace_filter, list_filter, label_filter,
@@ -59,32 +49,10 @@ class QueryService:
                                               -x.priority,
                                               x.tasklist.title.upper(),
                                               x.title.upper()))
-        self._dump_array(task_object_array, is_json, is_jsonvja)
+        return task_object_array
 
-    def print_task(self, task_id: int, is_json, is_jsonvja):
-        task_json = self._api_client.get_task(task_id)
-        task_object = self._list_service.task_from_json(task_json)
-        self._dump(task_object, is_json, is_jsonvja)
-
-    @staticmethod
-    def _dump(element, is_json, is_jsonvja):
-        if is_json:
-            print(json.dumps(element.json))
-        elif is_jsonvja:
-            print(json.dumps(element.data_dict(), default=str))
-        else:
-            print(element.output())
-            print(element)
-
-    @staticmethod
-    def _dump_array(object_array, is_json, is_jsonvja):
-        if is_json:
-            print(json.dumps([x.json for x in object_array]))
-        elif is_jsonvja:
-            print(json.dumps([x.data_dict() for x in object_array], default=str))
-        else:
-            for x in object_array:
-                print(x.output())
+    def find_task_by_id(self, task_id: int):
+        return self._list_service.task_from_json(self._api_client.get_task(task_id))
 
     @staticmethod
     def _filter(task_object_array, namespace_filter, list_filter, label_filter, favorite_filter, title_filter,

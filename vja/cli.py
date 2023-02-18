@@ -10,6 +10,7 @@ from click_aliases import ClickAliasedGroup
 from vja.apiclient import ApiClient
 from vja.config import VjaConfiguration
 from vja.list_service import ListService
+from vja.output import Output
 from vja.service_command import CommandService
 from vja.service_query import QueryService
 
@@ -23,6 +24,7 @@ class Application:
         list_service = ListService(api_client)
         self._command_service = CommandService(list_service, api_client)
         self._query_service = QueryService(list_service, api_client)
+        self._output = Output()
 
     @property
     def command_service(self):
@@ -31,6 +33,10 @@ class Application:
     @property
     def query_service(self):
         return self._query_service
+
+    @property
+    def output(self):
+        return self._output
 
     @property
     def configuration(self):
@@ -78,7 +84,8 @@ def user_group():
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
 @with_application
 def user_show(application, is_json=False, is_jsonvja=False):
-    application.query_service.print_user(is_json, is_jsonvja)
+    application.output.user(
+        application.query_service.find_current_user(), is_json, is_jsonvja)
 
 
 # namespaces
@@ -92,7 +99,8 @@ def namespace_group():
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
 @with_application
 def namespace_ls(application, is_json=False, is_jsonvja=False):
-    application.query_service.print_namespaces(is_json, is_jsonvja)
+    application.output.namespace_array(
+        application.query_service.find_all_namespaces(), is_json, is_jsonvja)
 
 
 # lists
@@ -115,7 +123,8 @@ def list_add(application, title, namespace_id=None):
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
 @with_application
 def list_ls(application, is_json, is_jsonvja):
-    application.query_service.print_lists(is_json, is_jsonvja)
+    application.output.list_array(
+        application.query_service.find_all_lists(), is_json, is_jsonvja)
 
 
 @list_group.command('show', help='show list details')
@@ -124,7 +133,8 @@ def list_ls(application, is_json, is_jsonvja):
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
 @with_application
 def list_show(application, list_id, is_json, is_jsonvja):
-    application.query_service.print_list(list_id, is_json, is_jsonvja)
+    application.output.list(
+        application.query_service.find_list_by_id(list_id), is_json, is_jsonvja)
 
 
 # buckets
@@ -140,7 +150,8 @@ def bucket_group():
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
 @with_application
 def bucket_ls(application, list_id, is_json, is_jsonvja):
-    application.query_service.print_buckets(list_id, is_json, is_jsonvja)
+    application.output.bucket_array(
+        application.query_service.find_all_buckets_in_list(list_id), is_json, is_jsonvja)
 
 
 # labels
@@ -154,7 +165,8 @@ def label_group():
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
 @with_application
 def label_ls(application, is_json, is_jsonvja):
-    application.query_service.print_labels(is_json, is_jsonvja)
+    application.output.label_array(
+        application.query_service.find_all_labels(), is_json, is_jsonvja)
 
 
 @label_group.command('add', help='add label with title')
@@ -270,8 +282,10 @@ def task_toggle(ctx, application, task_id):
 def task_ls(application,
             is_json, is_jsonvja, include_completed, namespace_filter, list_filter, label_filter, favorite_filter,
             title_filter, urgency_filter):
-    application.query_service.print_tasks(is_json, is_jsonvja, include_completed, namespace_filter, list_filter,
-                                          label_filter, favorite_filter, title_filter, urgency_filter)
+    tasks = application.query_service.find_filtered_tasks(include_completed, namespace_filter,
+                                                          list_filter, label_filter, favorite_filter, title_filter,
+                                                          urgency_filter)
+    application.output.task_array(tasks, is_json, is_jsonvja)
 
 
 @cli.command('show', help='show task details. Multiple task ids may be given')
@@ -280,8 +294,9 @@ def task_ls(application,
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
 @with_application
 def task_show(application, tasks, is_json, is_jsonvja):
-    for task in tasks:
-        application.query_service.print_task(task, is_json, is_jsonvja)
+    for task_id in tasks:
+        task = application.query_service.find_task_by_id(task_id)
+        application.output.task(task, is_json, is_jsonvja)
 
 
 @cli.command(name='open', help='open task in browser')

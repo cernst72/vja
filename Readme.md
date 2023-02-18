@@ -3,7 +3,6 @@
 [![pypi downloads](https://img.shields.io/pypi/dw/vja)](https://pypi.org/project/vja/)
 [![pipeline status](https://gitlab.com/ce72/vja/badges/main/pipeline.svg)](https://gitlab.com/ce72/vja/-/pipelines)
 [![coverage report](https://gitlab.com/ce72/vja/badges/main/coverage.svg)](https://gitlab.com/ce72/vja/commits/main)
-[![Release](https://gitlab.com/ce72/vja/-/badges/release.svg)](https://gitlab.com/ce72/vja/-/releases)
 
 This is a simple CLI for Vikunja > [The todo app to organize your life.](https://vikunja.io/)
 
