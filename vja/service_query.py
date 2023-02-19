@@ -55,4 +55,5 @@ class QueryService:
     @staticmethod
     def _filter(task_object_array, filter_args):
         filters = create_filter(filter_args)
+        logger.debug('applying filters %s', filters)
         return list(filter(lambda x: all(f(x) for f in filters), task_object_array))

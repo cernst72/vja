@@ -149,6 +149,17 @@ class TestTaskList:
         data = json.loads(res.output)
         assert len(data) == 0
 
+    def test_task_filter_priority(self, runner):
+        res = invoke(runner, ['ls', '--jsonvja', '--priority=eq 5'])
+        data = json.loads(res.output)
+        assert len(data) > 0
+        res = invoke(runner, ['ls', '--jsonvja', '--priority=gt 4'])
+        data = json.loads(res.output)
+        assert len(data) > 0
+        res = invoke(runner, ['ls', '--jsonvja', '--priority=gt 5'])
+        data = json.loads(res.output)
+        assert len(data) == 0
+
     def test_task_filter_title(self, runner):
         res = invoke(runner, ['ls', '--jsonvja', '--title=At least one'])
         data = json.loads(res.output)

@@ -302,13 +302,15 @@ def task_toggle(ctx, application, task_id):
               help='filter by list (name or id)')
 @click.option('namespace_filter', '-n', '--namespace',
               help='filter by namespace (name or id)')
+@click.option('priority_filter', '-p', '--priority',
+              help='filter by priority. The format must be <logical operator> <value>, '
+                   'where <logical operator> in eq, gt, lt, ge, le, ne.')
 @click.option('title_filter', '-i', '--title',
               help='filter title (regex)')
 @click.option('urgency_filter', '-u', '--urgency', is_flag=False, flag_value=3, type=click.INT,
               help='filter by urgency at least')
 @with_application
-def task_ls(application, is_json, is_jsonvja, custom_format, include_completed,
-            **filter_args):
+def task_ls(application, is_json, is_jsonvja, custom_format, include_completed, **filter_args):
     if custom_format:
         custom_format = application.configuration.get_custom_format_string(custom_format)
     filter_args = {k: v for k, v in filter_args.items() if v is not None}

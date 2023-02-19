@@ -1,3 +1,4 @@
+import operator
 import re
 
 
@@ -29,9 +30,28 @@ def _create_title_filter(value):
     return lambda x: bool(re.search(re.compile(value), x.title))
 
 
+def _create_priority_filter(value):
+    arguments = str(value).split(" ", 1)
+    operator_name = arguments[0]
+    operation = _operators[operator_name]
+    value = arguments[1]
+    return lambda x: operation(x.priority, int(value))
+
+
 def _create_urgency_filter(value):
     return lambda x: x.urgency >= value
 
+
+_operators = {
+    'eq': operator.eq,
+    'ne': operator.ne,
+    'lt': operator.lt,
+    'le': operator.le,
+    'gt': operator.gt,
+    'ge': operator.ge,
+    'before': operator.lt,
+    'after': operator.gt
+}
 
 _filter_mapping = {
     'favorite_filter': _create_favorite_filter,
@@ -39,6 +59,7 @@ _filter_mapping = {
     'list_filter': _create_list_filter,
     'namespace_filter': _create_namespace_filter,
     'title_filter': _create_title_filter,
+    'priority_filter': _create_priority_filter,
     'urgency_filter': _create_urgency_filter,
 }
 
