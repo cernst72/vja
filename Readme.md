@@ -1,4 +1,5 @@
 # CLI client for Vikunja
+
 [![pypi package version](https://badge.fury.io/py/vja.svg)](https://pypi.org/project/vja/)
 [![pypi downloads](https://img.shields.io/pypi/dw/vja)](https://pypi.org/project/vja/)
 [![pipeline status](https://gitlab.com/ce72/vja/badges/main/pipeline.svg)](https://gitlab.com/ce72/vja/-/pipelines)
@@ -52,6 +53,8 @@ vja ls
 
 ### Prepare python virtual environment
 
+Python > 3.8 is required. First create a local environment:
+
 ```shell
 pip install virtualenv
 virtualenv venv
@@ -62,19 +65,25 @@ source venv/bin/activate
 
 Build, install and perform some integration-test. For integration test a real Vikunja instance is launched locally via
 docker-compose.
+Local development install:
 
 ```shell
 pip install -r requirements_dev.txt
-pip uninstall -y vja;rm -rf build dist vja.egg-info; python setup.py sdist bdist_wheel; pip install dist/*.whl;
+pip install -e . 
+```
+
+Alternatively: full local install:
+
+```shell
+# pip uninstall -y vja;rm -rf build dist vja.egg-info; python setup.py sdist bdist_wheel; pip install dist/*.whl;
 ```
 
 Run integration test (requires docker and docker-compose)
 
 ```shell
-cd tests
-docker-compose up -d
+docker-compose -f tests/docker-compose.yml up -d
 ./run.sh
-VJA_CONFIGDIR=.vjatest pytest
-docker-compose down
+VJA_CONFIGDIR=tests/.vjatest pytest
+docker-compose -f tests/docker-compose.yml down
 ```
 

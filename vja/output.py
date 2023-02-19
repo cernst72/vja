@@ -5,18 +5,18 @@ import click
 
 from vja.model import User, List, Task
 
-NAMESPACE_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:15.15} {x.description:20.20}'
+NAMESPACE_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:20.20} {x.description:20.20}'
 
-LIST_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:15.15} {x.description:20.20}  ' \
-                           '{x.namespace.title:15.15} {x.namespace.id:5}'
+LIST_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:20.20} {x.description:20.20}  ' \
+                           '{x.namespace.title:20.20} {x.namespace.id:5}'
 
-BUCKET_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:15.15} {x.is_done_bucket:2} {x.limit:3} {x.count_tasks:5}'
+BUCKET_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:20.20} {x.is_done_bucket:2} {x.limit:3} {x.count_tasks:5}'
 
-LABEL_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:15.15}'
+LABEL_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:20.20}'
 
 TASK_LIST_FORMAT_DEFAULT = '{x.id:5} ({x.priority}) {"*" if x.is_favorite else " "} {x.title:50.50} ' \
                            '{x.due_date.strftime("%a %d.%m %H:%M") if x.due_date else "":15.15} ' \
-                           '{"R" if x.reminder_dates else " "} {x.tasklist.title:15.15} ' \
+                           '{"R" if x.reminder_dates else " "} {x.tasklist.title:20.20} ' \
                            '{x.label_titles:20.20} {x.urgency:3}'
 
 logger = logging.getLogger(__name__)

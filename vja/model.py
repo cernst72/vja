@@ -49,7 +49,7 @@ class User:
 
     @classmethod
     def from_json(cls, json):
-        return cls(json, json['id'], json['name'], json['username'], json['settings']['default_list_id'])
+        return cls(json, json['id'], json['username'], json['name'], json['settings']['default_list_id'])
 
 
 @dataclass(frozen=True)

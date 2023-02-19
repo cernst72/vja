@@ -14,7 +14,9 @@ def setup_runner():
 
 
 def invoke(runner, command, return_code=0, user_input=None, catch_exceptions=True):
-    res = runner.invoke(cli, command.split(), input=user_input, catch_exceptions=catch_exceptions)
+    if isinstance(command, str):
+        command = command.split()
+    res = runner.invoke(cli, command, input=user_input, catch_exceptions=catch_exceptions)
     assert res.exit_code == return_code, res
     return res
 
@@ -33,8 +35,14 @@ def _login_as_test_user():
     return result.returncode
 
 
-def _create_default_list():
+def _create_list_and_task():
     result = subprocess.run('vja list add test-list'.split(), check=False)
+    if result.returncode:
+        print(result.stdout)
+        print(result.stderr)
+        return result.returncode
+    result = subprocess.run('vja add At least one task --force-create '
+                            '--priority=5 --due-date=today --tag=my_tag --favorite=True'.split(), check=False)
     if result.returncode:
         print(result.stdout)
         print(result.stderr)
@@ -50,6 +58,6 @@ def pytest_configure():
         print('!!! Precondition not met. Cannot connect to Vikunja with user test/test')
         sys.exit(1)
 
-    if _create_default_list() > 0:
+    if _create_list_and_task() > 0:
         print('!!! Unable to create default list')
         sys.exit(1)

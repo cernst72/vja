@@ -58,23 +58,23 @@ class QueryService:
     def _filter(task_object_array, namespace_filter, list_filter, label_filter, favorite_filter, title_filter,
                 urgency_filter: int):
         filters = []
-        if namespace_filter:
-            if str(namespace_filter).isdigit():
-                filters.append(lambda x: x.tasklist.namespace.id == int(namespace_filter))
-            else:
-                filters.append(lambda x: x.tasklist.namespace.title == namespace_filter)
-        if list_filter:
-            if str(list_filter).isdigit():
-                filters.append(lambda x: x.tasklist.id == int(list_filter))
-            else:
-                filters.append(lambda x: x.tasklist.title == list_filter)
+        if favorite_filter is not None:
+            filters.append(lambda x: x.is_favorite == bool(favorite_filter))
         if label_filter:
             if str(label_filter).isdigit():
                 filters.append(lambda x: any(label.id == int(label_filter) for label in x.labels))
             else:
                 filters.append(lambda x: any(label.title == label_filter for label in x.labels))
-        if favorite_filter is not None:
-            filters.append(lambda x: x.is_favorite == bool(favorite_filter))
+        if list_filter:
+            if str(list_filter).isdigit():
+                filters.append(lambda x: x.tasklist.id == int(list_filter))
+            else:
+                filters.append(lambda x: x.tasklist.title == list_filter)
+        if namespace_filter:
+            if str(namespace_filter).isdigit():
+                filters.append(lambda x: x.tasklist.namespace.id == int(namespace_filter))
+            else:
+                filters.append(lambda x: x.tasklist.namespace.title == namespace_filter)
         if title_filter is not None:
             filters.append(lambda x: bool(re.search(re.compile(title_filter), x.title)))
         if urgency_filter is not None:
