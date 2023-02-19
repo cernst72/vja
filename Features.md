@@ -1,12 +1,16 @@
 # Features
 
 ## Create Tasks
-`vja add <Tasktitle>` allows to quickly add a new task to the default list. Several options exist to provide more context:
+
+`vja add <Tasktitle>` allows to quickly add a new task to the default list. Several options exist to provide more
+context:
 
 ```shell
 vja add Make things work --note="find out how" -priority=3 --favorite=True --due="tomorrow at 11:00" --reminder --tag=@work
 ```
+
 or more concise
+
 ```shell
 vja add One more task -l 1 -p 4 -t "Label1" -n "my note" -d "23:00" -f True
 ```
@@ -39,6 +43,9 @@ vja ls -u 6 # show quite urgent tasks
 ```
 
 See `vja ls --help` for more.
+
+Columns may be selected and formatted in .vjarc and activated via `--custom-format`.
+See [Output format](#output-format)
 
 ### Show task by id
 
@@ -135,6 +142,16 @@ vja label add Next action
 ```shell
 vja label ls
 ```
+
+## Output format
+
+You may specify custom list output formats (selecting and formatting columns).
+use `--custom-format=<template-name>` to refer a format string in your `vja.rc`.
+
+See [example](https://gitlab.com/ce72/vja/-/blob/main/.vjacli/vja.rc). This can be activated e.g. with `vja ls --custom-format=ids_only`.
+
+Be careful: The format string may contain arbitrary code, which gets executed at runtime (python eval()).
+Do not use `--custom-format` if you feel uncomfortable with that.
 
 ## Terminate session
 

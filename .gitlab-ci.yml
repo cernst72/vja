@@ -61,7 +61,6 @@ integration-test:
     - coverage report --omit='*test*'
     - coverage xml --omit='*test*'
     - docker-compose -f tests/docker-compose.yml down
-    - ls -l
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   cache: { }
   artifacts:

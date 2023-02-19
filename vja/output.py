@@ -33,24 +33,24 @@ class Output:
     def task(self, task: Task, is_json, is_jsonvja):
         self._dump(task, is_json, is_jsonvja)
 
-    def namespace_array(self, object_array, is_json, is_jsonvja):
-        line_format = NAMESPACE_LIST_FORMAT_DEFAULT
+    def namespace_array(self, object_array, is_json, is_jsonvja, custom_format=None):
+        line_format = custom_format or NAMESPACE_LIST_FORMAT_DEFAULT
         self._dump_array(object_array, line_format, is_json, is_jsonvja)
 
-    def list_array(self, object_array, is_json, is_jsonvja):
-        line_format = LIST_LIST_FORMAT_DEFAULT
+    def list_array(self, object_array, is_json, is_jsonvja, custom_format=None):
+        line_format = custom_format or LIST_LIST_FORMAT_DEFAULT
         self._dump_array(object_array, line_format, is_json, is_jsonvja)
 
-    def bucket_array(self, object_array, is_json, is_jsonvja):
-        line_format = BUCKET_LIST_FORMAT_DEFAULT
+    def bucket_array(self, object_array, is_json, is_jsonvja, custom_format=None):
+        line_format = custom_format or BUCKET_LIST_FORMAT_DEFAULT
         self._dump_array(object_array, line_format, is_json, is_jsonvja)
 
-    def label_array(self, object_array, is_json, is_jsonvja):
-        line_format = LABEL_LIST_FORMAT_DEFAULT
+    def label_array(self, object_array, is_json, is_jsonvja, custom_format=None):
+        line_format = custom_format or LABEL_LIST_FORMAT_DEFAULT
         self._dump_array(object_array, line_format, is_json, is_jsonvja)
 
-    def task_array(self, object_array, is_json, is_jsonvja):
-        line_format = TASK_LIST_FORMAT_DEFAULT
+    def task_array(self, object_array, is_json, is_jsonvja, custom_format=None):
+        line_format = custom_format or TASK_LIST_FORMAT_DEFAULT
         self._dump_array(object_array, line_format, is_json, is_jsonvja)
 
     @staticmethod

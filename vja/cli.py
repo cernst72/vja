@@ -27,19 +27,19 @@ class Application:
         self._output = Output()
 
     @property
-    def command_service(self):
+    def command_service(self) -> CommandService:
         return self._command_service
 
     @property
-    def query_service(self):
+    def query_service(self) -> QueryService:
         return self._query_service
 
     @property
-    def output(self):
+    def output(self) -> Output:
         return self._output
 
     @property
-    def configuration(self):
+    def configuration(self) -> VjaConfiguration:
         return self._configuration
 
     def open_browser(self, task):
@@ -52,7 +52,7 @@ class Application:
 with_application = click.make_pass_decorator(Application, ensure=True)
 
 
-@click.group(cls=ClickAliasedGroup, context_settings=dict(help_option_names=['-h', '--help']))
+@click.group(cls=ClickAliasedGroup, context_settings=dict({'help_option_names': ['-h', '--help']}))
 @click.pass_context
 @click.version_option(metadata.version("vja"))
 @click.option('-v', '--verbose', 'verbose', default=False, is_flag=True, help='verbose output')
@@ -95,12 +95,18 @@ def namespace_group():
 
 
 @namespace_group.command('ls', help='print namespaces ... (id; title; description)')
-@click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
-@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
+@click.option('is_json', '--json', default=False, is_flag=True,
+              help='print as Vikunja json')
+@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True,
+              help='print as vja application json')
+@click.option('custom_format', '--custom-format',
+              help='use formatting string from .vjacli/vja.rc')
 @with_application
-def namespace_ls(application, is_json=False, is_jsonvja=False):
+def namespace_ls(application, is_json, is_jsonvja, custom_format):
+    if custom_format:
+        custom_format = application.configuration.get_custom_format_string(custom_format)
     application.output.namespace_array(
-        application.query_service.find_all_namespaces(), is_json, is_jsonvja)
+        application.query_service.find_all_namespaces(), is_json, is_jsonvja, custom_format)
 
 
 # lists
@@ -119,18 +125,26 @@ def list_add(application, title, namespace_id=None):
 
 
 @list_group.command('ls', help='print lists ... (id; title; description; namespace; namespace_id)')
-@click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
-@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
+@click.option('is_json', '--json', default=False, is_flag=True,
+              help='print as Vikunja json')
+@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True,
+              help='print as vja application json')
+@click.option('custom_format', '--custom-format',
+              help='use formatting string from .vjacli/vja.rc')
 @with_application
-def list_ls(application, is_json, is_jsonvja):
+def list_ls(application, is_json, is_jsonvja, custom_format):
+    if custom_format:
+        custom_format = application.configuration.get_custom_format_string(custom_format)
     application.output.list_array(
-        application.query_service.find_all_lists(), is_json, is_jsonvja)
+        application.query_service.find_all_lists(), is_json, is_jsonvja, custom_format)
 
 
 @list_group.command('show', help='show list details')
 @click.argument('list_id', required=True, type=click.INT)
-@click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
-@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
+@click.option('is_json', '--json', default=False, is_flag=True,
+              help='print as Vikunja json')
+@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True,
+              help='print as vja application json')
 @with_application
 def list_show(application, list_id, is_json, is_jsonvja):
     application.output.list(
@@ -146,12 +160,18 @@ def bucket_group():
 @bucket_group.command('ls', help='print kanban buckets of given list ... (id; title; is_done; limit; count tasks)')
 @click.option('list_id', '-l', '--list', '--list-id', '--list_id', required=True, type=click.INT,
               help='show buckets of list with id')
-@click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
-@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
+@click.option('is_json', '--json', default=False, is_flag=True,
+              help='print as Vikunja json')
+@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True,
+              help='print as vja application json')
+@click.option('custom_format', '--custom-format',
+              help='use formatting string from .vjacli/vja.rc')
 @with_application
-def bucket_ls(application, list_id, is_json, is_jsonvja):
+def bucket_ls(application, list_id, is_json, is_jsonvja, custom_format):
+    if custom_format:
+        custom_format = application.configuration.get_custom_format_string(custom_format)
     application.output.bucket_array(
-        application.query_service.find_all_buckets_in_list(list_id), is_json, is_jsonvja)
+        application.query_service.find_all_buckets_in_list(list_id), is_json, is_jsonvja, custom_format)
 
 
 # labels
@@ -161,12 +181,18 @@ def label_group():
 
 
 @label_group.command('ls', help='print labels ... (id; title)')
-@click.option('is_json', '--json', default=False, is_flag=True, help='print as Vikunja json')
-@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='print as vja application json')
+@click.option('is_json', '--json', default=False, is_flag=True,
+              help='print as Vikunja json')
+@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True,
+              help='print as vja application json')
+@click.option('custom_format', '--custom-format',
+              help='use formatting string from .vjacli/vja.rc')
 @with_application
-def label_ls(application, is_json, is_jsonvja):
+def label_ls(application, is_json, is_jsonvja, custom_format):
+    if custom_format:
+        custom_format = application.configuration.get_custom_format_string(custom_format)
     application.output.label_array(
-        application.query_service.find_all_labels(), is_json, is_jsonvja)
+        application.query_service.find_all_labels(), is_json, is_jsonvja, custom_format)
 
 
 @label_group.command('add', help='add label with title')
@@ -278,14 +304,18 @@ def task_toggle(ctx, application, task_id):
               help='filter title (regex)')
 @click.option('urgency_filter', '-u', '--urgency', is_flag=False, flag_value=3, type=click.INT,
               help='filter by urgency at least')
+@click.option('custom_format', '--custom-format',
+              help='use formatting string from .vjacli/vja.rc')
 @with_application
 def task_ls(application,
             is_json, is_jsonvja, include_completed, namespace_filter, list_filter, label_filter, favorite_filter,
-            title_filter, urgency_filter):
+            title_filter, urgency_filter, custom_format):
+    if custom_format:
+        custom_format = application.configuration.get_custom_format_string(custom_format)
     tasks = application.query_service.find_filtered_tasks(include_completed, namespace_filter,
                                                           list_filter, label_filter, favorite_filter, title_filter,
                                                           urgency_filter)
-    application.output.task_array(tasks, is_json, is_jsonvja)
+    application.output.task_array(tasks, is_json, is_jsonvja, custom_format)
 
 
 @cli.command('show', help='show task details. Multiple task ids may be given')

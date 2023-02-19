@@ -31,10 +31,13 @@ class VjaConfiguration:
     def get_token_file(self):
         return os.path.join(self._directory, _TOKEN_JSON)
 
+    def get_custom_format_string(self, template_key):
+        return self._parser.get('output', template_key, fallback=None)
+
     @staticmethod
     def _load(filepath):
         logger.debug('Read config from %s', os.path.abspath(filepath))
-        parser = configparser.ConfigParser()
+        parser = configparser.RawConfigParser()
         if not parser.read(filepath):
             raise VjaError(f'Could not load config file from {os.path.abspath(filepath)}')
         return parser

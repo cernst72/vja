@@ -31,6 +31,11 @@ class TestNamespace:
         res = invoke(runner, 'namespace ls --jsonvja')
         assert json.loads(res.output)[1]['title'] == 'test'
 
+    def test_namespace_ls_custom_format(self, runner):
+        res = invoke(runner, 'namespace ls --custom-format=ids_only')
+        for line in res.output:
+            assert re.match(r'^-?\d*$', line)
+
 
 class TestList:
     def test_list_ls(self, runner):
@@ -41,11 +46,32 @@ class TestList:
         res = invoke(runner, 'list show 1')
         assert len(res.output) > 0
 
+    def test_list_ls_custom_format(self, runner):
+        res = invoke(runner, 'list ls --custom-format=ids_only')
+        for line in res.output:
+            assert re.match(r'^\d*$', line)
+
 
 class TestBucket:
     def test_bucket_ls(self, runner):
         res = invoke(runner, 'bucket ls --list-id=1')
         assert re.search(r'Backlog', res.output)
+
+    def test_bucket_ls_custom_format(self, runner):
+        res = invoke(runner, 'bucket ls --list-id=1 --custom-format=ids_only')
+        for line in res.output:
+            assert re.match(r'^\d*$', line)
+
+
+class TestLabel:
+    def test_label_ls(self, runner):
+        res = invoke(runner, 'label ls')
+        assert re.search(r'my_tag', res.output)
+
+    def test_label_ls_custom_format(self, runner):
+        res = invoke(runner, 'label ls --custom-format=ids_only')
+        for line in res.output:
+            assert re.match(r'^\d*$', line)
 
 
 class TestSingleTask:
@@ -134,3 +160,8 @@ class TestTaskList:
         res = invoke(runner, ['ls', '--jsonvja', '--urgency=10000'])
         data = json.loads(res.output)
         assert len(data) == 0
+
+    def test_task_custom_format(self, runner):
+        res = invoke(runner, 'ls --custom-format=ids_only')
+        for line in res.output:
+            assert re.match(r'^\d*$', line)

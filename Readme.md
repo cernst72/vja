@@ -53,7 +53,7 @@ vja ls
 
 ### Prepare python virtual environment
 
-Python > 3.8 is required. First create a local environment:
+Python >= 3.8 is recommended. First create a local environment:
 
 ```shell
 pip install virtualenv
