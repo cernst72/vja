@@ -60,9 +60,11 @@ class QueryService:
         filters = []
         if favorite_filter is not None:
             filters.append(lambda x: x.is_favorite == bool(favorite_filter))
-        if label_filter:
+        if label_filter or label_filter == '':
             if str(label_filter).isdigit():
                 filters.append(lambda x: any(label.id == int(label_filter) for label in x.labels))
+            elif str(label_filter).strip() == '':
+                filters.append(lambda x: not x.labels)
             else:
                 filters.append(lambda x: any(label.title == label_filter for label in x.labels))
         if list_filter:

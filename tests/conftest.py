@@ -46,6 +46,11 @@ def _create_list_and_task():
     if result.returncode:
         print(result.stdout)
         print(result.stderr)
+        return result.returncode
+    result = subprocess.run('vja add A task without a label --force-create ', check=False)
+    if result.returncode:
+        print(result.stdout)
+        print(result.stderr)
     return result.returncode
 
 

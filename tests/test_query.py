@@ -125,6 +125,11 @@ class TestTaskList:
         data = json.loads(res.output)
         assert len(data) == 0
 
+    def test_task_filter_label_empty(self, runner):
+        res = invoke(runner, ['ls', '--jsonvja', '--label= '])
+        data = json.loads(res.output)
+        assert len(data) > 0
+
     def test_task_filter_list(self, runner):
         res = invoke(runner, ['ls', '--jsonvja', '--list=test-list'])
         data = json.loads(res.output)
