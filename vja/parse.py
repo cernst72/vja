@@ -12,8 +12,10 @@ def parse_date_arg_to_datetime(text: str):
     try:
         return dateutil.parser.isoparse(text)
     except ValueError:
-        timetuple = parsedatetime.Calendar(version=parsedatetime.VERSION_CONTEXT_STYLE).parse(text)[0]
+        timetuple, pdt_context = parsedatetime.Calendar(version=parsedatetime.VERSION_CONTEXT_STYLE).parse(text)
         datetime_date = datetime.fromtimestamp(time.mktime(timetuple))
+        if not pdt_context.hasTime:
+            datetime_date = datetime_date.replace(hour=0, minute=0, second=0)
         return datetime_date
 
 

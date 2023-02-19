@@ -2,9 +2,9 @@ import logging
 from datetime import datetime
 
 from vja.apiclient import ApiClient
+from vja.filter import create_filter
 from vja.list_service import ListService
 from vja.model import Namespace, Label, User, Bucket
-from vja.filter import create_filter
 
 logger = logging.getLogger(__name__)
 
@@ -43,10 +43,10 @@ class QueryService:
                              self._api_client.get_tasks(exclude_completed=not include_completed)]
         filtered_tasks = self._filter(task_object_array, filter_args)
         filtered_tasks.sort(key=lambda x: (x.done, -x.urgency,
-                                              (x.due_date or datetime.max),
-                                              -x.priority,
-                                              x.tasklist.title.upper(),
-                                              x.title.upper()))
+                                           (x.due_date or datetime.max),
+                                           -x.priority,
+                                           x.tasklist.title.upper(),
+                                           x.title.upper()))
         return filtered_tasks
 
     def find_task_by_id(self, task_id: int):
@@ -55,5 +55,4 @@ class QueryService:
     @staticmethod
     def _filter(task_object_array, filter_args):
         filters = create_filter(filter_args)
-        logger.debug('applying filters %s', filters)
         return list(filter(lambda x: all(f(x) for f in filters), task_object_array))

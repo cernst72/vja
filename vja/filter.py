@@ -1,7 +1,10 @@
+import logging
 import operator
 import re
 
 from vja import parse
+
+logger = logging.getLogger(__name__)
 
 
 def _create_due_date_filter(value: str):
@@ -11,14 +14,17 @@ def _create_due_date_filter(value: str):
     operator_name = arguments[0]
     operation = _operators[operator_name]
     value = parse.parse_date_arg_to_datetime(arguments[1])
+    logger.debug("filter due date %s %s", operation.__name__, value)
     return lambda x: (operation(x.due_date, value) if x.due_date else False)
 
 
 def _create_favorite_filter(value):
+    logger.debug("filter favorite %s", value)
     return lambda x: x.is_favorite == bool(value)
 
 
 def _create_label_filter(value):
+    logger.debug("filter labels %s", value)
     if str(value).isdigit():
         return lambda x: any(label.id == int(value) for label in x.labels)
     if str(value).strip() == '':
@@ -27,12 +33,14 @@ def _create_label_filter(value):
 
 
 def _create_list_filter(value):
+    logger.debug("filter list %s", value)
     if str(value).isdigit():
         return lambda x: x.tasklist.id == int(value)
     return lambda x: x.tasklist.title == value
 
 
 def _create_namespace_filter(value):
+    logger.debug("filter namespace %s", value)
     if str(value).isdigit():
         return lambda x: x.tasklist.namespace.id == int(value)
     return lambda x: x.tasklist.namespace.title == value
@@ -47,10 +55,12 @@ def _create_priority_filter(value):
     operator_name = arguments[0]
     operation = _operators[operator_name]
     value = arguments[1]
+    logger.debug("filter priority %s %s", operation.__name__, value)
     return lambda x: operation(x.priority, int(value))
 
 
 def _create_urgency_filter(value):
+    logger.debug("filter urgency %s", value)
     return lambda x: x.urgency >= value
 
 
