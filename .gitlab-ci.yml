@@ -87,7 +87,7 @@ deploy:
         exit 1
       fi
     - ls -l dist/*
-    - twine upload dist/*
+    - twine upload --verbose dist/*
   only:
     - tags
 

@@ -150,6 +150,7 @@ class Task:
     end_date: datetime
     percent_done: float
     done: bool
+    done_at: datetime
     labels: typing.List[Label]
     tasklist: List
     position: int
@@ -179,6 +180,7 @@ class Task:
                    _date_from_json(json['end_date']),
                    json['percent_done'],
                    json['done'],
+                   _date_from_json(json['done_at']),
                    labels,
                    list_object,
                    json['position'],
