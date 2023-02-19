@@ -294,15 +294,19 @@ def task_toggle(ctx, application, task_id):
               help='use formatting string from .vjacli/vja.rc')
 @click.option('include_completed', '--include-completed', default=False, is_flag=True,
               help='include completed tasks')
+@click.option('due_date_filter', '-d', '--due', '--due-date', '--due_date',
+              help='filter by due date. The format must be <logical operator> <value>, '
+                   'where <logical operator> in eq, gt, lt, ge, le, ne, before, after. '
+                   '(supports parsedatetime expressions)')
 @click.option('favorite_filter', '-f', '--favorite', '--star', type=click.BOOL,
               help='filter by favorite flag')
-@click.option('label_filter', '-t', '--label', '--tag',
+@click.option('label_filter', '-t', '--tag', '--label',
               help='filter by label (name or id)')
 @click.option('list_filter', '-l', '--list',
               help='filter by list (name or id)')
 @click.option('namespace_filter', '-n', '--namespace',
               help='filter by namespace (name or id)')
-@click.option('priority_filter', '-p', '--priority',
+@click.option('priority_filter', '-p', '--prio', '--priority',
               help='filter by priority. The format must be <logical operator> <value>, '
                    'where <logical operator> in eq, gt, lt, ge, le, ne.')
 @click.option('title_filter', '-i', '--title',

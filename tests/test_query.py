@@ -110,11 +110,26 @@ class TestTaskList:
         data = json.loads(res.output)[0]
         assert data['title'] is not None
 
+    def test_task_filter_due(self, runner):
+        res = invoke(runner, ['ls', '--jsonvja', '--due-date=after yesterday'])
+        data = json.loads(res.output)
+        assert len(data) > 0
+        res = invoke(runner, ['ls', '--jsonvja', '--due-date=before tomorrow'])
+        data = json.loads(res.output)
+        assert len(data) > 0
+        res = invoke(runner, ['ls', '--jsonvja', '--due-date=after next week'])
+        data = json.loads(res.output)
+        assert len(data) == 0
+        res = invoke(runner, ['ls', '--jsonvja', '--due-date='''''''])
+        data = json.loads(res.output)
+        assert len(data) > 0
+        assert all(i['due_date'] is None for i in data)
+
     def test_task_filter_favorite(self, runner):
         res = invoke(runner, ['ls', '--jsonvja', '--favorite=True'])
         data = json.loads(res.output)
         assert len(data) > 0
-        assert data[0]['is_favorite']
+        assert all(i['is_favorite'] for i in data)
 
     def test_task_filter_label(self, runner):
         res = invoke(runner, ['ls', '--jsonvja', '--label=my_tag'])
@@ -129,13 +144,13 @@ class TestTaskList:
         res = invoke(runner, ['ls', '--jsonvja', '--label='''''''])
         data = json.loads(res.output)
         assert len(data) > 0
-        assert len(data[0]['labels']) == 0
+        assert all(len(i['labels']) == 0 for i in data)
 
     def test_task_filter_list(self, runner):
         res = invoke(runner, ['ls', '--jsonvja', '--list=test-list'])
         data = json.loads(res.output)
         assert len(data) > 0
-        assert data[0]['tasklist']['title'] == 'test-list'
+        assert all(i['tasklist']['title'] == 'test-list' for i in data)
         res = invoke(runner, ['ls', '--jsonvja', '--list=Not created'])
         data = json.loads(res.output)
         assert len(data) == 0
@@ -144,7 +159,7 @@ class TestTaskList:
         res = invoke(runner, ['ls', '--jsonvja', '--namespace=test'])
         data = json.loads(res.output)
         assert len(data) > 0
-        assert data[0]['tasklist']['namespace']['title'] == 'test'
+        assert all(i['tasklist']['namespace']['title'] == 'test' for i in data)
         res = invoke(runner, ['ls', '--jsonvja', '--namespace=Not created'])
         data = json.loads(res.output)
         assert len(data) == 0
@@ -153,9 +168,11 @@ class TestTaskList:
         res = invoke(runner, ['ls', '--jsonvja', '--priority=eq 5'])
         data = json.loads(res.output)
         assert len(data) > 0
+        assert all(i['priority'] == 5 for i in data)
         res = invoke(runner, ['ls', '--jsonvja', '--priority=gt 4'])
         data = json.loads(res.output)
         assert len(data) > 0
+        assert all(i['priority'] > 4 for i in data)
         res = invoke(runner, ['ls', '--jsonvja', '--priority=gt 5'])
         data = json.loads(res.output)
         assert len(data) == 0
@@ -164,7 +181,7 @@ class TestTaskList:
         res = invoke(runner, ['ls', '--jsonvja', '--title=At least one'])
         data = json.loads(res.output)
         assert len(data) > 0
-        assert data[0]['title'] == 'At least one task'
+        assert all('At least one task' in i['title'] for i in data)
         res = invoke(runner, ['ls', '--jsonvja', '--title=Not created'])
         data = json.loads(res.output)
         assert len(data) == 0
@@ -173,7 +190,7 @@ class TestTaskList:
         res = invoke(runner, ['ls', '--jsonvja', '--urgency=10'])
         data = json.loads(res.output)
         assert len(data) > 0
-        assert data[0]['urgency'] >= 10
+        assert all(i['urgency'] >= 10 for i in data)
         res = invoke(runner, ['ls', '--jsonvja', '--urgency=10000'])
         data = json.loads(res.output)
         assert len(data) == 0

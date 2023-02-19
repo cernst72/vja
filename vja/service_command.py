@@ -1,28 +1,13 @@
 import logging
 import time
-from datetime import datetime
-
-import dateutil.parser
-from dateutil import tz
-from parsedatetime import parsedatetime
 
 from vja import VjaError
 from vja.apiclient import ApiClient
 from vja.list_service import ListService
 from vja.model import Label
+from vja.parse import parse_date_arg
 
 logger = logging.getLogger(__name__)
-
-
-def _parse_date_arg(text: str):
-    if not text:
-        return None
-    try:
-        return dateutil.parser.isoparse(text).astimezone(tz.tzlocal()).isoformat()
-    except ValueError:
-        timetuple = parsedatetime.Calendar(version=parsedatetime.VERSION_CONTEXT_STYLE).parse(text)[0]
-        datetime_date = datetime.fromtimestamp(time.mktime(timetuple))
-        return datetime_date.astimezone(tz.tzlocal()).isoformat()
 
 
 class CommandService:
@@ -54,14 +39,14 @@ class CommandService:
     _arg_to_json = {'title': {'field': 'title', 'mapping': (lambda x: x)},
                     'note': {'field': 'description', 'mapping': (lambda x: x)},
                     'prio': {'field': 'priority', 'mapping': int},
-                    'due': {'field': 'due_date', 'mapping': _parse_date_arg},
+                    'due': {'field': 'due_date', 'mapping': parse_date_arg},
                     'favorite': {'field': 'is_favorite', 'mapping': bool},
                     'completed': {'field': 'done', 'mapping': bool},
                     'position': {'field': 'position', 'mapping': int},
                     'list_id': {'field': 'list_id', 'mapping': int},
                     'bucket_id': {'field': 'bucket_id', 'mapping': int},
                     'kanban_position': {'field': 'kanban_position', 'mapping': int},
-                    'reminder': {'field': 'reminder_dates', 'mapping': (lambda x: [_parse_date_arg(x)])}
+                    'reminder': {'field': 'reminder_dates', 'mapping': (lambda x: [parse_date_arg(x)])}
                     }
 
     def _args_to_payload(self, args: dict):

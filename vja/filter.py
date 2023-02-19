@@ -1,6 +1,18 @@
 import operator
 import re
 
+from vja import parse
+
+
+def _create_due_date_filter(value: str):
+    if value.strip() == '':
+        return lambda x: not x.due_date
+    arguments = value.split(" ", 1)
+    operator_name = arguments[0]
+    operation = _operators[operator_name]
+    value = parse.parse_date_arg_to_datetime(arguments[1])
+    return lambda x: (operation(x.due_date, value) if x.due_date else False)
+
 
 def _create_favorite_filter(value):
     return lambda x: x.is_favorite == bool(value)
@@ -54,6 +66,7 @@ _operators = {
 }
 
 _filter_mapping = {
+    'due_date_filter': _create_due_date_filter,
     'favorite_filter': _create_favorite_filter,
     'label_filter': _create_label_filter,
     'list_filter': _create_list_filter,

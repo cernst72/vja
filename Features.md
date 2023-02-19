@@ -39,6 +39,8 @@ vja ls --label="@work"
 vja ls --title="ask"
 vja ls --priority="gt 3"
 vja ls --priority="eq 5"
+vja ls --due-date="before today"
+vja ls --due-date="ge in 0 days" --due-date="before 5 days"
 vja ls -u   # show Tasks with minimum urgency
 vja ls -u 6 # show quite urgent tasks
 ```

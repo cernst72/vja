@@ -41,13 +41,13 @@ class QueryService:
     def find_filtered_tasks(self, include_completed, filter_args):
         task_object_array = [self._list_service.task_from_json(x) for x in
                              self._api_client.get_tasks(exclude_completed=not include_completed)]
-        task_object_array = self._filter(task_object_array, filter_args)
-        task_object_array.sort(key=lambda x: (x.done, -x.urgency,
+        filtered_tasks = self._filter(task_object_array, filter_args)
+        filtered_tasks.sort(key=lambda x: (x.done, -x.urgency,
                                               (x.due_date or datetime.max),
                                               -x.priority,
                                               x.tasklist.title.upper(),
                                               x.title.upper()))
-        return task_object_array
+        return filtered_tasks
 
     def find_task_by_id(self, task_id: int):
         return self._list_service.task_from_json(self._api_client.get_task(task_id))
