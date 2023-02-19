@@ -64,7 +64,7 @@ class CommandService:
                     'reminder': {'field': 'reminder_dates', 'mapping': (lambda x: [_parse_date_arg(x)])}
                     }
 
-    def _args_to_payload(self, args):
+    def _args_to_payload(self, args: dict):
         payload = {}
         for arg_name, arg_value in args.items():
             mapper = self._arg_to_json[arg_name]

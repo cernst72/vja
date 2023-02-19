@@ -1,10 +1,10 @@
 import logging
-import re
 from datetime import datetime
 
 from vja.apiclient import ApiClient
 from vja.list_service import ListService
 from vja.model import Namespace, Label, User, Bucket
+from vja.filter import create_filter
 
 logger = logging.getLogger(__name__)
 
@@ -38,12 +38,10 @@ class QueryService:
         return Label.from_json_array(self._api_client.get_labels())
 
     # tasks
-    def find_filtered_tasks(self, include_completed, namespace_filter, list_filter, label_filter,
-                            favorite_filter, title_filter, urgency_filter):
+    def find_filtered_tasks(self, include_completed, filter_args):
         task_object_array = [self._list_service.task_from_json(x) for x in
                              self._api_client.get_tasks(exclude_completed=not include_completed)]
-        task_object_array = self._filter(task_object_array, namespace_filter, list_filter, label_filter,
-                                         favorite_filter, title_filter, urgency_filter)
+        task_object_array = self._filter(task_object_array, filter_args)
         task_object_array.sort(key=lambda x: (x.done, -x.urgency,
                                               (x.due_date or datetime.max),
                                               -x.priority,
@@ -55,30 +53,6 @@ class QueryService:
         return self._list_service.task_from_json(self._api_client.get_task(task_id))
 
     @staticmethod
-    def _filter(task_object_array, namespace_filter, list_filter, label_filter, favorite_filter, title_filter,
-                urgency_filter: int):
-        filters = []
-        if favorite_filter is not None:
-            filters.append(lambda x: x.is_favorite == bool(favorite_filter))
-        if label_filter or label_filter == '':
-            if str(label_filter).isdigit():
-                filters.append(lambda x: any(label.id == int(label_filter) for label in x.labels))
-            elif str(label_filter).strip() == '':
-                filters.append(lambda x: not x.labels)
-            else:
-                filters.append(lambda x: any(label.title == label_filter for label in x.labels))
-        if list_filter:
-            if str(list_filter).isdigit():
-                filters.append(lambda x: x.tasklist.id == int(list_filter))
-            else:
-                filters.append(lambda x: x.tasklist.title == list_filter)
-        if namespace_filter:
-            if str(namespace_filter).isdigit():
-                filters.append(lambda x: x.tasklist.namespace.id == int(namespace_filter))
-            else:
-                filters.append(lambda x: x.tasklist.namespace.title == namespace_filter)
-        if title_filter is not None:
-            filters.append(lambda x: bool(re.search(re.compile(title_filter), x.title)))
-        if urgency_filter is not None:
-            filters.append(lambda x: x.urgency >= urgency_filter)
+    def _filter(task_object_array, filter_args):
+        filters = create_filter(filter_args)
         return list(filter(lambda x: all(f(x) for f in filters), task_object_array))

@@ -290,6 +290,8 @@ def task_toggle(ctx, application, task_id):
               help='print as Vikunja json')
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True,
               help='print as vja application json')
+@click.option('custom_format', '--custom-format',
+              help='use formatting string from .vjacli/vja.rc')
 @click.option('include_completed', '--include-completed', default=False, is_flag=True,
               help='include completed tasks')
 @click.option('favorite_filter', '-f', '--favorite', '--star', type=click.BOOL,
@@ -304,17 +306,14 @@ def task_toggle(ctx, application, task_id):
               help='filter title (regex)')
 @click.option('urgency_filter', '-u', '--urgency', is_flag=False, flag_value=3, type=click.INT,
               help='filter by urgency at least')
-@click.option('custom_format', '--custom-format',
-              help='use formatting string from .vjacli/vja.rc')
 @with_application
-def task_ls(application,
-            is_json, is_jsonvja, include_completed, namespace_filter, list_filter, label_filter, favorite_filter,
-            title_filter, urgency_filter, custom_format):
+def task_ls(application, is_json, is_jsonvja, custom_format, include_completed,
+            **filter_args):
     if custom_format:
         custom_format = application.configuration.get_custom_format_string(custom_format)
-    tasks = application.query_service.find_filtered_tasks(include_completed, namespace_filter,
-                                                          list_filter, label_filter, favorite_filter, title_filter,
-                                                          urgency_filter)
+    filter_args = {k: v for k, v in filter_args.items() if v is not None}
+
+    tasks = application.query_service.find_filtered_tasks(include_completed, filter_args)
     application.output.task_array(tasks, is_json, is_jsonvja, custom_format)
 
 
