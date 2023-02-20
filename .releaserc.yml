@@ -19,7 +19,7 @@ plugins:
         - { type: ci, release: patch }
         - { type: test, release: patch }
         - { type: update, release: patch }
-
+  - "semantic-release-pypi"
   # Generate CHANGELOG.md
   - - "@semantic-release/release-notes-generator"
     - preset: conventionalcommits
@@ -42,5 +42,5 @@ plugins:
   - "@semantic-release/changelog"
 
   - - "@semantic-release/git"
-    - assets: [ CHANGELOG.md ]
-      message: "release: Release ${nextRelease.version} update changelog\n\n${nextRelease.notes}"
+    - assets: [ CHANGELOG.md, setup.cfg ]
+      message: "chore(release): Release ${nextRelease.version} update changelog [skip ci]\n\n${nextRelease.notes}"
