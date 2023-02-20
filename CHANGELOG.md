@@ -1,3 +1,10 @@
+## [1.0.5](https://gitlab.com/ce72/vja/compare/1.0.4...1.0.5) (2023-02-20)
+
+
+### Automation
+
+* simplify ci pipeline ([e771908](https://gitlab.com/ce72/vja/commit/e771908dd17323657ceb11ec4f966d7673216ffd))
+
 ## [1.0.4](https://gitlab.com/ce72/vja/compare/1.0.3...1.0.4) (2023-02-20)
 
 
