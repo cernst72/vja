@@ -21,6 +21,7 @@ run-test () {
   vja ls --list=Work
   vja ls --label="Next Action"
   vja ls --title="home"
+  vja ls --bucket=2
   vja ls --sort="-due_date"
   vja ls --custom-format=ids_only
   vja edit 1 --prio=0 --note="" --due="" --favorite=False --reminder="" --title="empty title" --completed=True

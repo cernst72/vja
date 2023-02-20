@@ -7,6 +7,11 @@ from vja import parse
 logger = logging.getLogger(__name__)
 
 
+def _create_bucket_filter(value):
+    logger.debug("filter bucket_id %s", value)
+    return lambda x: x.bucket_id == int(value)
+
+
 def _create_due_date_filter(value: str):
     if value.strip() == '':
         return lambda x: not x.due_date
@@ -76,6 +81,7 @@ _operators = {
 }
 
 _filter_mapping = {
+    'bucket_filter': _create_bucket_filter,
     'due_date_filter': _create_due_date_filter,
     'favorite_filter': _create_favorite_filter,
     'label_filter': _create_label_filter,
@@ -87,7 +93,7 @@ _filter_mapping = {
 }
 
 
-def create_filter(filter_args):
+def create_filters(filter_args):
     filters = []
     for filter_name, filter_value in filter_args.items():
         filters.append(_filter_mapping[filter_name](filter_value))

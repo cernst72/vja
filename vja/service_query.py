@@ -2,7 +2,7 @@ import functools
 import logging
 
 from vja.apiclient import ApiClient
-from vja.filter import create_filter
+from vja.filter import create_filters
 from vja.list_service import ListService
 from vja.model import Namespace, Label, User, Bucket
 
@@ -60,7 +60,7 @@ class QueryService:
 
     @staticmethod
     def _filter(task_object_array, filter_args):
-        filters = create_filter(filter_args)
+        filters = create_filters(filter_args)
         return list(filter(lambda x: all(f(x) for f in filters), task_object_array))
 
     @staticmethod

@@ -296,6 +296,8 @@ def task_toggle(ctx, application, task_id):
               help='sort by arguments (task arguments separated by ,) (prefix each with - to reverse order')
 @click.option('include_completed', '--include-completed', default=False, is_flag=True,
               help='include completed tasks')
+@click.option('bucket_filter', '-b', '--bucket', '--bucket-id', '--bucket_id',
+              help='filter by kanban bucket id')
 @click.option('due_date_filter', '-d', '--due', '--due-date', '--due_date',
               help='filter by due date. The TEXT value must be like <logical operator> <value>, '
                    'where <logical operator> in eq, gt, lt, ge, le, ne, before, after. '
