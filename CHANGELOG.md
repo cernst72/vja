@@ -1,3 +1,11 @@
+## [1.0.4](https://gitlab.com/ce72/vja/compare/1.0.3...1.0.4) (2023-02-20)
+
+
+### Automation
+
+* let sematic-release manage pypi upload ([ea501a5](https://gitlab.com/ce72/vja/commit/ea501a549566f9a94c031e811c078fa752a54eb2))
+* manage version in setup.cfg file ([af2afdc](https://gitlab.com/ce72/vja/commit/af2afdc3e9e6bec8644723d6a7a7c11dbeaf9e3f))
+
 ## [1.0.3](https://gitlab.com/ce72/vja/compare/1.0.2...1.0.3) (2023-02-20)
 
 
