@@ -1,3 +1,10 @@
+## [1.0.6](https://gitlab.com/ce72/vja/compare/1.0.5...1.0.6) (2023-02-20)
+
+
+### Automation
+
+* @semantic-release/gitlab to create gitlab release ([ca1c1bc](https://gitlab.com/ce72/vja/commit/ca1c1bc1287214463f35aff0cd7c68964f9836ae))
+
 ## [1.0.5](https://gitlab.com/ce72/vja/compare/1.0.4...1.0.5) (2023-02-20)
 
 
