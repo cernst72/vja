@@ -7,7 +7,7 @@ requirements = ["click", "click-aliases", "requests", "parsedatetime", "python-d
 
 setup(
     name="vja",
-    version="0.5.0",
+    version="0.5.1",
     author="ce72",
     description="A simple CLI for Vikunja task manager",
     long_description=readme,
