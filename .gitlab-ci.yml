@@ -11,6 +11,7 @@ cache:
 stages:
   - build
   - test
+  - release
   - deploy
 
 build:
@@ -24,17 +25,6 @@ build:
   artifacts:
     paths:
       - dist/*.whl
-
-release:
-  image: node:lts-slim
-  stage: build
-  before_script:
-    - apt-get update && apt-get install -y --no-install-recommends git-core ca-certificates
-    - npm install -g semantic-release @semantic-release/gitlab @semantic-release/changelog conventional-changelog-conventionalcommits @semantic-release/commit-analyzer @semantic-release/git
-  script:
-    - semantic-release
-  only:
-    - main
 
 pylint:
   stage: test
@@ -79,6 +69,18 @@ integration-test:
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
+
+release:
+  image: node:lts-slim
+  stage: release
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends git-core ca-certificates
+    - npm install -g semantic-release @semantic-release/gitlab @semantic-release/changelog conventional-changelog-conventionalcommits @semantic-release/commit-analyzer @semantic-release/git
+  script:
+    - semantic-release
+  when: manual
+  only:
+    - main
 
 deploy:
   stage: deploy
