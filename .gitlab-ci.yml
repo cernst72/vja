@@ -27,7 +27,7 @@ build:
       - dist/*.whl
   rules:
     # Exclude semantic-release commits when on $CI_DEFAULT_BRANCH of
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^chore: Release/'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^release: Release/'
       when: never
     - when: always
 
@@ -40,7 +40,7 @@ pylint:
     - pylint -d C0103,C0114,C0115,C0116,C0301 --fail-under=9 vja/*.py
   rules:
     # Exclude semantic-release commits when on $CI_DEFAULT_BRANCH of
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^chore: Release/'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^release: Release/'
       when: never
     - when: on_success
 
@@ -81,7 +81,7 @@ integration-test:
         path: coverage.xml
   rules:
     # Exclude semantic-release commits when on $CI_DEFAULT_BRANCH of
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^chore: Release/'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^release: Release/'
       when: never
     - when: on_success
 
@@ -96,7 +96,7 @@ release:
   cache: { }
   rules:
     # Exclude semantic-release commits when on $CI_DEFAULT_BRANCH of
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^chore: Release/'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^release: Release/'
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: manual

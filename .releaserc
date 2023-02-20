@@ -6,6 +6,9 @@
             "@semantic-release/commit-analyzer", {
                 "preset": "conventionalcommits",
                 "releaseRules": [
+                    {"type": "feat", "section": "Features", "hidden": false},
+                    {"type": "new", "section": "Features", "hidden": false},
+                    {"type": "fix", "section": "Fixes", "hidden": false},
                     {"type": "docs", "scope": "README", "release": "patch"},
                     {"type": "refactor", "scope": "core-*", "release": "minor"},
                     {"type": "chore", "release": "patch"},
@@ -33,7 +36,7 @@
         [
             "@semantic-release/git",
             {
-                "message": "chore: Release ${nextRelease.version} \n\n${nextRelease.notes}"
+                "message": "release: Release ${nextRelease.version} \n\n${nextRelease.notes}"
             }
         ]
     ]
