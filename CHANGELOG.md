@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## Unreleased
+
+<small>[Compare with latest](https://gitlab.com/ce72/vja/compare/1.0.2...HEAD)</small>
+
+### Continuous Integration
+
+- regenrate changelog with pip install git-changelog ([c841455](https://gitlab.com/ce72/vja/commit/c8414559c6203f3f481986399826cd0a1d818cd7) by cernst72).
+
+<!-- insertion marker -->
 ## [1.0.2](https://gitlab.com/ce72/vja/tags/1.0.2) - 2023-02-20
 
 <small>[Compare with 1.0.1](https://gitlab.com/ce72/vja/compare/1.0.1...1.0.2)</small>
