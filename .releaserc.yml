@@ -19,8 +19,6 @@ plugins:
         - { type: ci, release: patch }
         - { type: test, release: patch }
         - { type: update, release: patch }
-  - "semantic-release-pypi"
-  # Generate CHANGELOG.md
   - - "@semantic-release/release-notes-generator"
     - preset: conventionalcommits
       presetConfig:
@@ -40,6 +38,8 @@ plugins:
           - { type: ci, section: "Automation" }
           - { type: CI, section: "Automation" }
   - "@semantic-release/changelog"
+  - "@semantic-release/gitlab"
+  - "semantic-release-pypi"
 
   - - "@semantic-release/git"
     - assets: [ CHANGELOG.md, setup.cfg ]
