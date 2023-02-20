@@ -25,6 +25,11 @@ build:
   artifacts:
     paths:
       - dist/*.whl
+  rules:
+    # Exclude semantic-release commits when on $CI_DEFAULT_BRANCH of
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^chore: Release/'
+      when: never
+    - when: always
 
 pylint:
   stage: test
@@ -33,6 +38,11 @@ pylint:
     - source venv/bin/activate
     - flake8 --max-line-length=120 vja/*.py || true
     - pylint -d C0103,C0114,C0115,C0116,C0301 --fail-under=9 vja/*.py
+  rules:
+    # Exclude semantic-release commits when on $CI_DEFAULT_BRANCH of
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^chore: Release/'
+      when: never
+    - when: on_success
 
 integration-test:
   stage: test
@@ -69,6 +79,11 @@ integration-test:
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
+  rules:
+    # Exclude semantic-release commits when on $CI_DEFAULT_BRANCH of
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^chore: Release/'
+      when: never
+    - when: on_success
 
 release:
   image: node:lts-slim
@@ -79,9 +94,12 @@ release:
   script:
     - semantic-release
   cache: { }
-  when: manual
-  only:
-    - main
+  rules:
+    # Exclude semantic-release commits when on $CI_DEFAULT_BRANCH of
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_MESSAGE =~ /^chore: Release/'
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
 
 deploy:
   stage: deploy
