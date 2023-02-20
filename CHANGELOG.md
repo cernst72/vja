@@ -1,3 +1,13 @@
+## [1.0.3](https://gitlab.com/ce72/vja/compare/1.0.2...1.0.3) (2023-02-20)
+
+
+### Automation
+
+* .releaserc in yaml format for better editing ([310621c](https://gitlab.com/ce72/vja/commit/310621c46dd88abe3decc8fe949acf249ca11e1d))
+* recreate CHANGELOG.md ([5a42e31](https://gitlab.com/ce72/vja/commit/5a42e31fbc35600a6059591601ac99a9a3535f80))
+* regenrate changelog with pip install git-changelog ([402391b](https://gitlab.com/ce72/vja/commit/402391b84c9db21a6367cad1985aeb5e2cb01b99))
+* regenrate changelog with pip install git-changelog ([c841455](https://gitlab.com/ce72/vja/commit/c8414559c6203f3f481986399826cd0a1d818cd7))
+
 ##  (2023-02-20)
 
 
@@ -183,4 +193,3 @@
 ### Improvements
 
 * data_dict per class decorator ([1a65611](https://gitlab.com/ce72/vja/commit/1a6561161ba3434df3542807f51e4d620678c648))
-
