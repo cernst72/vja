@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
 import dateutil.parser
+from dateutil import tz
 
 
 def custom_output(cls):
@@ -167,6 +168,10 @@ class Task:
     def label_titles(self):
         return ",".join(map(lambda label: label.title, self.labels or []))
 
+    @property
+    def sortable_due_date(self):
+        return int((self.due_date or datetime.max).strftime("%Y%m%d%H%M%S"))
+
     @classmethod
     def from_json(cls, json, list_object, labels):
         return cls(json, json['id'], json['title'], json['description'],
@@ -240,5 +245,5 @@ class Urgency:
 
 def _date_from_json(json_date):
     if json_date and json_date > '0001-01-01T00:00:00Z':
-        return dateutil.parser.isoparse(json_date).replace(tzinfo=None)
+        return dateutil.parser.isoparse(json_date).astimezone(tz.tzlocal()).replace(tzinfo=None)
     return None

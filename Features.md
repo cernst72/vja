@@ -32,7 +32,9 @@ vja ls
 vja ls --json
 ```
 
-Some filters exist like id or title of list, namespace and label
+### Filter
+
+The displayed tasks may be filtered by several arguments like list id or title, namespace and label
 
 ```shell
 vja ls --label="@work"
@@ -42,13 +44,29 @@ vja ls --priority="eq 5"
 vja ls --due-date="before today"
 vja ls --due-date="ge in 0 days" --due-date="before 5 days"
 vja ls -u   # show Tasks with minimum urgency
-vja ls -u 6 # show quite urgent tasks
+vja ls --urgency=8 # show quite urgent tasks
 ```
 
 See `vja ls --help` for more.
 
+### Sort
+Sorting of tasks can be achieved by setting the `--sort` option.
+```shell
+vja ls --sort='id'
+vja ls --sort='-id' # reverse
+```
+Sort criteria can be combined. The default sort order is the same as
+```shell
+vja ls --sort='done, -urgency, due_date, -priority, tasklist.title, title'
+```
+
+See `vja ls --help` for more.
+### Select
+
 Columns may be selected and formatted in .vjarc and activated via `--custom-format`.
 See [Output format](#output-format)
+
+See `vja ls --help` for more.
 
 ### Show task by id
 
@@ -57,12 +75,6 @@ vja show 1
 vja show 1 --json
 vja show 1 2 3
 
-```
-
-Display single task with full information:
-
-```shell
-vja -v show 1
 ```
 
 ## Modify task
@@ -151,7 +163,8 @@ vja label ls
 You may specify custom list output formats (selecting and formatting columns).
 use `--custom-format=<template-name>` to refer a format string in your `vja.rc`.
 
-See [example](https://gitlab.com/ce72/vja/-/blob/main/.vjacli/vja.rc). This can be activated e.g. with `vja ls --custom-format=ids_only`.
+See [example](https://gitlab.com/ce72/vja/-/blob/main/.vjacli/vja.rc). This can be activated e.g.
+with `vja ls --custom-format=ids_only`.
 
 Be careful: The format string may contain arbitrary code, which gets executed at runtime (python eval()).
 Do not use `--custom-format` if you feel uncomfortable with that.

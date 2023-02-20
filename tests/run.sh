@@ -21,6 +21,7 @@ run-test () {
   vja ls --list=Work
   vja ls --label="Next Action"
   vja ls --title="home"
+  vja ls --sort="-due_date"
   vja ls --custom-format=ids_only
   vja edit 1 --prio=0 --note="" --due="" --favorite=False --reminder="" --title="empty title" --completed=True
   vja edit 2 --prio=1 --note="modified note" --due="4.2" --reminder="tomorrow"

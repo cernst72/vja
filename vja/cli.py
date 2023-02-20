@@ -249,7 +249,7 @@ def task_add(ctx, application, title, **args):
               help='set bucket id')
 @click.option('kanban_position', '--kanban-position', '--kanban_position', type=click.INT,
               help='set kanban position')
-@click.option('due', '-d', '--due', '--duedate', '--due-date',
+@click.option('due', '-d', '--due', '--duedate', '--due-date', '--due_date',
               help='set due date (supports parsedatetime expressions)')
 @click.option('favorite', '-f', '--favorite', '--star', type=click.BOOL,
               help='mark as favorite')
@@ -259,7 +259,7 @@ def task_add(ctx, application, title, **args):
               help='set label (label must exist on server unless called with --force-create)')
 @click.option('reminder', '-r', '--alarm', '--remind', '--reminder', is_flag=False, flag_value='due',
               help='set reminder (supports parsedatetime expressions). Leave empty to set to due date.')
-@click.option('force_create', '--force-create', '--force', is_flag=True,
+@click.option('force_create', '--force-create', '--force', is_flag=True, default=None,
               help='force creation of non existing label')
 @with_application
 @click.pass_context
@@ -292,10 +292,12 @@ def task_toggle(ctx, application, task_id):
               help='print as vja application json')
 @click.option('custom_format', '--custom-format',
               help='use formatting string from .vjacli/vja.rc')
+@click.option('sort_string', '--sort', '--sort-by', '--sort-string',
+              help='sort by arguments (task arguments separated by ,) (prefix each with - to reverse order')
 @click.option('include_completed', '--include-completed', default=False, is_flag=True,
               help='include completed tasks')
 @click.option('due_date_filter', '-d', '--due', '--due-date', '--due_date',
-              help='filter by due date. The format must be <logical operator> <value>, '
+              help='filter by due date. The TEXT value must be like <logical operator> <value>, '
                    'where <logical operator> in eq, gt, lt, ge, le, ne, before, after. '
                    '(supports parsedatetime expressions)')
 @click.option('favorite_filter', '-f', '--favorite', '--star', type=click.BOOL,
@@ -307,19 +309,19 @@ def task_toggle(ctx, application, task_id):
 @click.option('namespace_filter', '-n', '--namespace',
               help='filter by namespace (name or id)')
 @click.option('priority_filter', '-p', '--prio', '--priority',
-              help='filter by priority. The format must be <logical operator> <value>, '
+              help='filter by priority. The TEXT value must be like <logical operator> <value>, '
                    'where <logical operator> in eq, gt, lt, ge, le, ne.')
 @click.option('title_filter', '-i', '--title',
               help='filter title (regex)')
 @click.option('urgency_filter', '-u', '--urgency', is_flag=False, flag_value=3, type=click.INT,
               help='filter by urgency at least')
 @with_application
-def task_ls(application, is_json, is_jsonvja, custom_format, include_completed, **filter_args):
+def task_ls(application, is_json, is_jsonvja, custom_format, include_completed, sort_string=None, **filter_args):
     if custom_format:
         custom_format = application.configuration.get_custom_format_string(custom_format)
     filter_args = {k: v for k, v in filter_args.items() if v is not None}
 
-    tasks = application.query_service.find_filtered_tasks(include_completed, filter_args)
+    tasks = application.query_service.find_filtered_tasks(include_completed, sort_string, filter_args)
     application.output.task_array(tasks, is_json, is_jsonvja, custom_format)
 
 

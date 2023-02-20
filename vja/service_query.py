@@ -1,5 +1,5 @@
+import functools
 import logging
-from datetime import datetime
 
 from vja.apiclient import ApiClient
 from vja.filter import create_filter
@@ -7,6 +7,17 @@ from vja.list_service import ListService
 from vja.model import Namespace, Label, User, Bucket
 
 logger = logging.getLogger(__name__)
+DEFAULT_SORT_STRING = 'done, -urgency, due_date, -priority, tasklist.title, title'
+
+
+def rgetattr(obj, path: str, *default):
+    attrs = path.split('.')
+    try:
+        return functools.reduce(getattr, attrs, obj)
+    except AttributeError:
+        if default:
+            return default[0]
+        raise
 
 
 class QueryService:
@@ -38,16 +49,11 @@ class QueryService:
         return Label.from_json_array(self._api_client.get_labels())
 
     # tasks
-    def find_filtered_tasks(self, include_completed, filter_args):
+    def find_filtered_tasks(self, include_completed, sort_string, filter_args):
         task_object_array = [self._list_service.task_from_json(x) for x in
                              self._api_client.get_tasks(exclude_completed=not include_completed)]
         filtered_tasks = self._filter(task_object_array, filter_args)
-        filtered_tasks.sort(key=lambda x: (x.done, -x.urgency,
-                                           (x.due_date or datetime.max),
-                                           -x.priority,
-                                           x.tasklist.title.upper(),
-                                           x.title.upper()))
-        return filtered_tasks
+        return self._sort(filtered_tasks, sort_string)
 
     def find_task_by_id(self, task_id: int):
         return self._list_service.task_from_json(self._api_client.get_task(task_id))
@@ -56,3 +62,12 @@ class QueryService:
     def _filter(task_object_array, filter_args):
         filters = create_filter(filter_args)
         return list(filter(lambda x: all(f(x) for f in filters), task_object_array))
+
+    @staticmethod
+    def _sort(filtered_tasks, sort_string):
+        sort_string = sort_string or DEFAULT_SORT_STRING
+        sort_values = [(x.strip().strip('-'), x.strip().startswith('-')) for x in sort_string.split(',')]
+        for sort_value in reversed(sort_values):
+            field_name = 'sortable_due_date' if sort_value[0] == 'due_date' else sort_value[0]
+            filtered_tasks.sort(key=lambda x, field=field_name: rgetattr(x, field), reverse=sort_value[1])
+        return filtered_tasks
