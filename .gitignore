@@ -91,7 +91,10 @@ ENV/
 # Rope project settings
 .ropeproject
 
-# intellij and co
+# custom
+node_modules
+package.json
+package-lock.json
 .idea/
 tasks.json
 token.json

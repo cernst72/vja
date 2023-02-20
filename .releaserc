@@ -1,9 +1,22 @@
 {
     "branches": ["main", "next"],
+    "tagFormat": "${version}",
     "plugins": [
         [
             "@semantic-release/commit-analyzer", {
                 "preset": "conventionalcommits",
+                "releaseRules": [
+                    {"type": "docs", "scope": "README", "release": "patch"},
+                    {"type": "refactor", "scope": "core-*", "release": "minor"},
+                    {"type": "chore", "release": "patch"},
+                    {"type": "ci", "release": "patch"},
+                    {"type": "CI", "release": "patch"},
+                    {"type": "doc", "release": "patch"},
+                    {"type": "new", "release": "minor"},
+                    {"type": "test", "release": "patch"},
+                    {"type": "tests", "release": "patch"},
+                    {"scope": "no-release", "release": false}
+                ]
             }
         ],
         [
