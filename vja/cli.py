@@ -299,11 +299,15 @@ def task_toggle(ctx, application, task_id):
 @click.option('bucket_filter', '-b', '--bucket', '--bucket-id', '--bucket_id',
               help='filter by kanban bucket id')
 @click.option('due_date_filter', '-d', '--due', '--due-date', '--due_date',
-              help='filter by due date. The TEXT value must be like <logical operator> <value>, '
-                   'where <logical operator> in eq, gt, lt, ge, le, ne, before, after. '
+              help='filter by due date. The TEXT value must be like <operator> <value>, '
+                   'where <operator> in eq, gt, lt, ge, le, ne, before, after. '
                    '(supports parsedatetime expressions)')
 @click.option('favorite_filter', '-f', '--favorite', '--star', type=click.BOOL,
               help='filter by favorite flag')
+@click.option('general_filter', '--filter',
+              help='general filter. Must be like <field> <operator> <value> e.g. --filter="priority ge 2" '
+                   'where <operator> in eq, gt, lt, ge, le, ne, before, after, contains. '
+                   '')
 @click.option('label_filter', '-t', '--tag', '--label',
               help='filter by label (name or id)')
 @click.option('list_filter', '-l', '--list',
@@ -311,8 +315,8 @@ def task_toggle(ctx, application, task_id):
 @click.option('namespace_filter', '-n', '--namespace',
               help='filter by namespace (name or id)')
 @click.option('priority_filter', '-p', '--prio', '--priority',
-              help='filter by priority. The TEXT value must be like <logical operator> <value>, '
-                   'where <logical operator> in eq, gt, lt, ge, le, ne.')
+              help='filter by priority. The TEXT value must be like <operator> <value>, '
+                   'where <perator> in eq, gt, lt, ge, le, ne.')
 @click.option('title_filter', '-i', '--title',
               help='filter title (regex)')
 @click.option('urgency_filter', '-u', '--urgency', is_flag=False, flag_value=3, type=click.INT,

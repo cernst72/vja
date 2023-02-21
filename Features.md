@@ -47,20 +47,35 @@ vja ls -u   # show Tasks with minimum urgency
 vja ls --urgency=8 # show quite urgent tasks
 ```
 
+In addition to these shortcut filters, more general filtering can be done by `--filter=<field_name> <operator> <value>`:
+
+```shell
+vja ls --filter="priority gt 2"
+vja ls --filter="title contains clean up" 
+vja ls --filter="labels contains @work" 
+vja ls --filter="created after 2 days ago"
+vja ls --filter="due_date before today in 7 days"
+```
+
 See `vja ls --help` for more.
 
 ### Sort
+
 Sorting of tasks can be achieved by setting the `--sort` option.
+
 ```shell
 vja ls --sort='id'
 vja ls --sort='-id' # reverse
 ```
-Sort criteria can be combined. The default sort order is the same as
+
+Sort criteria can be combined. The default sort order of vja is the same as
+
 ```shell
 vja ls --sort='done, -urgency, due_date, -priority, tasklist.title, title'
 ```
 
 See `vja ls --help` for more.
+
 ### Select
 
 Columns may be selected and formatted in .vjarc and activated via `--custom-format`.

@@ -1,8 +1,9 @@
 import logging
 import operator
 import re
+from datetime import datetime
 
-from vja import parse
+from vja.parse import rgetattr, parse_date_arg_to_datetime
 
 logger = logging.getLogger(__name__)
 
@@ -16,11 +17,30 @@ def _create_due_date_filter(value: str):
     if value.strip() == '':
         return lambda x: not x.due_date
     arguments = value.split(" ", 1)
-    operator_name = arguments[0]
-    operation = _operators[operator_name]
-    value = parse.parse_date_arg_to_datetime(arguments[1])
+    operation = _operators[arguments[0]]
+    value = parse_date_arg_to_datetime(arguments[1])
     logger.debug("filter due date %s %s", operation.__name__, value)
     return lambda x: (operation(x.due_date, value) if x.due_date else False)
+
+
+def _create_general_filter(value: str):
+    arguments = value.split(" ", 2)
+    field = arguments[0]
+    operation = _operators[arguments[1]]
+    value = arguments[2]
+    logger.debug("filter attribute %s: %s %s", field, operation.__name__, value)
+    return lambda x: _general_filter(x, field, operation, value)
+
+
+def _general_filter(task, field_name, operation, value):
+    task_value = rgetattr(task, field_name)
+    if task_value:
+        if isinstance(task_value, datetime):
+            value = parse_date_arg_to_datetime(value)
+        elif isinstance(task_value, (bool, int, float)):
+            task_value = str(task_value)
+        return operation(task_value, value)
+    return False
 
 
 def _create_favorite_filter(value):
@@ -57,8 +77,7 @@ def _create_title_filter(value):
 
 def _create_priority_filter(value):
     arguments = str(value).split(" ", 1)
-    operator_name = arguments[0]
-    operation = _operators[operator_name]
+    operation = _operators[arguments[0]]
     value = arguments[1]
     logger.debug("filter priority %s %s", operation.__name__, value)
     return lambda x: operation(x.priority, int(value))
@@ -77,13 +96,15 @@ _operators = {
     'gt': operator.gt,
     'ge': operator.ge,
     'before': operator.lt,
-    'after': operator.gt
+    'after': operator.gt,
+    'contains': operator.contains
 }
 
 _filter_mapping = {
     'bucket_filter': _create_bucket_filter,
     'due_date_filter': _create_due_date_filter,
     'favorite_filter': _create_favorite_filter,
+    'general_filter': _create_general_filter,
     'label_filter': _create_label_filter,
     'list_filter': _create_list_filter,
     'namespace_filter': _create_namespace_filter,

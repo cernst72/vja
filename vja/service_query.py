@@ -1,10 +1,10 @@
-import functools
 import logging
 
 from vja.apiclient import ApiClient
 from vja.filter import create_filters
 from vja.list_service import ListService
 from vja.model import Namespace, Label, User, Bucket
+from vja.parse import rgetattr
 
 logger = logging.getLogger(__name__)
 DEFAULT_SORT_STRING = 'done, -urgency, due_date, -priority, tasklist.title, title'
@@ -75,13 +75,3 @@ def sortable_task_value(task, field):
     if isinstance(field_value, str):
         return field_value.upper()
     return field_value
-
-
-def rgetattr(obj, path: str, *default):
-    attrs = path.split('.')
-    try:
-        return functools.reduce(getattr, attrs, obj)
-    except AttributeError:
-        if default:
-            return default[0]
-        raise

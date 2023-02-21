@@ -1,3 +1,4 @@
+import functools
 import time
 from datetime import datetime
 
@@ -22,3 +23,13 @@ def parse_date_arg_to_datetime(text: str):
 def parse_date_arg(text: str):
     result = parse_date_arg_to_datetime(text)
     return result.astimezone(tz.tzlocal()).isoformat() if result else None
+
+
+def rgetattr(obj, path: str, *default):
+    attrs = path.split('.')
+    try:
+        return functools.reduce(getattr, attrs, obj)
+    except AttributeError:
+        if default:
+            return default[0]
+        raise

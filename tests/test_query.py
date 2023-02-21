@@ -204,6 +204,26 @@ class TestTaskList:
         data = json.loads(res.output)
         assert len(data) == 0
 
+    def test_task_filter_general(self, runner):
+        res = invoke(runner, ['ls', '--jsonvja', '--filter=title contains At least one'])
+        assert len(json.loads(res.output)) > 0
+        res = invoke(runner, ['ls', '--jsonvja', '--filter=title contains TASK_NOT_CREATED'])
+        assert len(json.loads(res.output)) == 0
+        res = invoke(runner, ['ls', '--jsonvja', '--filter=priority gt 2'])
+        assert len(json.loads(res.output)) > 0
+        res = invoke(runner, ['ls', '--jsonvja', '--filter=priority gt 5'])
+        assert len(json.loads(res.output)) == 0
+        res = invoke(runner, ['ls', '--jsonvja', '--filter=due_date after 2 days ago'])
+        assert len(json.loads(res.output)) > 0
+        res = invoke(runner, ['ls', '--jsonvja', '--filter=due_date after 200 days'])
+        assert len(json.loads(res.output)) == 0
+        res = invoke(runner, ['ls', '--jsonvja', '--filter=due_date after 200 days'])
+        assert len(json.loads(res.output)) == 0
+        res = invoke(runner, ['ls', '--jsonvja', '--filter=is_favorite eq True'])
+        data = json.loads(res.output)
+        assert len(data) > 0
+        assert all(i['is_favorite'] for i in data)
+
     def test_sort_id(self, runner):
         res = invoke(runner, ['ls', '--jsonvja', '--sort=id'])
         data = json.loads(res.output)
