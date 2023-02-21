@@ -168,10 +168,6 @@ class Task:
     def label_titles(self):
         return ",".join(map(lambda label: label.title, self.labels or []))
 
-    @property
-    def sortable_due_date(self):
-        return int((self.due_date or datetime.max).strftime("%Y%m%d%H%M%S"))
-
     @classmethod
     def from_json(cls, json, list_object, labels):
         return cls(json, json['id'], json['title'], json['description'],

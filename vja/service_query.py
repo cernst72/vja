@@ -60,19 +60,21 @@ class QueryService:
                         'reverse': x.strip().startswith('-')}
                        for x in sort_string.split(',')]
         for sort_field in reversed(sort_fields):
-            filtered_tasks.sort(key=lambda x, field=sort_field['name']: sortable_task_value(x, field),
-                                reverse=sort_field['reverse'])
+            filtered_tasks.sort(
+                key=lambda x, field=sort_field['name']: (
+                    sortable_task_value(x, field) is None, sortable_task_value(x, field)),
+                reverse=sort_field['reverse'])
         return filtered_tasks
 
 
 def sortable_task_value(task, field):
     field_name = field
-    if field == 'due_date':
-        field_name = 'sortable_due_date'
     if field in ('label', 'labels', 'tag', 'tags'):
         field_name = 'label_titles'
     field_value = rgetattr(task, field_name)
-    return field_value.upper() if isinstance(field_value, str) else field_value
+    if isinstance(field_value, str):
+        return field_value.upper()
+    return field_value
 
 
 def rgetattr(obj, path: str, *default):
