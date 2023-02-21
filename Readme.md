@@ -35,8 +35,7 @@ Before using vja you must provide a configuration.
   (If you cloned from git, you may copy the folder .vjacli to your `$HOME` directory instead.)
 - Adjust to your needs.  
   `frontend_url` and `api_url` must point to your own Vikunja server.  
-  Especially the api_url must be reachable from your client. This can be verified for example
-  by  `curl https://mydomain.com/api/v1/info`
+  Especially, the api_url must be reachable from your client. This can be verified, for example by `curl https://mydomain.com/api/v1/info`
 
 ## Usage
 
@@ -63,7 +62,7 @@ source venv/bin/activate
 
 ### Local build
 
-Build, install and perform some integration-test. For integration test a real Vikunja instance is launched locally via
+Build, install and perform some integration-test. For integration test, a real Vikunja instance is launched locally via
 docker-compose.
 Local development install:
 
@@ -72,7 +71,7 @@ pip install -r requirements_dev.txt
 pip install -e . 
 ```
 
-Alternatively: full local install:
+Alternatively: full local installation:
 
 ```shell
 # pip uninstall -y vja;rm -rf build dist vja.egg-info; python setup.py sdist bdist_wheel; pip install dist/*.whl;

@@ -22,7 +22,6 @@ plugins:
   - - "@semantic-release/release-notes-generator"
     - preset: conventionalcommits
       presetConfig:
-        # spec: https://github.com/conventional-changelog/conventional-changelog-config-spec/tree/master/versions/2.1.0
         types:
           - { type: feat, section: "Features" }
           - { type: new, section: "Features" }
@@ -40,7 +39,6 @@ plugins:
   - "@semantic-release/changelog"
   - "@semantic-release/gitlab"
   - "semantic-release-pypi"
-
   - - "@semantic-release/git"
     - assets: [ CHANGELOG.md, setup.cfg ]
       message: "chore(release): Release ${nextRelease.version} update changelog [skip ci]\n\n${nextRelease.notes}"
