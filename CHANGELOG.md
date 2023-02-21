@@ -1,3 +1,20 @@
+## [1.2.0](https://gitlab.com/ce72/vja/compare/1.1.0...1.2.0) (2023-02-21)
+
+
+### Features
+
+* arbitrary filter with vja ls --filter="<field> <operator> <value>" ([e408195](https://gitlab.com/ce72/vja/commit/e4081958b9916ef2f59f1f5a8aa05626bab12bf6))
+
+
+### Automation
+
+* Always release on main branch (remove "manual") ([56e28e9](https://gitlab.com/ce72/vja/commit/56e28e9b492eaf58316fab7cda622d094fa24bbd))
+
+
+### Improvements
+
+* Simplify sort by dates with NoneType ([ee902b1](https://gitlab.com/ce72/vja/commit/ee902b1dc8bfe66a00811a75c62c543d690c3f5c))
+
 ## [1.1.0](https://gitlab.com/ce72/vja/compare/1.0.6...1.1.0) (2023-02-21)
 
 
