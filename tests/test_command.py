@@ -173,6 +173,7 @@ class TestMultipleTasks:
             after = json_for_task_id(runner, i)
             assert after['priority'] == 4
             assert after['updated'][:10] == TODAY_ISO[:10]
+        invoke(runner, 'edit 1 2 3 --priority=5')
 
     def test_show_three_tasks(self, runner):
         res = invoke(runner, 'show 1 2 3')

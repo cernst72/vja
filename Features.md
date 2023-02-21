@@ -161,7 +161,7 @@ vja label ls
 ## Output format
 
 You may specify custom list output formats (selecting and formatting columns).
-use `--custom-format=<template-name>` to refer a format string in your `vja.rc`.
+Run with `--custom-format=<template-name>` to refer a format string in your `vja.rc`.
 
 See [example](https://gitlab.com/ce72/vja/-/blob/main/.vjacli/vja.rc). This can be activated e.g.
 with `vja ls --custom-format=ids_only`.

@@ -207,7 +207,7 @@ def label_add(application, title):
 @cli.command('add', help='add new task')
 @click.argument('title', required=True, nargs=-1)
 @click.option('list_id', '-l', '--folder', '--project', '--list',
-              help='list (id or name), default: first favorite list')
+              help='list (id or name), defaults to list from user settings, than to first favorite list')
 @click.option('note', '-n', '--note', '--description',
               help='set description (note)')
 @click.option('prio', '-p', '--prio', '--priority',

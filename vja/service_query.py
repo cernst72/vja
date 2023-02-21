@@ -10,16 +10,6 @@ logger = logging.getLogger(__name__)
 DEFAULT_SORT_STRING = 'done, -urgency, due_date, -priority, tasklist.title, title'
 
 
-def rgetattr(obj, path: str, *default):
-    attrs = path.split('.')
-    try:
-        return functools.reduce(getattr, attrs, obj)
-    except AttributeError:
-        if default:
-            return default[0]
-        raise
-
-
 class QueryService:
     def __init__(self, list_service: ListService, api_client: ApiClient):
         self._list_service = list_service
@@ -66,8 +56,30 @@ class QueryService:
     @staticmethod
     def _sort(filtered_tasks, sort_string):
         sort_string = sort_string or DEFAULT_SORT_STRING
-        sort_values = [(x.strip().strip('-'), x.strip().startswith('-')) for x in sort_string.split(',')]
-        for sort_value in reversed(sort_values):
-            field_name = 'sortable_due_date' if sort_value[0] == 'due_date' else sort_value[0]
-            filtered_tasks.sort(key=lambda x, field=field_name: rgetattr(x, field), reverse=sort_value[1])
+        sort_fields = [{'name': x.strip().strip('-'),
+                        'reverse': x.strip().startswith('-')}
+                       for x in sort_string.split(',')]
+        for sort_field in reversed(sort_fields):
+            filtered_tasks.sort(key=lambda x, field=sort_field['name']: sortable_task_value(x, field),
+                                reverse=sort_field['reverse'])
         return filtered_tasks
+
+
+def sortable_task_value(task, field):
+    field_name = field
+    if field == 'due_date':
+        field_name = 'sortable_due_date'
+    if field in ('label', 'labels', 'tag', 'tags'):
+        field_name = 'label_titles'
+    field_value = rgetattr(task, field_name)
+    return field_value.upper() if isinstance(field_value, str) else field_value
+
+
+def rgetattr(obj, path: str, *default):
+    attrs = path.split('.')
+    try:
+        return functools.reduce(getattr, attrs, obj)
+    except AttributeError:
+        if default:
+            return default[0]
+        raise
