@@ -1,3 +1,22 @@
+## [1.1.0](https://gitlab.com/ce72/vja/compare/1.0.6...1.1.0) (2023-02-21)
+
+
+### Features
+
+* Ignore case when sorting text fields ([d7464b6](https://gitlab.com/ce72/vja/commit/d7464b6aa55cda1007c7a932f507f1096f9a79e1))
+* Support sorting with sort=label|labels|tag|tags ([04ce769](https://gitlab.com/ce72/vja/commit/04ce769664c45e3430ecc219a9450d8ae1ac78bd))
+
+
+### Documentation
+
+* spelling fixes ([37d46cb](https://gitlab.com/ce72/vja/commit/37d46cbebce339b205790316b9860d256900dd37))
+
+
+### Automation
+
+* Improve test robustness ([a2779f7](https://gitlab.com/ce72/vja/commit/a2779f78f6f1d7ba2e0a272d1fc798523c98e632))
+* use the (smaller) requirements_ci.txt for release stage ([33143c9](https://gitlab.com/ce72/vja/commit/33143c9c8771b6c8582a435bf649850082caa977))
+
 ## [1.0.6](https://gitlab.com/ce72/vja/compare/1.0.5...1.0.6) (2023-02-20)
 
 
