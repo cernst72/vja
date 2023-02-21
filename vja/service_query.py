@@ -66,7 +66,11 @@ class QueryService:
 
 
 def sortable_task_value(task, field):
-    field_name = 'sortable_due_date' if field == 'due_date' else field
+    field_name = field
+    if field == 'due_date':
+        field_name = 'sortable_due_date'
+    if field in ('label', 'labels', 'tag', 'tags'):
+        field_name = 'label_titles'
     field_value = rgetattr(task, field_name)
     return field_value.upper() if isinstance(field_value, str) else field_value
 
