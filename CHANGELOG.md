@@ -1,3 +1,15 @@
+## [1.2.1](https://gitlab.com/ce72/vja/compare/1.2.0...1.2.1) (2023-02-22)
+
+
+### Documentation
+
+* Extend Features.md ([a06e8c5](https://gitlab.com/ce72/vja/commit/a06e8c5cacbac7d5424421703a5e08d7245ed8a7))
+
+
+### Improvements
+
+* Use general filters where possible ([6452679](https://gitlab.com/ce72/vja/commit/6452679080577a71e403451c3d839fcf90b4cefb))
+
 ## [1.2.0](https://gitlab.com/ce72/vja/compare/1.1.0...1.2.0) (2023-02-21)
 
 
