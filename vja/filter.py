@@ -3,24 +3,19 @@ import operator
 import re
 from datetime import datetime
 
-from vja.parse import rgetattr, parse_date_arg_to_datetime
+from vja.parse import rgetattr, parse_date_arg_to_datetime, parse_bool_arg
 
 logger = logging.getLogger(__name__)
 
 
 def _create_bucket_filter(value):
-    logger.debug("filter bucket_id %s", value)
-    return lambda x: x.bucket_id == int(value)
+    return _create_general_filter(f'bucket_id eq {value}')
 
 
 def _create_due_date_filter(value: str):
     if value.strip() == '':
         return lambda x: not x.due_date
-    arguments = value.split(" ", 1)
-    operation = _operators[arguments[0]]
-    value = parse_date_arg_to_datetime(arguments[1])
-    logger.debug("filter due date %s %s", operation.__name__, value)
-    return lambda x: (operation(x.due_date, value) if x.due_date else False)
+    return _create_general_filter(f'due_date {value}')
 
 
 def _create_general_filter(value: str):
@@ -28,24 +23,27 @@ def _create_general_filter(value: str):
     field = arguments[0]
     operation = _operators[arguments[1]]
     value = arguments[2]
-    logger.debug("filter attribute %s: %s %s", field, operation.__name__, value)
+    logger.debug("filter %s: %s %s", field, operation.__name__, value)
     return lambda x: _general_filter(x, field, operation, value)
 
 
 def _general_filter(task, field_name, operation, value):
     task_value = rgetattr(task, field_name)
-    if task_value:
+    if task_value is not None:
         if isinstance(task_value, datetime):
             value = parse_date_arg_to_datetime(value)
-        elif isinstance(task_value, (bool, int, float)):
-            task_value = str(task_value)
+        elif isinstance(task_value, bool):
+            value = parse_bool_arg(value)
+        elif isinstance(task_value, int):
+            value = int(value)
+        elif isinstance(task_value, float):
+            value = float(value)
         return operation(task_value, value)
     return False
 
 
 def _create_favorite_filter(value):
-    logger.debug("filter favorite %s", value)
-    return lambda x: x.is_favorite == bool(value)
+    return _create_general_filter(f'is_favorite eq {value}')
 
 
 def _create_label_filter(value):
@@ -58,17 +56,15 @@ def _create_label_filter(value):
 
 
 def _create_list_filter(value):
-    logger.debug("filter list %s", value)
     if str(value).isdigit():
-        return lambda x: x.tasklist.id == int(value)
-    return lambda x: x.tasklist.title == value
+        return _create_general_filter(f'tasklist.id eq {value}')
+    return _create_general_filter(f'tasklist.title eq {value}')
 
 
 def _create_namespace_filter(value):
-    logger.debug("filter namespace %s", value)
     if str(value).isdigit():
-        return lambda x: x.tasklist.namespace.id == int(value)
-    return lambda x: x.tasklist.namespace.title == value
+        return _create_general_filter(f'tasklist.namespace.id eq {value}')
+    return _create_general_filter(f'tasklist.namespace.title eq {value}')
 
 
 def _create_title_filter(value):
@@ -76,16 +72,11 @@ def _create_title_filter(value):
 
 
 def _create_priority_filter(value):
-    arguments = str(value).split(" ", 1)
-    operation = _operators[arguments[0]]
-    value = arguments[1]
-    logger.debug("filter priority %s %s", operation.__name__, value)
-    return lambda x: operation(x.priority, int(value))
+    return _create_general_filter(f'priority {value}')
 
 
 def _create_urgency_filter(value):
-    logger.debug("filter urgency %s", value)
-    return lambda x: x.urgency >= value
+    return _create_general_filter(f'urgency ge {value}')
 
 
 _operators = {

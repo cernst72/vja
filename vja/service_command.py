@@ -5,7 +5,7 @@ from vja import VjaError
 from vja.apiclient import ApiClient
 from vja.list_service import ListService
 from vja.model import Label
-from vja.parse import parse_date_arg
+from vja.parse import parse_date_arg_to_iso
 
 logger = logging.getLogger(__name__)
 
@@ -39,14 +39,14 @@ class CommandService:
     _arg_to_json = {'title': {'field': 'title', 'mapping': (lambda x: x)},
                     'note': {'field': 'description', 'mapping': (lambda x: x)},
                     'prio': {'field': 'priority', 'mapping': int},
-                    'due': {'field': 'due_date', 'mapping': parse_date_arg},
+                    'due': {'field': 'due_date', 'mapping': parse_date_arg_to_iso},
                     'favorite': {'field': 'is_favorite', 'mapping': bool},
                     'completed': {'field': 'done', 'mapping': bool},
                     'position': {'field': 'position', 'mapping': int},
                     'list_id': {'field': 'list_id', 'mapping': int},
                     'bucket_id': {'field': 'bucket_id', 'mapping': int},
                     'kanban_position': {'field': 'kanban_position', 'mapping': int},
-                    'reminder': {'field': 'reminder_dates', 'mapping': (lambda x: [parse_date_arg(x)])}
+                    'reminder': {'field': 'reminder_dates', 'mapping': (lambda x: [parse_date_arg_to_iso(x)])}
                     }
 
     def _args_to_payload(self, args: dict):

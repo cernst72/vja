@@ -20,9 +20,13 @@ def parse_date_arg_to_datetime(text: str):
         return datetime_date
 
 
-def parse_date_arg(text: str):
+def parse_date_arg_to_iso(text: str):
     result = parse_date_arg_to_datetime(text)
     return result.astimezone(tz.tzlocal()).isoformat() if result else None
+
+
+def parse_bool_arg(text: str):
+    return text.lower() in ['true', '1', 't', 'y', 'yes'] if text else False
 
 
 def rgetattr(obj, path: str, *default):
