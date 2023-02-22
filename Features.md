@@ -95,9 +95,21 @@ vja show 1 2 3
 ## Modify task
 
 ```shell
-vja edit 1 --title="new title" --due="friday" --prio=1
+vja edit 1 --title="new title" --due-date="friday" --priority=1
 ```
 
+Set new due_date and set reminder=due_date
+
+```shell
+vja edit 1 --due="in 4 days at 15:00" -r
+```
+
+Toggle tag (=label). Use with --force to create new label:
+
+```shell
+vja edit 1 -t @work 
+```
+MArk as done
 ```shell
 vja edit 1 --done="true"
 vja check 1 # Shortcut to toggle the done flag of task 1
