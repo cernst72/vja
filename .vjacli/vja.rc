@@ -3,10 +3,22 @@ frontend_url=https://try.vikunja.io/
 api_url=https://try.vikunja.io/api/v1
 
 [output]
-# This allows to specify custom output formats (i.e. selecting displayed columns).
-# use with --custom-format=tasklist_short to apply your own output format.
+# This section allows to specify custom output formats (i.e. selecting displayed columns).
+# These can be activated like "vja ls --custom-format=tasklist_short".
 # Be careful: Any code which is entered here gets executed at runtime (python eval()).
 # Do not use --custom-format if you feel uncomfortable with that.
 
 tasklist_long={x.id:5} ({x.priority}) {"*" if x.is_favorite else " "} {x.title:50.50} {x.due_date.strftime("%a %d.%m %H:%M") if x.due_date else "":15.15} {"R" if x.reminder_dates else " "} {x.tasklist.title:20.20} {x.label_titles:20.20} {x.urgency:3}
+tasklist_short={x.id:5} {x.title:50.50}
 ids_only={x.id}
+
+[urgency_coefficients]
+due_date_weight=1.0
+priority_weight=2.0
+favorite_weight=1.0
+list_weight=1.0
+label_weight=1.0
+
+[urgency_keywords]
+list_keywords=next, test-list
+label_keywords=next,my_tag

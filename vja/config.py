@@ -34,6 +34,18 @@ class VjaConfiguration:
     def get_custom_format_string(self, template_key):
         return self._parser.get('output', template_key, fallback=None)
 
+    def get_urgency_list_keywords(self):
+        return self._parser.get('urgency_keywords', 'list_keywords', fallback=None)
+
+    def get_urgency_label_keywords(self):
+        return self._parser.get('urgency_keywords', 'label_keywords', fallback=None)
+
+    def get_urgency_coefficients(self):
+        try:
+            return dict(self._parser.items('urgency_coefficients'))
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            return {}
+
     @staticmethod
     def _load(filepath):
         logger.debug('Read config from %s', os.path.abspath(filepath))

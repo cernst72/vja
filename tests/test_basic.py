@@ -21,7 +21,7 @@ class TestBasicOptions:
     def test_help_ls(self, runner):
         res = invoke(runner, 'ls --help')
         assert 'Usage: cli ls [OPTIONS]' in res.output
-        assert 'list tasks' in res.output
+        assert 'List tasks' in res.output
         assert res.output.count('\n') > 12
 
     def test_verbose_logging(self, runner, caplog):

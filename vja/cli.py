@@ -12,6 +12,8 @@ from vja.list_service import ListService
 from vja.output import Output
 from vja.service_command import CommandService
 from vja.service_query import QueryService
+from vja.task_service import TaskService
+from vja.urgency import Urgency
 
 logger = logging.getLogger(__name__)
 
@@ -19,10 +21,12 @@ logger = logging.getLogger(__name__)
 class Application:
     def __init__(self):
         self._configuration = VjaConfiguration()
-        api_client = ApiClient(self.configuration.get_api_url(), self._configuration.get_token_file())
+        api_client = ApiClient(self._configuration.get_api_url(), self._configuration.get_token_file())
         list_service = ListService(api_client)
-        self._command_service = CommandService(list_service, api_client)
-        self._query_service = QueryService(list_service, api_client)
+        urgency_service = Urgency.from_config(self._configuration)
+        task_service = TaskService(list_service, urgency_service)
+        self._command_service = CommandService(list_service, task_service, api_client)
+        self._query_service = QueryService(list_service, task_service, api_client)
         self._output = Output()
 
     @property
