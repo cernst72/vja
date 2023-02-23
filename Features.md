@@ -1,6 +1,6 @@
 # Features
 
-## Create Tasks
+## Create Task
 
 `vja add <Tasktitle>` allows to quickly add a new task to the default list. Several options exist to provide more
 context:
@@ -32,13 +32,16 @@ vja ls
 vja ls --json
 ```
 
+### Urgency
+By default tasks are sorted (amongst others) by their urgency, which is displayed in the last column. Urgency is calculated by regarding due_date, priority and is_favorite of the task, as well as the occurence of keywords in the list title or the label titles. The weights of each factor and the keywords can be specified in the configuration file ~/.vjacli/vja.rc. See Configuration section in [Readme.md](Readme.md). See [.vjacli/vja.rc](.vjacli/vja.rc) for an example.
+
 ### Filter
 
 The displayed tasks may be filtered by several arguments like list id or title, namespace and label
 
 ```shell
-vja ls --label="@work"
-vja ls --title="ask"
+vja ls --label=@work
+vja ls --title=ask
 vja ls --priority="gt 3"
 vja ls --priority="eq 5"
 vja ls --due-date="before today"
@@ -51,8 +54,8 @@ In addition to these shortcut filters, more general filtering can be done by `--
 
 ```shell
 vja ls --filter="priority gt 2"
-vja ls --filter="title contains clean up" 
-vja ls --filter="labels contains @work" 
+vja ls --filter="title contains clean up"
+vja ls --filter="labels contains @work"
 vja ls --filter="created after 2 days ago"
 vja ls --filter="due_date before today in 7 days"
 ```
@@ -64,8 +67,8 @@ See `vja ls --help` for more.
 Sorting of tasks can be achieved by setting the `--sort` option.
 
 ```shell
-vja ls --sort='id'
-vja ls --sort='-id' # reverse
+vja ls --sort=id
+vja ls --sort=-id # reverse
 ```
 
 Sort criteria can be combined. The default sort order of vja is the same as
@@ -83,7 +86,7 @@ See [Output format](#output-format)
 
 See `vja ls --help` for more.
 
-### Show task by id
+## Show single task by id
 
 ```shell
 vja show 1
@@ -92,7 +95,7 @@ vja show 1 2 3
 
 ```
 
-## Modify task
+## Modify tasks
 
 ```shell
 vja edit 1 --title="new title" --due-date="friday" --priority=1
@@ -107,9 +110,9 @@ vja edit 1 --due="in 4 days at 15:00" -r
 Toggle tag (=label). Use with --force to create new label:
 
 ```shell
-vja edit 1 -t @work 
+vja edit 1 -t @work
 ```
-MArk as done
+Mark as done
 ```shell
 vja edit 1 --done="true"
 vja check 1 # Shortcut to toggle the done flag of task 1
@@ -143,7 +146,7 @@ Open task 42 in browser
 vja open 42
 ```
 
-## Manage lists, namespaces, labels
+## Manage lists, namespaces, labels, buckets
 
 ### Manage namespaces
 
