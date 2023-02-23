@@ -6,13 +6,15 @@ from vja.apiclient import ApiClient
 from vja.list_service import ListService
 from vja.model import Label
 from vja.parse import parse_date_arg_to_iso
+from vja.task_service import TaskService
 
 logger = logging.getLogger(__name__)
 
 
 class CommandService:
-    def __init__(self, list_service: ListService, api_client: ApiClient):
+    def __init__(self, list_service: ListService, task_service: TaskService, api_client: ApiClient):
         self._list_service = list_service
+        self._task_service = task_service
         self._api_client = api_client
 
     def login(self, username, password, totp_passcode):
@@ -80,7 +82,7 @@ class CommandService:
             self._validate_add_task(title, tag_name)
         logger.debug('put task: %s', payload)
         task_json = self._api_client.put_task(list_id, payload)
-        task = self._list_service.task_from_json(task_json)
+        task = self._task_service.task_from_json(task_json)
 
         label = self._label_from_name(tag_name, is_force) if tag_name else None
         if label:
@@ -107,7 +109,7 @@ class CommandService:
         task_remote.update(payload)
 
         task_json = self._api_client.post_task(task_id, task_remote)
-        task = self._list_service.task_from_json(task_json)
+        task = self._task_service.task_from_json(task_json)
 
         label = self._label_from_name(tag_name, is_force) if tag_name else None
         if label:
@@ -121,7 +123,7 @@ class CommandService:
         task_remote = self._api_client.get_task(task_id)
         task_remote.update({'done': not task_remote['done']})
         task_json = self._api_client.post_task(task_id, task_remote)
-        return self._list_service.task_from_json(task_json)
+        return self._task_service.task_from_json(task_json)
 
     def _label_from_name(self, name, is_force):
         if not name:

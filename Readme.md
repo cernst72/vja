@@ -33,9 +33,33 @@ Before using vja you must provide a configuration.
   api_url=https://try.vikunja.io/api/v1
   ```
   (If you cloned from git, you may copy the folder .vjacli to your `$HOME` directory instead.)
-- Adjust to your needs.  
-  `frontend_url` and `api_url` must point to your own Vikunja server.  
-  Especially, the api_url must be reachable from your client. This can be verified, for example by `curl https://mydomain.com/api/v1/info`
+- Adjust to your needs.
+  `frontend_url` and `api_url` must point to your own Vikunja server.
+  Especially, the api_url must be reachable from your client. This can be verified, for example
+  by `curl https://mydomain.com/api/v1/info`
+
+### Description of configuration
+
+#### Required options
+
+| Section       | Option       | Description                                                 |
+|---------------|--------------|-------------------------------------------------------------|
+| [application] | api_url      | The service instance of Vikunja to which vja should connect |
+| [application] | frontend_url | Required to open Vikunja in Browser                         |
+
+#### Optional options
+
+| Section                | Option          | Description                                                                                                                                                                                                                                                                                                  |
+|------------------------|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [output]               | arbitrary_name  | Python format strings which may be referenced on the command line by `--custom-format=<option_name>`. May contain any valid python f-Format string.<br>Take care: The format string may provide code which will be executed at runtime! Do not use `--custom-format` if you are unsure.<br> Default: missing |
+| [output]               | another_format  | Multiple formats can be defined for reference. (see above)                                                                                                                                                                                                                                                   |
+| [urgency_coefficients] | due_date_weight | Weight of dueness in urgency score. Default: 1.0                                                                                                                                                                                                                                                             |
+| [urgency_coefficients] | priority_weight | Weight of priority in urgency score. Default: 1.0                                                                                                                                                                                                                                                            |
+| [urgency_coefficients] | favorite_weight | Weight of is_favorite in urgency score. Default: 1.0                                                                                                                                                                                                                                                         |
+| [urgency_coefficients] | list_weight     | Weight of keyword occurrence in list title in urgency score. Default: 1.0                                                                                                                                                                                                                                    |
+| [urgency_coefficients] | label_weight    | Weight of keyword occurrence in label title in urgency score. Default: 1.0                                                                                                                                                                                                                                   |
+| [urgency_keywords]     | list_keywords   | Tasks in lists with a title containing these keywords are considered more urgent. Default: None                                                                                                                                                                                                              |
+| [urgency_keywords]     | label_keywords  | Tasks labeled with one of these keywords are considered more urgent. Default: None                                                                                                                                                                                                                           |
 
 ## Usage
 
@@ -68,7 +92,7 @@ Local development install:
 
 ```shell
 pip install -r requirements_dev.txt
-pip install -e . 
+pip install -e .
 ```
 
 Alternatively: full local installation:

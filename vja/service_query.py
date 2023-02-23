@@ -5,14 +5,16 @@ from vja.filter import create_filters
 from vja.list_service import ListService
 from vja.model import Namespace, Label, User, Bucket
 from vja.parse import rgetattr
+from vja.task_service import TaskService
 
 logger = logging.getLogger(__name__)
 DEFAULT_SORT_STRING = 'done, -urgency, due_date, -priority, tasklist.title, title'
 
 
 class QueryService:
-    def __init__(self, list_service: ListService, api_client: ApiClient):
+    def __init__(self, list_service: ListService, task_service: TaskService, api_client: ApiClient):
         self._list_service = list_service
+        self._task_service = task_service
         self._api_client = api_client
 
     # user
@@ -40,13 +42,13 @@ class QueryService:
 
     # tasks
     def find_filtered_tasks(self, include_completed, sort_string, filter_args):
-        task_object_array = [self._list_service.task_from_json(x) for x in
+        task_object_array = [self._task_service.task_from_json(x) for x in
                              self._api_client.get_tasks(exclude_completed=not include_completed)]
         filtered_tasks = self._filter(task_object_array, filter_args)
         return self._sort(filtered_tasks, sort_string)
 
     def find_task_by_id(self, task_id: int):
-        return self._list_service.task_from_json(self._api_client.get_task(task_id))
+        return self._task_service.task_from_json(self._api_client.get_task(task_id))
 
     @staticmethod
     def _filter(task_object_array, filter_args):
