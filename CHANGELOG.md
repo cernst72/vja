@@ -1,3 +1,26 @@
+## [1.3.0](https://gitlab.com/ce72/vja/compare/1.2.1...1.3.0) (2023-02-23)
+
+
+### Features
+
+* Make urgency calculation configurable ([5013825](https://gitlab.com/ce72/vja/commit/501382551f3f677a40649f8b2a446a6fa5c16500))
+
+
+### Misc
+
+* Remove and .gitignore .vscode folder ([bb7b668](https://gitlab.com/ce72/vja/commit/bb7b6683736123bdbf1131ac7b07fb0dc36f37da))
+
+
+### Documentation
+
+* Describe configuration in more detail ([f50246b](https://gitlab.com/ce72/vja/commit/f50246b113ec0e4c1a234790794985e2070d86c2))
+* Formatting and Spelling of help text ([3e2233f](https://gitlab.com/ce72/vja/commit/3e2233fc4fc87f8a7301f795ca80d5d28afea370))
+
+
+### Improvements
+
+* Code style ([fe6553b](https://gitlab.com/ce72/vja/commit/fe6553b28d6f27ae7610b852a1974bcbd7c3ac46))
+
 ## [1.2.1](https://gitlab.com/ce72/vja/compare/1.2.0...1.2.1) (2023-02-22)
 
 
