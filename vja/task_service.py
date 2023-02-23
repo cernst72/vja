@@ -16,5 +16,5 @@ class TaskService:
         list_object = self._list_service.find_list_by_id(task_json['list_id'])
         labels = Label.from_json_array(task_json['labels'])
         task = Task.from_json(task_json, list_object, labels)
-        task.urgency = self._urgency.compute(task)
+        task.urgency = self._urgency.compute_for(task)
         return task

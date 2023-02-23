@@ -11,7 +11,7 @@ class Urgency:
         self._list_keywords = list_keywords
         self._label_keywords = label_keywords
 
-    def compute(self, task: Task):
+    def compute_for(self, task: Task):
         if task.done:
             return 0
         due_date_score = self._get_due_date_score(task) * self._urgency_coefficients.get('due_date_weight', 1.0)
