@@ -6,6 +6,7 @@ from importlib import metadata
 
 import click
 from click_aliases import ClickAliasedGroup
+
 from vja.apiclient import ApiClient
 from vja.config import VjaConfiguration
 from vja.list_service import ListService
@@ -308,9 +309,10 @@ def task_toggle(ctx, application, task_id):
                    'Shortcut for --filter="due_date <operator> <value>"')
 @click.option('favorite_filter', '-f', '--favorite', '--star', type=click.BOOL,
               help='Filter by favorite flag. Shortcut for --filter="favorite_filter eq <value>"')
-@click.option('general_filter', '--filter',
+@click.option('general_filter', '--filter', multiple=True,
               help='General filter. Must be like <field> <operator> <value> e.g. --filter="priority ge 2" '
-                   'where <operator> in (eq, ne, gt, lt, ge, le, before, after, contains).')
+                   'where <operator> in (eq, ne, gt, lt, ge, le, before, after, contains). '
+                   'Multiple occurrences of --filter are allowed and will be combined with logical AND.')
 @click.option('label_filter', '-t', '--tag', '--label',
               help='Filter by label (name or id)')
 @click.option('list_filter', '-l', '--list',

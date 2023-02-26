@@ -10,16 +10,20 @@ logger = logging.getLogger(__name__)
 
 
 def _create_bucket_filter(value):
-    return _create_general_filter(f'bucket_id eq {value}')
+    return _create_general_filter([f'bucket_id eq {value}'])
 
 
 def _create_due_date_filter(value: str):
     if value.strip() == '':
         return lambda x: not x.due_date
-    return _create_general_filter(f'due_date {value}')
+    return _create_general_filter([f'due_date {value}'])
 
 
-def _create_general_filter(value: str):
+def _create_general_filter(values: list[str]):
+    return [_create_single_general_filter(x) for x in values]
+
+
+def _create_single_general_filter(value: str):
     arguments = value.split(" ", 2)
     field = arguments[0]
     operation = _operators[arguments[1]]
@@ -46,7 +50,7 @@ def _general_filter(task, field_name, operation, value):
 
 
 def _create_favorite_filter(value):
-    return _create_general_filter(f'is_favorite eq {value}')
+    return _create_general_filter([f'is_favorite eq {value}'])
 
 
 def _create_label_filter(value):
@@ -60,14 +64,14 @@ def _create_label_filter(value):
 
 def _create_list_filter(value):
     if str(value).isdigit():
-        return _create_general_filter(f'tasklist.id eq {value}')
-    return _create_general_filter(f'tasklist.title eq {value}')
+        return _create_general_filter([f'tasklist.id eq {value}'])
+    return _create_general_filter([f'tasklist.title eq {value}'])
 
 
 def _create_namespace_filter(value):
     if str(value).isdigit():
-        return _create_general_filter(f'tasklist.namespace.id eq {value}')
-    return _create_general_filter(f'tasklist.namespace.title eq {value}')
+        return _create_general_filter([f'tasklist.namespace.id eq {value}'])
+    return _create_general_filter([f'tasklist.namespace.title eq {value}'])
 
 
 def _create_title_filter(value):
@@ -75,11 +79,11 @@ def _create_title_filter(value):
 
 
 def _create_priority_filter(value):
-    return _create_general_filter(f'priority {value}')
+    return _create_general_filter([f'priority {value}'])
 
 
 def _create_urgency_filter(value):
-    return _create_general_filter(f'urgency ge {value}')
+    return _create_general_filter([f'urgency ge {value}'])
 
 
 _operators = {
@@ -111,5 +115,6 @@ _filter_mapping = {
 def create_filters(filter_args):
     filters = []
     for filter_name, filter_value in filter_args.items():
-        filters.append(_filter_mapping[filter_name](filter_value))
+        add_filter = _filter_mapping[filter_name](filter_value)
+        filters.extend(add_filter if isinstance(add_filter, (list, tuple)) else [add_filter])
     return filters
