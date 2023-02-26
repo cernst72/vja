@@ -1,3 +1,12 @@
+## [1.3.1](https://gitlab.com/ce72/vja/compare/1.3.0...1.3.1) (2023-02-26)
+
+
+### Bug Fixes
+
+* Allow multiple --filter options ([c2ec9d4](https://gitlab.com/ce72/vja/commit/c2ec9d4f73c22e351c3421ff1131d75d9e9fe58a))
+* Allow multiple --filter options ([9361f27](https://gitlab.com/ce72/vja/commit/9361f274068804c2b05c79a8b76483d4a1322f89))
+* Parse timedelta in order to filter on repeat_after ([ce6e6e8](https://gitlab.com/ce72/vja/commit/ce6e6e8cfbeadf50487b86c1c54381b154c35fad))
+
 ## [1.3.0](https://gitlab.com/ce72/vja/compare/1.2.1...1.3.0) (2023-02-23)
 
 
