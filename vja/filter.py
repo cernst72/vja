@@ -1,9 +1,10 @@
 import logging
 import operator
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from vja.parse import rgetattr, parse_date_arg_to_datetime, parse_bool_arg
+from vja.parse import (parse_bool_arg, parse_date_arg_to_datetime,
+                       parse_date_arg_to_timedelta, rgetattr)
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +33,8 @@ def _general_filter(task, field_name, operation, value):
     if task_value is not None:
         if isinstance(task_value, datetime):
             value = parse_date_arg_to_datetime(value)
+        elif isinstance(task_value, timedelta):
+            value = parse_date_arg_to_timedelta(value)
         elif isinstance(task_value, bool):
             value = parse_bool_arg(value)
         elif isinstance(task_value, int):
