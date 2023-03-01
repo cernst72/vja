@@ -110,6 +110,27 @@ class TestTaskList:
         data = json.loads(res.output)[0]
         assert data['title'] is not None
 
+    def test_sort_id(self, runner):
+        res = invoke(runner, ['ls', '--jsonvja', '--sort=id'])
+        data = json.loads(res.output)
+        assert data[0]['id'] == 1
+        res = invoke(runner, ['ls', '--jsonvja', '--sort=-id'])
+        data = json.loads(res.output)
+        assert data[0]['id'] > 1
+
+    def test_sort_combined(self, runner):
+        res = invoke(runner, ['ls', '--jsonvja', '--sort=due_date, is_favorite, -priority, tasklist.title'])
+        data = json.loads(res.output)
+        assert data[0]['due_date'] is not None
+        assert data[-1]['due_date'] is None
+
+    def test_task_custom_format(self, runner):
+        res = invoke(runner, 'ls --custom-format=ids_only')
+        for line in res.output:
+            assert re.match(r'^\d*$', line)
+
+
+class TestTaskListFilter:
     def test_task_filter_bucket(self, runner):
         res = invoke(runner, ['ls', '--jsonvja', '--bucket=1'])
         data = json.loads(res.output)
@@ -224,21 +245,8 @@ class TestTaskList:
         assert len(data) > 0
         assert all(i['is_favorite'] for i in data)
 
-    def test_sort_id(self, runner):
-        res = invoke(runner, ['ls', '--jsonvja', '--sort=id'])
+    def test_task_filter_general_combined(self, runner):
+        res = invoke(runner, ['ls', '--jsonvja', '--filter=id gt 0', '--filter=id lt 2'])
         data = json.loads(res.output)
-        assert data[0]['id'] == 1
-        res = invoke(runner, ['ls', '--jsonvja', '--sort=-id'])
-        data = json.loads(res.output)
-        assert data[0]['id'] > 1
-
-    def test_sort_combined(self, runner):
-        res = invoke(runner, ['ls', '--jsonvja', '--sort=due_date, is_favorite, -priority, tasklist.title'])
-        data = json.loads(res.output)
-        assert data[0]['due_date'] is not None
-        assert data[-1]['due_date'] is None
-
-    def test_task_custom_format(self, runner):
-        res = invoke(runner, 'ls --custom-format=ids_only')
-        for line in res.output:
-            assert re.match(r'^\d*$', line)
+        assert len(data) == 1
+        assert all(i['id'] == 1 for i in data)

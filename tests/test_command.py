@@ -178,6 +178,9 @@ class TestMultipleTasks:
     def test_show_three_tasks(self, runner):
         res = invoke(runner, 'show 1 2 3')
         assert res.output.count('\n') >= 30
+        assert re.search(r'id: 1', res.output)
+        assert re.search(r'id: 2', res.output)
+        assert re.search(r'id: 3', res.output)
 
 
 def json_for_created_task(runner, message):
