@@ -1,3 +1,16 @@
+## [1.3.2](https://gitlab.com/ce72/vja/compare/1.3.1...1.3.2) (2023-03-02)
+
+
+### Bug Fixes
+
+* open <task_id> does not open task in browser ([58c6dce](https://gitlab.com/ce72/vja/commit/58c6dcea20df8e8ed35c30e4edda5c6e1e6178f6))
+* Respect existing reminder dates. Edit only first one. ([28afc65](https://gitlab.com/ce72/vja/commit/28afc652c1d4eaca960b13580e89c004214501ef))
+
+
+### Automation
+
+* Add test for combining general filter ([0c94125](https://gitlab.com/ce72/vja/commit/0c941250af961e6b8574e7ecc8f8b1ea8f283b5d))
+
 ## [1.3.1](https://gitlab.com/ce72/vja/compare/1.3.0...1.3.1) (2023-02-26)
 
 
