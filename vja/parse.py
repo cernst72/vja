@@ -62,3 +62,9 @@ def rgetattr(obj, path: str, *default):
         if default:
             return default[0]
         raise
+
+
+def parse_json_date(json_date):
+    if json_date and json_date > '0001-01-02T00:00:00Z':
+        return dateutil.parser.isoparse(json_date).astimezone(tz.tzlocal()).replace(tzinfo=None)
+    return None

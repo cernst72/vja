@@ -5,7 +5,7 @@ from vja import VjaError
 from vja.apiclient import ApiClient
 from vja.list_service import ListService
 from vja.model import Label
-from vja.parse import parse_date_arg_to_iso
+from vja.parse import parse_date_arg_to_iso, parse_json_date
 from vja.task_service import TaskService
 
 logger = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ class CommandService:
                     'list_id': {'field': 'list_id', 'mapping': int},
                     'bucket_id': {'field': 'bucket_id', 'mapping': int},
                     'kanban_position': {'field': 'kanban_position', 'mapping': int},
-                    'reminder': {'field': 'reminder_dates', 'mapping': (lambda x: [parse_date_arg_to_iso(x)])}
+                    'reminder': {'field': 'reminder_dates', 'mapping': (lambda x: x)}
                     }
 
     def _args_to_payload(self, args: dict):
@@ -72,9 +72,13 @@ class CommandService:
         is_force = args.pop('force_create') if args.get('force_create') is not None else False
         if args.get('reminder') == 'due':
             args.update({'reminder': args.get('due') or 'tomorrow'})
+        if args.get('reminder'):
+            args.update({'reminder': [parse_date_arg_to_iso(args.get('reminder'))]})
+
         payload = self._args_to_payload(args)
-        # workaround: api server does not seem to set positions. But they should not be 0, because sorting between 0s
-        # does not work.
+        # Workaround: api server does not seem to set positions. But they should not be 0, because sorting between 0s
+        # does not work. TODO: The following two lines can be removed after
+        # https://kolaente.dev/vikunja/api/commit/1efa1696bf46f5a31d96e7862d33f6e4d275816a is productive
         seconds = int(time.time() / 60)
         payload.update({'position': seconds, 'kanban_position': seconds})
 
@@ -93,31 +97,51 @@ class CommandService:
         task_remote = self._api_client.get_task(task_id)
         tag_name = args.pop('tag') if args.get('tag') else None
         is_force = args.pop('force_create') if args.get('force_create') is not None else False
-        if args.get('reminder') == 'due':
-            if args.get('due'):
-                args.update({'reminder': args.get('due')})
-            else:
-                args.update({'reminder': task_remote['due_date'] if task_remote['due_date'] else 'tomorrow'})
+
+        self._update_reminder(args, task_remote)
         if args.get('note_append'):
             append_note = args.pop('note_append')
             args.update({
                 'note': task_remote['description'] + '\n' + append_note if task_remote['description'] else append_note
             })
+
         payload = self._args_to_payload(args)
         logger.debug('post task: %s', payload)
-
         task_remote.update(payload)
-
         task_json = self._api_client.post_task(task_id, task_remote)
-        task = self._task_service.task_from_json(task_json)
+        task_new = self._task_service.task_from_json(task_json)
 
         label = self._label_from_name(tag_name, is_force) if tag_name else None
         if label:
-            if task.has_label(label):
-                self._api_client.remove_label_from_task(task.id, label.id)
+            if task_new.has_label(label):
+                self._api_client.remove_label_from_task(task_new.id, label.id)
             else:
-                self._api_client.add_label_to_task(task.id, label.id)
-        return task
+                self._api_client.add_label_to_task(task_new.id, label.id)
+        return task_new
+
+    @staticmethod
+    def _update_reminder(args, task_remote):
+        if args.get('reminder') == 'due':
+            if args.get('due'):
+                args.update({'reminder': args.get('due')})  # reminder = cli argument --due
+            else:
+                if parse_json_date(task_remote['due_date']):
+                    args.update({'reminder': task_remote['due_date']})  # reminder = due_date
+                else:
+                    args.update({'reminder': 'tomorrow'})  # reminder default
+        if args.get('reminder') is not None:
+            # replace the first existing reminder
+            new_reminder = parse_date_arg_to_iso(args.pop('reminder'))
+            old_reminders = task_remote['reminder_dates']
+            if old_reminders and len(old_reminders) > 0:
+                if new_reminder:
+                    old_reminders[0] = new_reminder  # overwrite first remote reminder_date
+                else:
+                    old_reminders.pop(0)  # remove first remote reminder_date
+            else:
+                if new_reminder:
+                    old_reminders = [new_reminder]  # create single reminder_date
+            args.update({'reminder': old_reminders})
 
     def toggle_task_done(self, task_id):
         task_remote = self._api_client.get_task(task_id)

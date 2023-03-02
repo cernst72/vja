@@ -117,8 +117,18 @@ class TestEditGeneral:
 
 
 class TestEditReminder:
-    def test_set_reminder_to_task(self, runner):
-        invoke(runner, f'edit 2 --due-date={TOMORROW_ISO}')
+    def test_set_default_reminder_to_remote_due(self, runner):
+        invoke(runner, f'edit 2 --due-date={TODAY_ISO}')
+        invoke(runner, f'edit 2 --reminder={TOMORROW_ISO}')
+        before = json_for_task_id(runner, 2)
+
+        invoke(runner, 'edit 2 --reminder')
+        after = json_for_task_id(runner, 2)
+        assert before['reminder_dates'][0][:10] == TOMORROW.date().isoformat()
+        assert after['reminder_dates'][0][:10] == TODAY.date().isoformat()
+
+    def test_set_default_reminder_to_tomorrow(self, runner):
+        invoke(runner, 'edit 2 --due-date=')
         invoke(runner, f'edit 2 --reminder={TODAY_ISO}')
         before = json_for_task_id(runner, 2)
 
@@ -134,7 +144,7 @@ class TestEditReminder:
         invoke(runner, 'edit 2 --reminder=')
         after = json_for_task_id(runner, 2)
         assert before['reminder_dates'][0][:10] == TODAY.date().isoformat()
-        assert after['reminder_dates'][0] is None
+        assert not after['reminder_dates']
 
     def test_set_reminder_to_due(self, runner):
         invoke(runner, f'edit 2 --reminder={TODAY_ISO}')
@@ -143,6 +153,25 @@ class TestEditReminder:
         invoke(runner, f'edit 2 --due={TOMORROW_ISO} --reminder=due')
         after = json_for_task_id(runner, 2)
         assert before['reminder_dates'][0][:10] == TODAY.date().isoformat()
+        assert after['reminder_dates'][0][:10] == TOMORROW.date().isoformat()
+
+    def test_set_reminder_to_value(self, runner):
+        invoke(runner, f'edit 2 --reminder={TODAY_ISO}')
+        before = json_for_task_id(runner, 2)
+
+        invoke(runner, f'edit 2 --due={TODAY_ISO} --reminder={TOMORROW_ISO}')
+        after = json_for_task_id(runner, 2)
+        assert before['reminder_dates'][0][:10] == TODAY.date().isoformat()
+        assert after['reminder_dates'][0][:10] == TOMORROW.date().isoformat()
+
+
+    def test_set_reminder_to_value_new_reminder(self, runner):
+        invoke(runner, 'edit 2 --reminder=')
+        before = json_for_task_id(runner, 2)
+
+        invoke(runner, f'edit 2 --reminder={TOMORROW_ISO}')
+        after = json_for_task_id(runner, 2)
+        assert not before['reminder_dates']
         assert after['reminder_dates'][0][:10] == TOMORROW.date().isoformat()
 
 

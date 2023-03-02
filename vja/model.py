@@ -3,8 +3,7 @@ import typing
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
-import dateutil.parser
-from dateutil import tz
+from vja.parse import parse_json_date
 
 
 def custom_output(cls):
@@ -170,29 +169,23 @@ class Task:
         return cls(json, json['id'], json['title'], json['description'],
                    json['priority'],
                    json['is_favorite'],
-                   _date_from_json(json['due_date']),
-                   [_date_from_json(reminder) for reminder in json['reminder_dates'] or []],
+                   parse_json_date(json['due_date']),
+                   [parse_json_date(reminder) for reminder in json['reminder_dates'] or []],
                    json['repeat_mode'],
                    timedelta(seconds=json['repeat_after']),
-                   _date_from_json(json['start_date']),
-                   _date_from_json(json['end_date']),
+                   parse_json_date(json['start_date']),
+                   parse_json_date(json['end_date']),
                    json['percent_done'],
                    json['done'],
-                   _date_from_json(json['done_at']),
+                   parse_json_date(json['done_at']),
                    labels,
                    list_object,
                    json['position'],
                    json['bucket_id'],
                    json['kanban_position'],
-                   _date_from_json(json['created']),
-                   _date_from_json(json['updated'])
+                   parse_json_date(json['created']),
+                   parse_json_date(json['updated'])
                    )
 
     def has_label(self, label):
         return any(x.id == label.id for x in self.labels)
-
-
-def _date_from_json(json_date):
-    if json_date and json_date > '0001-01-01T00:00:00Z':
-        return dateutil.parser.isoparse(json_date).astimezone(tz.tzlocal()).replace(tzinfo=None)
-    return None
