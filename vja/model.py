@@ -135,6 +135,26 @@ class Label:
 @custom_output
 @data_dict
 # pylint: disable=too-many-instance-attributes
+class TaskReminder:
+    json: dict = field(repr=False)
+    reminder: datetime
+    relative_period: int
+    relative_to: str
+
+    @classmethod
+    def from_json(cls, json):
+        return cls(json, parse_json_date(json['reminder']), json['relative_period'], json['relative_to'])
+
+    @classmethod
+    def from_json_array(cls, json_array):
+        return [TaskReminder.from_json(x) for x in json_array or []]
+
+
+
+@dataclass
+@custom_output
+@data_dict
+# pylint: disable=too-many-instance-attributes
 class Task:
     json: dict = field(repr=False)
     id: int
@@ -144,6 +164,7 @@ class Task:
     is_favorite: bool
     due_date: datetime
     reminder_dates: typing.List[datetime]
+    reminders: typing.List[TaskReminder]
     repeat_mode: int
     repeat_after: timedelta
     start_date: datetime
@@ -171,6 +192,7 @@ class Task:
                    json['is_favorite'],
                    parse_json_date(json['due_date']),
                    [parse_json_date(reminder) for reminder in json['reminder_dates'] or []],
+                   TaskReminder.from_json_array(json["reminders"]),
                    json['repeat_mode'],
                    timedelta(seconds=json['repeat_after']),
                    parse_json_date(json['start_date']),

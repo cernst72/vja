@@ -111,8 +111,9 @@ class CommandService:
             })
 
         payload = self._args_to_payload(args)
-        logger.debug('post task: %s', payload)
+        logger.debug('update fields: %s', payload)
         task_remote.update(payload)
+        logger.debug('post task: %s', task_remote)
         task_json = self._api_client.post_task(task_id, task_remote)
         task_new = self._task_service.task_from_json(task_json)
 
