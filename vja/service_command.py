@@ -47,7 +47,7 @@ class CommandService:
                     'list_id': {'field': 'list_id', 'mapping': int},
                     'bucket_id': {'field': 'bucket_id', 'mapping': int},
                     'kanban_position': {'field': 'kanban_position', 'mapping': int},
-                    'reminder': {'field': 'reminder_dates', 'mapping': (lambda x: x)}
+                    'reminder': {'field': 'reminders', 'mapping': (lambda x: x)}
                     }
 
     def _args_to_payload(self, args: dict):
@@ -69,10 +69,11 @@ class CommandService:
             list_id = self._list_service.get_default_list().id
         tag_name = args.pop('tag') if args.get('tag') else None
         is_force = args.pop('force_create') if args.get('force_create') is not None else False
-        if args.get('reminder') == 'due':
-            args.update({'reminder': args.get('due') or 'tomorrow'})
         if args.get('reminder'):
-            args.update({'reminder': [parse_date_arg_to_iso(args.get('reminder'))]})
+            if args.get('reminder') == 'due':
+                args.update({'reminder': [{'relative_to': 'due_date', 'relative_period': 0}]})
+            else:
+                args.update({'reminder': [{'reminder': parse_date_arg_to_iso(args.get('reminder'))}]})
 
         payload = self._args_to_payload(args)
 
@@ -113,6 +114,8 @@ class CommandService:
         payload = self._args_to_payload(args)
         logger.debug('update fields: %s', payload)
         task_remote.update(payload)
+        # make sure we do not send back the old reminder_dates
+        task_remote.pop("reminder_dates", None)
         logger.debug('post task: %s', task_remote)
         task_json = self._api_client.post_task(task_id, task_remote)
         task_new = self._task_service.task_from_json(task_json)
@@ -127,27 +130,32 @@ class CommandService:
 
     @staticmethod
     def _update_reminder(args, task_remote):
+        if args.get('reminder') is None:
+            return
+
+        # create reminder entry
         if args.get('reminder') == 'due':
-            if args.get('due'):
-                args.update({'reminder': args.get('due')})  # reminder = cli argument --due
+            args.update(
+                {'reminder': [{'relative_to': 'due_date', 'relative_period': 0}]})  # --reminder=due or --reminder
+        elif args.get('reminder') == '':
+            args.update(
+                {'reminder': None})  # --reminder=""
+        else:
+            args.update(
+                {'reminder': [{'reminder': parse_date_arg_to_iso(args.get('reminder'))}]})
+
+        # replace the first existing reminder with our entry
+        new_reminder = args.pop('reminder')[0] if args.get('reminder') else None
+        old_reminders = task_remote['reminders']
+        if old_reminders and len(old_reminders) > 0:
+            if new_reminder:
+                old_reminders[0] = new_reminder  # overwrite first remote reminder
             else:
-                if parse_json_date(task_remote['due_date']):
-                    args.update({'reminder': task_remote['due_date']})  # reminder = due_date
-                else:
-                    args.update({'reminder': 'tomorrow'})  # reminder default
-        if args.get('reminder') is not None:
-            # replace the first existing reminder
-            new_reminder = parse_date_arg_to_iso(args.pop('reminder'))
-            old_reminders = task_remote['reminder_dates']
-            if old_reminders and len(old_reminders) > 0:
-                if new_reminder:
-                    old_reminders[0] = new_reminder  # overwrite first remote reminder_date
-                else:
-                    old_reminders.pop(0)  # remove first remote reminder_date
-            else:
-                if new_reminder:
-                    old_reminders = [new_reminder]  # create single reminder_date
-            args.update({'reminder': old_reminders})
+                old_reminders.pop(0)  # remove first remote reminder
+        else:
+            if new_reminder:
+                old_reminders = [new_reminder]  # create single reminder_date
+        args.update({'reminder': old_reminders})
 
     def toggle_task_done(self, task_id):
         task_remote = self._api_client.get_task(task_id)
