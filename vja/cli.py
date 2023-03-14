@@ -209,7 +209,7 @@ def label_add(application, title):
 
 
 # tasks
-@cli.command('add', ['create'],
+@cli.command('add', aliases=['create'],
              help='Add new task')
 @click.argument('title', required=True, nargs=-1)
 @click.option('list_id', '-l', '--folder', '--project', '--list',
@@ -236,7 +236,7 @@ def task_add(ctx, application, title, **args):
     ctx.invoke(task_show, tasks=[task.id])
 
 
-@cli.command('clone', ['copy'],
+@cli.command('clone', aliases=['copy'],
              help='Clone task with given task_id. Set the new title')
 @click.argument('task_id', required=True, type=click.INT)
 @click.argument('title', required=True, nargs=-1)
