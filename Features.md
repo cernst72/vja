@@ -22,6 +22,17 @@ vja add --help
 ```
 
 for more.
+### Clone
+Another option to create a new task is cloning an existing task
+```shell
+vja clone 1 Clone a new task 
+```
+
+See
+```shell
+vja clone --help
+```
+
 
 ## List tasks
 

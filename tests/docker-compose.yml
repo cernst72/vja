@@ -2,7 +2,7 @@ version: '3'
 
 services:
   api:
-    image: vikunja/api:0.20.2
+    image: vikunja/api:0.20.4
     ports:
       - "3456:3456"
     environment:
@@ -14,7 +14,7 @@ services:
         exec /app/vikunja/vikunja
       "
   frontend:
-    image: vikunja/frontend:0.20.3
+    image: vikunja/frontend:0.20.5
     ports:
       - "8080:80"
     environment:

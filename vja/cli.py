@@ -209,7 +209,8 @@ def label_add(application, title):
 
 
 # tasks
-@cli.command('add', help='Add new task')
+@cli.command('add', aliases=['create'],
+             help='Add new task')
 @click.argument('title', required=True, nargs=-1)
 @click.option('list_id', '-l', '--folder', '--project', '--list',
               help='List (id or name), defaults to list from user settings, than to first favorite list')
@@ -232,6 +233,18 @@ def label_add(application, title):
 def task_add(ctx, application, title, **args):
     task = application.command_service.add_task(" ".join(title), {k: v for k, v in args.items() if v is not None})
     click.echo(f'Created task {task.id} in list {task.tasklist.id}')
+    ctx.invoke(task_show, tasks=[task.id])
+
+
+@cli.command('clone', aliases=['copy'],
+             help='Clone task with given task_id. Set the new title')
+@click.argument('task_id', required=True, type=click.INT)
+@click.argument('title', required=True, nargs=-1)
+@with_application
+@click.pass_context
+def task_clone(ctx, application, task_id, title):
+    task = application.command_service.clone_task(task_id, " ".join(title))
+    click.echo(f'Created task {task.id} in list {task.tasklist.id} as clone from {task_id}')
     ctx.invoke(task_show, tasks=[task.id])
 
 

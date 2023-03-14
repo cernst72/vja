@@ -1,5 +1,4 @@
 import logging
-import time
 
 from vja import VjaError
 from vja.apiclient import ApiClient
@@ -76,11 +75,6 @@ class CommandService:
             args.update({'reminder': [parse_date_arg_to_iso(args.get('reminder'))]})
 
         payload = self._args_to_payload(args)
-        # Workaround: api server does not seem to set positions. But they should not be 0, because sorting between 0s
-        # does not work. TODO: The following two lines can be removed after
-        # https://kolaente.dev/vikunja/api/commit/1efa1696bf46f5a31d96e7862d33f6e4d275816a is productive
-        seconds = int(time.time() / 60)
-        payload.update({'position': seconds, 'kanban_position': seconds})
 
         if not is_force:
             self._validate_add_task(title, tag_name)
@@ -91,6 +85,17 @@ class CommandService:
         label = self._label_from_name(tag_name, is_force) if tag_name else None
         if label:
             self._api_client.add_label_to_task(task.id, label.id)
+        return task
+
+    def clone_task(self, task_id: int, title):
+        task_remote = self._api_client.get_task(task_id)
+        task_remote.update({'id': None})
+        task_remote.update({'title': title})
+
+        logger.debug('put task: %s', task_remote)
+        task_json = self._api_client.put_task(task_remote['list_id'], task_remote)
+        task = self._task_service.task_from_json(task_json)
+
         return task
 
     def edit_task(self, task_id: int, args: dict):
