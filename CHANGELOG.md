@@ -1,3 +1,18 @@
+## [1.4.0](https://gitlab.com/ce72/vja/compare/1.3.2...1.4.0) (2023-03-14)
+
+
+### Features
+
+* more command aliases (create and copy) ([70d936d](https://gitlab.com/ce72/vja/commit/70d936d9e751be3e4f311193e416db463482cd61))
+* remove workaround to set position when adding task ([1409895](https://gitlab.com/ce72/vja/commit/140989542a06f2dcb1ca8dafddbb104b973992de))
+* vja clone <taskId> <new title> ([4b15fbc](https://gitlab.com/ce72/vja/commit/4b15fbca6237e0e6bc00d19c6091e6f6ada46c33))
+
+
+### Misc
+
+* **deps:** update all dependencies ([2ad612b](https://gitlab.com/ce72/vja/commit/2ad612bfcbd6aa489c48e25d15be891d25c5f21e))
+* update vikunja version ([6239c97](https://gitlab.com/ce72/vja/commit/6239c9751e241ee5b25b51c7a8d7e125ce677e0d))
+
 ## [1.3.2](https://gitlab.com/ce72/vja/compare/1.3.1...1.3.2) (2023-03-02)
 
 
