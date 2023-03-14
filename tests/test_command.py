@@ -44,6 +44,18 @@ class TestAddTask:
         assert TOMORROW_ISO[0:10] in after['reminder_dates'][0]
 
 
+class TestCloneTask:
+    def test_clone_task(self, runner):
+        before = json_for_task_id(runner, 1)
+        res = invoke(runner, 'clone 1 title of new task cloned from 1')
+        after = json_for_created_task(runner, res.output)
+        assert after['tasklist'] == before['tasklist']
+        assert after['due_date'] == before['due_date']
+        assert after['title'] != before['title']
+        assert after['id'] != before['id']
+        assert after['created'] != before['created']
+
+
 class TestEditGeneral:
     def test_edit_title(self, runner):
         before = json_for_task_id(runner, 1)
@@ -163,7 +175,6 @@ class TestEditReminder:
         after = json_for_task_id(runner, 2)
         assert before['reminder_dates'][0][:10] == TODAY.date().isoformat()
         assert after['reminder_dates'][0][:10] == TOMORROW.date().isoformat()
-
 
     def test_set_reminder_to_value_new_reminder(self, runner):
         invoke(runner, 'edit 2 --reminder=')

@@ -93,6 +93,17 @@ class CommandService:
             self._api_client.add_label_to_task(task.id, label.id)
         return task
 
+    def clone_task(self, task_id: int, title):
+        task_remote = self._api_client.get_task(task_id)
+        task_remote.update({'id': None})
+        task_remote.update({'title': title})
+
+        logger.debug('put task: %s', task_remote)
+        task_json = self._api_client.put_task(task_remote['list_id'], task_remote)
+        task = self._task_service.task_from_json(task_json)
+
+        return task
+
     def edit_task(self, task_id: int, args: dict):
         task_remote = self._api_client.get_task(task_id)
         tag_name = args.pop('tag') if args.get('tag') else None

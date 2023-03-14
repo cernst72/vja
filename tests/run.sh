@@ -26,6 +26,7 @@ run-test () {
   vja ls --custom-format=ids_only
   vja edit 1 --prio=0 --note="" --due="" --favorite=False --reminder="" --title="empty title" --completed=True
   vja edit 2 --prio=1 --note="modified note" --due="4.2" --reminder="tomorrow"
+  vja clone 1 new title of cloned task
   vja show 1
   vja show 1 --json
   vja show 1 --jsonvja
