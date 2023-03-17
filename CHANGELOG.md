@@ -1,3 +1,10 @@
+## [1.4.1](https://gitlab.com/ce72/vja/compare/1.4.0...1.4.1) (2023-03-17)
+
+
+### Bug Fixes
+
+* multiple edit only worked for one task ([dac74af](https://gitlab.com/ce72/vja/commit/dac74afb9ccffafcd2205313b11aba06ca7be85d))
+
 ## [1.4.0](https://gitlab.com/ce72/vja/compare/1.3.2...1.4.0) (2023-03-14)
 
 
