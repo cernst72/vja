@@ -231,7 +231,8 @@ def label_add(application, title):
 @with_application
 @click.pass_context
 def task_add(ctx, application, title, **args):
-    task = application.command_service.add_task(" ".join(title), {k: v for k, v in args.items() if v is not None})
+    args_present = {k: v for k, v in args.items() if v is not None}
+    task = application.command_service.add_task(" ".join(title), args_present.copy())
     click.echo(f'Created task {task.id} in list {task.tasklist.id}')
     ctx.invoke(task_show, tasks=[task.id])
 
@@ -285,7 +286,7 @@ def task_edit(ctx, application, task_ids, **args):
     args_present = {k: v for k, v in args.items() if v is not None}
     for task_id in task_ids:
         if args_present:
-            task = application.command_service.edit_task(task_id, args_present)
+            task = application.command_service.edit_task(task_id, args_present.copy())
             click.echo(f'Modified task {task.id} in list {task.tasklist.id}')
             ctx.invoke(task_show, tasks=[task.id])
         else:
