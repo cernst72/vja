@@ -22,17 +22,20 @@ vja add --help
 ```
 
 for more.
+
 ### Clone
+
 Another option to create a new task is cloning an existing task
+
 ```shell
-vja clone 1 Clone a new task 
+vja clone 1 Clone a new task
 ```
 
 See
+
 ```shell
 vja clone --help
 ```
-
 
 ## List tasks
 
@@ -44,7 +47,12 @@ vja ls --json
 ```
 
 ### Urgency
-By default tasks are sorted (amongst others) by their urgency, which is displayed in the last column. Urgency is calculated by regarding due_date, priority and is_favorite of the task, as well as the occurence of keywords in the list title or the label titles. The weights of each factor and the keywords can be specified in the configuration file ~/.vjacli/vja.rc. See Configuration section in [Readme.md](Readme.md). See [.vjacli/vja.rc](.vjacli/vja.rc) for an example.
+
+By default, tasks are sorted (amongst others) by their urgency, which is displayed in the last column. Urgency is
+calculated by regarding due_date, priority and is_favorite of the task, as well as the occurence of keywords in the list
+title or the label titles. The weights of each factor and the keywords can be specified in the configuration file ~
+/.vjacli/vja.rc. See Configuration section in [Readme.md](Readme.md). See [.vjacli/vja.rc](.vjacli/vja.rc) for an
+example.
 
 ### Filter
 
@@ -123,7 +131,9 @@ Toggle tag (=label). Use with --force to create new label:
 ```shell
 vja edit 1 -t @work
 ```
+
 Mark as done
+
 ```shell
 vja edit 1 --done="true"
 vja check 1 # Shortcut to toggle the done flag of task 1
@@ -136,6 +146,41 @@ vja defer 1 1d
 vja defer --help
 ```
 This command moves the due_date (and later the reminder) ahead in time.
+
+### Reminders
+
+vja manages only the first reminder of the task. That is the earliest reminder on the server.
+
+Set reminder to an absolute time
+
+```shell
+vja edit 1 -r "next sunday at 11:00"
+vja edit 1 --reminder="in 3 days at 11:00"
+```
+
+Set reminder equal to due date
+
+```shell
+vja edit 1 -r
+vja edit 1 --reminder
+```
+
+Set reminder relative to due date
+
+```shell
+Not yet implemented!
+```
+
+Remove the earliest reminder
+
+```shell
+vja edit 1 -r ""
+vja edit 1 --reminder=""
+```
+
+The same goes for `vja add`.
+
+### Batch editing
 
 Multiple edits are possible by giving more task ids
 

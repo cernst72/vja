@@ -68,7 +68,7 @@ class TestEditGeneral:
         assert after['updated'] > before['updated']
         # other attributes remain in place
         assert after['due_date'] == before['due_date']
-        assert after['reminder_dates'] == before['reminder_dates']
+        assert after['reminders'] == before['reminders']
         assert after['position'] == before['position']
         assert after['tasklist']['id'] == before['tasklist']['id']
         assert after['created'] == before['created']

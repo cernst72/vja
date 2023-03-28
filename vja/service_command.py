@@ -154,7 +154,7 @@ class CommandService:
                 old_reminders.pop(0)  # remove first remote reminder
         else:
             if new_reminder:
-                old_reminders = [new_reminder]  # create single reminder_date
+                old_reminders = [new_reminder]  # create single reminder
         args.update({'reminder': old_reminders})
 
     def toggle_task_done(self, task_id):
