@@ -13,7 +13,7 @@ class TaskService:
         self._urgency = urgency
 
     def task_from_json(self, task_json: dict) -> Task:
-        list_object = self._list_service.find_list_by_id(task_json['list_id'])
+        list_object = self._list_service.find_list_by_id(task_json['project_id'])
         labels = Label.from_json_array(task_json['labels'])
         task = Task.from_json(task_json, list_object, labels)
         task.urgency = self._urgency.compute_for(task)

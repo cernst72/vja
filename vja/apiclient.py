@@ -41,7 +41,7 @@ class ApiClient:
     def __init__(self, api_url, token_file):
         logger.debug('Connecting to api_url %s', api_url)
         self._api_url = api_url
-        self._cache = {'lists': None, 'labels': None, 'namespaces': None, 'tasks': None}
+        self._cache = {'projects': None, 'labels': None, 'namespaces': None, 'tasks': None}
         self._login = Login(api_url, token_file)
 
     def _create_url(self, path):
@@ -117,19 +117,19 @@ class ApiClient:
         return self._cache['namespaces']
 
     def get_lists(self):
-        if self._cache['lists'] is None:
-            self._cache['lists'] = self._get_json(self._create_url('/lists')) or []
-        return self._cache['lists']
+        if self._cache['projects'] is None:
+            self._cache['projects'] = self._get_json(self._create_url('/projects')) or []
+        return self._cache['projects']
 
     def get_list(self, list_id):
-        return self._get_json(self._create_url(f'/lists/{str(list_id)}'))
+        return self._get_json(self._create_url(f'/projects/{str(list_id)}'))
 
     def put_list(self, namespace_id, title):
         payload = {'title': title}
-        return self._put_json(self._create_url(f'/namespaces/{str(namespace_id)}/lists'), payload=payload)
+        return self._put_json(self._create_url(f'/namespaces/{str(namespace_id)}/projects'), payload=payload)
 
     def get_buckets(self, list_id):
-        return self._get_json(self._create_url(f'/lists/{str(list_id)}/buckets'))
+        return self._get_json(self._create_url(f'/projects/{str(list_id)}/buckets'))
 
     def get_labels(self):
         if self._cache['labels'] is None:
@@ -152,7 +152,7 @@ class ApiClient:
         return self._get_json(url)
 
     def put_task(self, list_id, payload):
-        return self._put_json(self._create_url(f'/lists/{str(list_id)}'), payload=payload)
+        return self._put_json(self._create_url(f'/projects/{str(list_id)}'), payload=payload)
 
     def post_task(self, task_id, payload):
         return self._post_json(self._create_url(f'/tasks/{str(task_id)}'), payload=payload)
