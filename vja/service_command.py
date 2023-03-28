@@ -44,7 +44,7 @@ class CommandService:
                     'favorite': {'field': 'is_favorite', 'mapping': bool},
                     'completed': {'field': 'done', 'mapping': bool},
                     'position': {'field': 'position', 'mapping': int},
-                    'list_id': {'field': 'list_id', 'mapping': int},
+                    'list_id': {'field': 'project_id', 'mapping': int},
                     'bucket_id': {'field': 'bucket_id', 'mapping': int},
                     'kanban_position': {'field': 'kanban_position', 'mapping': int},
                     'reminder': {'field': 'reminders', 'mapping': (lambda x: x)}
@@ -94,7 +94,7 @@ class CommandService:
         task_remote.update({'title': title})
 
         logger.debug('put task: %s', task_remote)
-        task_json = self._api_client.put_task(task_remote['list_id'], task_remote)
+        task_json = self._api_client.put_task(task_remote['project_id'], task_remote)
         task = self._task_service.task_from_json(task_json)
 
         return task
