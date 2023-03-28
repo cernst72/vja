@@ -163,7 +163,6 @@ class Task:
     priority: int
     is_favorite: bool
     due_date: datetime
-    reminder_dates: typing.List[datetime]
     reminders: typing.List[TaskReminder]
     repeat_mode: int
     repeat_after: timedelta
@@ -191,7 +190,6 @@ class Task:
                    json['priority'],
                    json['is_favorite'],
                    parse_json_date(json['due_date']),
-                   [parse_json_date(reminder) for reminder in json['reminder_dates'] or []],
                    TaskReminder.from_json_array(json["reminders"]),
                    json['repeat_mode'],
                    timedelta(seconds=json['repeat_after']),
