@@ -69,11 +69,8 @@ class CommandService:
             list_id = self._list_service.get_default_list().id
         tag_name = args.pop('tag') if args.get('tag') else None
         is_force = args.pop('force_create') if args.get('force_create') is not None else False
-        if args.get('reminder'):
-            if args.get('reminder') == 'due':
-                args.update({'reminder': [{'relative_to': 'due_date', 'relative_period': 0}]})
-            else:
-                args.update({'reminder': [{'reminder': parse_date_arg_to_iso(args.get('reminder'))}]})
+
+        self._parse_reminder_arg(args.get('reminder'), args)
 
         payload = self._args_to_payload(args)
 
@@ -130,22 +127,11 @@ class CommandService:
 
     @staticmethod
     def _update_reminder(args, task_remote):
-        if args.get('reminder') is None:
-            return
-
-        # create reminder entry
-        if args.get('reminder') == 'due':
-            args.update(
-                {'reminder': [{'relative_to': 'due_date', 'relative_period': 0}]})  # --reminder=due or --reminder
-        elif args.get('reminder') == '':
-            args.update(
-                {'reminder': None})  # --reminder=""
-        else:
-            args.update(
-                {'reminder': [{'reminder': parse_date_arg_to_iso(args.get('reminder'))}]})
+        reminder_arg = args.get('reminder')
+        CommandService._parse_reminder_arg(reminder_arg, args)
 
         # replace the first existing reminder with our entry
-        new_reminder = args.pop('reminder')[0] if args.get('reminder') else None
+        new_reminder = args.pop('reminder')[0] if reminder_arg else None
         old_reminders = task_remote['reminders']
         if old_reminders and len(old_reminders) > 0:
             if new_reminder:
@@ -156,6 +142,27 @@ class CommandService:
             if new_reminder:
                 old_reminders = [new_reminder]  # create single reminder
         args.update({'reminder': old_reminders})
+
+    @staticmethod
+    def _parse_reminder_arg(reminder_arg, args):
+        if reminder_arg is None:
+            return
+        if reminder_arg == 'due':
+            args.update(
+                {'reminder': [{'relative_to': 'due_date', 'relative_period': 0}]})  # --reminder=due or --reminder
+        elif 'due' in reminder_arg:
+            reminder_due_args = reminder_arg.split(" ", 2)
+            duration = int(parse_date_arg_to_timedelta(reminder_due_args[0]).total_seconds())
+            sign = -1 if reminder_due_args[1] == 'before' else 1
+            args.update(
+                {'reminder': [{'relative_to': 'due_date',
+                               'relative_period': sign * duration}]})  # --reminder="1h before due_date"
+        elif reminder_arg == '':
+            args.update(
+                {'reminder': None})  # --reminder=""
+        else:
+            args.update(
+                {'reminder': [{'reminder': parse_date_arg_to_iso(reminder_arg)}]})
 
     def toggle_task_done(self, task_id):
         task_remote = self._api_client.get_task(task_id)

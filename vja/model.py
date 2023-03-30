@@ -14,7 +14,11 @@ def custom_output(cls):
                          if attribute.name != 'json' and getattr(self, attribute.name))
 
     def _str_value(attribute_value):
-        return [_str_value(x) for x in attribute_value] if isinstance(attribute_value, list) else str(attribute_value)
+        if isinstance(attribute_value, datetime):
+            return attribute_value.isoformat()
+        if isinstance(attribute_value, list):
+            return [_str_value(x) for x in attribute_value]
+        return str(attribute_value)
 
     setattr(cls, '__str__', str_function)
     return cls
@@ -25,6 +29,8 @@ def data_dict(cls):
         return {k: _transform_value(v) for k, v in self.__dict__.items() if k != 'json'}
 
     def _transform_value(v):
+        if isinstance(v, datetime):
+            return v.isoformat()
         if _is_data_dict(v):
             return v.data_dict()
         if isinstance(v, list):
