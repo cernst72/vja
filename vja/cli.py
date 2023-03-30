@@ -225,7 +225,9 @@ def label_add(application, title):
 @click.option('tag', '-t', '--tag', '--label',
               help='Set label (label must exist on server)')
 @click.option('reminder', '-r', '--alarm', '--remind', '--reminder', is_flag=False, flag_value='due',
-              help='Set reminder (supports parsedatetime expressions). Leave empty to set to due date.')
+              help='Set reminder (supports parsedatetime and timedelta expressions). '
+                   'Absolute: "in 3 days at 18:00" or relative: "1h before due_date" or just -r to set equal to '
+                   'due date.')
 @click.option('force_create', '--force-create', '--force', is_flag=True,
               help='Force creation of non existing label')
 @with_application
@@ -257,7 +259,7 @@ def task_clone(ctx, application, task_id, title):
 @click.option('note', '-n', '--note', '--description',
               help='Set description (note)')
 @click.option('note_append', '-a', '--note-append', '--append-note', '--description-append', '--append-description',
-              help='Append description to existing note separated by new line')
+              help='Append note to existing description separated by new line')
 @click.option('prio', '-p', '--prio', '--priority', type=click.INT,
               help='Set priority')
 @click.option('list_id', '-l', '--folder-id', '--project-id', '--list-id', '--list_id', type=click.INT,
@@ -277,7 +279,9 @@ def task_clone(ctx, application, task_id, title):
 @click.option('tag', '-t', '--tag', '--label',
               help='Set label (label must exist on server unless called with --force-create)')
 @click.option('reminder', '-r', '--alarm', '--remind', '--reminder', is_flag=False, flag_value='due',
-              help='Set reminder (supports parsedatetime expressions). Leave empty to set to due date.')
+              help='Set reminder (supports parsedatetime and timedelta expressions). '
+                   'Absolute: "in 3 days at 18:00" or relative: "1h30m before due_date" or just -r to set equal to '
+                   'due date.')
 @click.option('force_create', '--force-create', '--force', is_flag=True, default=None,
               help='Force creation of non existing label')
 @with_application
