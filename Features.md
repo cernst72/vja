@@ -165,10 +165,11 @@ vja edit 1 -r
 vja edit 1 --reminder
 ```
 
-Set reminder relative to due date
+Set reminder relative to due date (only due date is supported by vja for relative reminders)
 
 ```shell
-Not yet implemented!
+vja edit --reminder="1h before due_date" 
+vja edit -r "10m before due" 
 ```
 
 Remove the earliest reminder
