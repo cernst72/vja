@@ -25,7 +25,7 @@ build:
     paths:
       - dist/*.whl
   rules:
-    - if: CI_COMMIT_BRANCH && $CI_COMMIT_REF_SLUG !~ /renovate.*/
+    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_REF_SLUG !~ /renovate.*/
       when: manual
     - when: always
 
@@ -37,7 +37,7 @@ pylint:
     - flake8 --max-line-length=120 vja/*.py || true
     - pylint -d C0103,C0114,C0115,C0116,C0301 --fail-under=9 vja/*.py
   rules:
-    - if: CI_COMMIT_BRANCH && $CI_COMMIT_REF_SLUG !~ /renovate.*/
+    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_REF_SLUG !~ /renovate.*/
       when: manual
     - when: on_success
 
@@ -78,7 +78,7 @@ integration-test:
         coverage_format: cobertura
         path: coverage.xml
   rules:
-    - if: CI_COMMIT_BRANCH && $CI_COMMIT_REF_SLUG !~ /renovate.*/
+    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_REF_SLUG !~ /renovate.*/
       when: manual
     - when: on_success
 
