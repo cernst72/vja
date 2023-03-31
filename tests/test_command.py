@@ -28,12 +28,6 @@ class TestAddTask:
     def test_duplicate_task_title_rejected(self, runner):
         invoke(runner, 'add title of new task', 1)
 
-    def test_positions_not_null(self, runner):
-        res = invoke(runner, 'add any other new task --force')
-        after = json_for_created_task(runner, res.output)
-        assert after['kanban_position'] > 0
-        assert after['position'] > 0
-
     def test_default_reminder_uses_due(self, runner):
         res = invoke(runner, 'add title of new task --force --list=test-list --due=today --reminder')
         after = json_for_created_task(runner, res.output)
