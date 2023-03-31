@@ -13,10 +13,10 @@ services:
         /app/vikunja/vikunja user create -u test -p test -e test@test.test
         exec /app/vikunja/vikunja
       "
-#  frontend:
-#    image: vikunja/frontend:0.20.5
-#    ports:
-#      - "8080:80"
-#    environment:
-#      VIKUNJA_API_URL: http://localhost:3456/api/v1
+  frontend:
+    image: vikunja/frontend:0.20.5
+    ports:
+      - "8080:80"
+    environment:
+      VIKUNJA_API_URL: http://localhost:3456/api/v1
 
