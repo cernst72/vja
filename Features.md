@@ -1,4 +1,5 @@
 # Features
+
 <!-- TOC -->
 * [Features](#features)
   * [Create Task](#create-task)
@@ -10,6 +11,7 @@
     * [Select](#select)
   * [Show single task by id](#show-single-task-by-id)
   * [Modify tasks](#modify-tasks)
+    * [Defer task](#defer-task)
     * [Reminders](#reminders)
     * [Batch editing](#batch-editing)
   * [Open Vikunja in browser](#open-vikunja-in-browser)
@@ -162,12 +164,15 @@ vja check 1 # Shortcut to toggle the done flag of task 1
 ```
 
 ### Defer task
+
 There is a shortcut for setting a delay on a task by giving a timedelta expression.
+
 ```shell
 vja defer 1 1d
 vja defer --help
 ```
-This command moves the due_date (and later the reminder) ahead in time.
+
+This command moves the due_date and the first reminder ahead in time.
 
 ### Reminders
 
@@ -205,7 +210,7 @@ The same goes for `vja add`.
 
 ### Batch editing
 
-Multiple edits are possible by giving more task ids
+Multiple edits and defers are possible by giving more task ids
 
 ```shell
 vja edit 1 5 8 --due="next monday 14:00"

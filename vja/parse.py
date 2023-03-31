@@ -29,10 +29,10 @@ def parse_date_arg_to_datetime(text: str) -> Optional[datetime]:
 
 
 def parse_date_arg_to_iso(text: str) -> str:
-    return format_datetime_to_json(parse_date_arg_to_datetime(text))
+    return datetime_to_isoformat(parse_date_arg_to_datetime(text))
 
 
-def format_datetime_to_json(date: datetime) -> str:
+def datetime_to_isoformat(date: datetime) -> str:
     return date.astimezone(tz.tzlocal()).isoformat() if date else None
 
 
