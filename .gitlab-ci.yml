@@ -16,7 +16,7 @@ pylint:
   allow_failure: true
   script:
     - pip install -r requirements_dev.txt
-    - python setup.py sdist bdist_wheel
+    - pip uninstall -y vja && python3 setup.py sdist bdist_wheel && pip install dist/*.whl;
     - flake8 --max-line-length=120 vja/*.py || true
     - pylint -d C0103,C0114,C0115,C0116,C0301 --fail-under=9 vja/*.py
   rules:
@@ -42,14 +42,13 @@ integration-test:
     - python3 --version
 
     - pip install -r requirements_dev.txt
-    - pip uninstall -y vja; python3 setup.py sdist bdist_wheel
-    - pip install dist/*.whl;
-
+    - pip uninstall -y vja && python3 setup.py sdist bdist_wheel && pip install dist/*.whl;
     - pip show vja
     - which vja
 
     - docker-compose -f tests/docker-compose.yml up -d api
     - sleep 1s
+
     - export VJA_CONFIGDIR=tests/.vjatest_dind
     - tests/run.sh test
     - coverage run --omit='*test*' -m pytest
