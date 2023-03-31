@@ -156,7 +156,6 @@ class TaskReminder:
         return [TaskReminder.from_json(x) for x in json_array or []]
 
 
-
 @dataclass
 @custom_output
 @data_dict
