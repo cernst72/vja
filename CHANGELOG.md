@@ -1,3 +1,15 @@
+## [1.5.0](https://gitlab.com/ce72/vja/compare/1.4.1...1.5.0) (2023-03-31)
+
+
+### Features
+
+* defer task ([af87d8a](https://gitlab.com/ce72/vja/commit/af87d8acd821b36609c95fccd4a77ffea96e4b08))
+
+
+### Misc
+
+* **deps:** update all dependencies ([5abe98f](https://gitlab.com/ce72/vja/commit/5abe98f0e32d450930f2d28f904ea2a565e1b011))
+
 ## [1.4.1](https://gitlab.com/ce72/vja/compare/1.4.0...1.4.1) (2023-03-17)
 
 
