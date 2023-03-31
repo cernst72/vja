@@ -303,6 +303,19 @@ def task_toggle(ctx, application, task_id):
     ctx.invoke(task_show, tasks=[task_id])
 
 
+@cli.command('defer', aliases=['delay'], help='Shortcut for moving the due_date and the reminders of the task. '
+                                              'Valid delay values are 2d, 1h30m.')
+@click.argument('task_ids', required=True, type=click.INT, nargs=-1)
+@click.argument('delay_by', required=True)
+@with_application
+@click.pass_context
+def task_defer(ctx, application, task_ids, delay_by):
+    for task_id in task_ids:
+        task = application.command_service.defer_task(task_id, delay_by)
+        click.echo(f'Modified task {task.id} in list {task.tasklist.id}')
+        ctx.invoke(task_show, tasks=[task_id])
+
+
 @cli.command('ls', help='List tasks ... (task-id; priority; is_favorite; title; due_date; '
                         'has reminder; namespace; list; labels; urgency)')
 @click.option('is_json', '--json', default=False, is_flag=True,
