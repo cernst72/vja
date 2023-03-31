@@ -59,6 +59,7 @@ integration-test:
     - which vja
 
     - docker-compose -f tests/docker-compose.yml up -d api
+    - sleep 1s
     - export VJA_CONFIGDIR=tests/.vjatest_dind
     - tests/run.sh test
     - coverage run --omit='*test*' -m pytest
