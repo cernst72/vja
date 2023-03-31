@@ -308,7 +308,7 @@ def task_toggle(ctx, application, task_id):
 
 
 @cli.command('defer', aliases=['delay'], help='Shortcut for moving the due_date and the reminders of the task. '
-                                              'Valid delay values are 2d, 1h30m.')
+                                              'Examples for valid delay values are 2d, 1h30m.')
 @click.argument('task_ids', required=True, type=click.INT, nargs=-1)
 @click.argument('delay_by', required=True)
 @with_application
