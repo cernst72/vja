@@ -36,9 +36,6 @@ integration-test:
   script:
     - docker --version
     - apk add --no-cache bash curl python3-dev py3-pip docker-compose
-    - pip3 install wheel
-    - pip3 install pytest
-    - pip3 install coverage
     - python3 --version
 
     - pip install -r requirements_dev.txt
