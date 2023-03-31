@@ -6,7 +6,6 @@ variables:
 cache:
   paths:
     - .cache/pip
-    - venv/
 
 stages:
   - test
@@ -16,6 +15,7 @@ pylint:
   stage: test
   allow_failure: true
   script:
+    - pip install -r requirements_dev.txt
     - flake8 --max-line-length=120 vja/*.py || true
     - pylint -d C0103,C0114,C0115,C0116,C0301 --fail-under=9 vja/*.py
   rules:
@@ -56,7 +56,6 @@ integration-test:
     - coverage xml --omit='*test*'
     - docker-compose -f tests/docker-compose.yml down
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
-  cache: { }
   artifacts:
     reports:
       coverage_report:
