@@ -206,6 +206,17 @@ class TestToggleDoneTask:
         assert json_0['priority'] == json_1['priority'] == json_2['priority'] == 5
 
 
+class TestDeferTask:
+    def test_defer_task(self, runner):
+        invoke(runner, f'edit 2 --due-date={TODAY_ISO}')
+
+        invoke(runner, 'defer 2 1d')
+
+        after = json_for_task_id(runner, 2)
+        assert after['due_date'][:10] == TOMORROW.date().isoformat()
+        assert after['reminder_dates'][0][:10] == TOMORROW.date().isoformat()
+
+
 class TestMultipleTasks:
     def test_edit_three_tasks(self, runner):
         invoke(runner, 'edit 1 2 3 --priority=4')

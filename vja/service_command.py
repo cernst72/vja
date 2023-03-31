@@ -4,7 +4,7 @@ from vja import VjaError
 from vja.apiclient import ApiClient
 from vja.list_service import ListService
 from vja.model import Label
-from vja.parse import parse_date_arg_to_iso, parse_json_date
+from vja.parse import parse_date_arg_to_iso, parse_json_date, parse_date_arg_to_timedelta, format_datetime_to_json
 from vja.task_service import TaskService
 
 logger = logging.getLogger(__name__)
@@ -151,6 +151,17 @@ class CommandService:
     def toggle_task_done(self, task_id):
         task_remote = self._api_client.get_task(task_id)
         task_remote.update({'done': not task_remote['done']})
+        task_json = self._api_client.post_task(task_id, task_remote)
+        return self._task_service.task_from_json(task_json)
+
+    def defer_task(self, task_id, delay_by):
+        task_remote = self._api_client.get_task(task_id)
+        timedelta = parse_date_arg_to_timedelta(delay_by)
+        due_date = parse_json_date(task_remote['due_date'])
+        if due_date:
+            due_date = format_datetime_to_json(due_date + timedelta)
+            task_remote.update({'due_date': due_date})
+        # TODO update absolute reminders
         task_json = self._api_client.post_task(task_id, task_remote)
         return self._task_service.task_from_json(task_json)
 
