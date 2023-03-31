@@ -16,8 +16,6 @@ pylint:
   stage: test
   allow_failure: true
   script:
-    - ci/virtual-env.sh
-    - source venv/bin/activate
     - flake8 --max-line-length=120 vja/*.py || true
     - pylint -d C0103,C0114,C0115,C0116,C0301 --fail-under=9 vja/*.py
   rules:
@@ -42,7 +40,10 @@ integration-test:
     - pip3 install coverage
     - python3 --version
 
-    - ci/build-install.sh
+    - pip install -r requirements_dev.txt
+    - python3 setup.py sdist bdist_wheel
+    - pip install dist/*.whl;
+
     - pip show vja
     - which vja
 
