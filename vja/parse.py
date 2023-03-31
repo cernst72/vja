@@ -2,6 +2,7 @@ import functools
 import re
 import time
 from datetime import datetime, timedelta
+from typing import Optional
 
 import dateutil.parser
 from dateutil import tz
@@ -14,7 +15,7 @@ _timedelta_regex = re.compile(r'^((?P<weeks>[.\d]+?)w)? *'
                               r'((?P<seconds>[.\d]+?)s?)?$')
 
 
-def parse_date_arg_to_datetime(text: str):
+def parse_date_arg_to_datetime(text: str) -> Optional[datetime]:
     if not text:
         return None
     try:
@@ -27,12 +28,15 @@ def parse_date_arg_to_datetime(text: str):
         return datetime_date
 
 
-def parse_date_arg_to_iso(text: str):
-    result = parse_date_arg_to_datetime(text)
-    return result.astimezone(tz.tzlocal()).isoformat() if result else None
+def parse_date_arg_to_iso(text: str) -> str:
+    return format_datetime_to_json(parse_date_arg_to_datetime(text))
 
 
-def parse_date_arg_to_timedelta(time_str: str):
+def format_datetime_to_json(date: datetime) -> str:
+    return date.astimezone(tz.tzlocal()).isoformat() if date else None
+
+
+def parse_date_arg_to_timedelta(time_str: str) -> Optional[timedelta]:
     """
     Parse a time string e.g. '2h 13m' or '1.5d' into a timedelta object.
     Based on Peter's answer at https://stackoverflow.com/a/51916936/2445204
@@ -50,7 +54,7 @@ def parse_date_arg_to_timedelta(time_str: str):
     return timedelta(**time_params)
 
 
-def parse_bool_arg(text: str):
+def parse_bool_arg(text: str) -> bool:
     return text.lower() in ['true', '1', 't', 'y', 'yes'] if text else False
 
 
@@ -64,7 +68,7 @@ def rgetattr(obj, path: str, *default):
         raise
 
 
-def parse_json_date(json_date):
+def parse_json_date(json_date: str) -> Optional[datetime]:
     if json_date and json_date > '0001-01-02T00:00:00Z':
         return dateutil.parser.isoparse(json_date).astimezone(tz.tzlocal()).replace(tzinfo=None)
     return None

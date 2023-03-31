@@ -129,10 +129,18 @@ vja edit 1 --done="true"
 vja check 1 # Shortcut to toggle the done flag of task 1
 ```
 
+### Defer task
+There is a shortcut for setting a delay on a task by giving a timedelta expression.
+```shell
+vja defer 1 1d
+```
+This command moves the due_date (and later the reminder) ahead in time.
+
 Multiple edits are possible by giving more task ids
 
 ```shell
-vja edit 1 5 8 --due="next monday at 14:00"
+vja edit 1 5 8 --due="next monday 14:00"
+vja defer 1 2 3 1d
 ```
 
 See
