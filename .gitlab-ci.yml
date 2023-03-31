@@ -16,7 +16,7 @@ pylint:
   allow_failure: true
   script:
     - pip install -r requirements_dev.txt
-    - pip uninstall -y vja && python3 setup.py sdist bdist_wheel && pip install dist/*.whl;
+    - pip uninstall -y vja && python3 setup.py sdist bdist_wheel && pip install dist/*.whl
     - flake8 --max-line-length=120 vja/*.py || true
     - pylint -d C0103,C0114,C0115,C0116,C0301 --fail-under=9 vja/*.py
   rules:
@@ -35,11 +35,11 @@ integration-test:
     DOCKER_TLS_CERTDIR: ""
   script:
     - docker --version
-    - apk add --no-cache bash curl python3-dev py3-pip docker-compose
+    - apk add --no-cache python3 py3-pip docker-compose
     - python3 --version
 
     - pip install -r requirements_dev.txt
-    - pip uninstall -y vja && python3 setup.py sdist bdist_wheel && pip install dist/*.whl;
+    - pip uninstall -y vja && python3 setup.py sdist bdist_wheel && pip install dist/*.whl
     - pip show vja
     - which vja
 
