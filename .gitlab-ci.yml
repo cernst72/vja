@@ -33,7 +33,7 @@ integration-test:
     DOCKER_TLS_CERTDIR: ""
   script:
     - docker --version
-    - apk add --no-cache bash python3 py3-pip docker-compose
+    - apk add --no-cache bash python3 py3-pip
     - python3 --version
 
     - pip install -r requirements_dev.txt
@@ -41,7 +41,7 @@ integration-test:
     - pip show vja
     - which vja
 
-    - docker-compose -f tests/docker-compose.yml up -d api
+    - docker compose -f tests/docker-compose.yml up -d api
     - sleep 1s
 
     - export VJA_CONFIGDIR=tests/.vjatest_dind
