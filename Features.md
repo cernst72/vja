@@ -1,4 +1,26 @@
 # Features
+<!-- TOC -->
+* [Features](#features)
+  * [Create Task](#create-task)
+    * [Clone](#clone)
+  * [List tasks](#list-tasks)
+    * [Urgency](#urgency)
+    * [Filter](#filter)
+    * [Sort](#sort)
+    * [Select](#select)
+  * [Show single task by id](#show-single-task-by-id)
+  * [Modify tasks](#modify-tasks)
+    * [Reminders](#reminders)
+    * [Batch editing](#batch-editing)
+  * [Open Vikunja in browser](#open-vikunja-in-browser)
+  * [Manage lists, namespaces, labels, buckets](#manage-lists-namespaces-labels-buckets)
+    * [Manage namespaces](#manage-namespaces)
+    * [Manage lists (projects)](#manage-lists-projects)
+    * [Manage kanban buckets](#manage-kanban-buckets)
+    * [Manage labels](#manage-labels)
+  * [Output format](#output-format)
+  * [Terminate session](#terminate-session)
+<!-- TOC -->
 
 ## Create Task
 
@@ -6,7 +28,7 @@
 context:
 
 ```shell
-vja add Make things work --note="find out how" -priority=3 --favorite=True --due="tomorrow at 11:00" --reminder --tag=@work
+vja add Getting things done --note="find out how" -priority=3 --favorite=True --due="tomorrow at 11:00" --reminder --tag=@work
 ```
 
 or more concise
