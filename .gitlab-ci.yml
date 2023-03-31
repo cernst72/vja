@@ -16,6 +16,7 @@ pylint:
   allow_failure: true
   script:
     - pip install -r requirements_dev.txt
+    - python setup.py sdist bdist_wheel
     - flake8 --max-line-length=120 vja/*.py || true
     - pylint -d C0103,C0114,C0115,C0116,C0301 --fail-under=9 vja/*.py
   rules:
@@ -41,7 +42,7 @@ integration-test:
     - python3 --version
 
     - pip install -r requirements_dev.txt
-    - python3 setup.py sdist bdist_wheel
+    - pip uninstall -y vja; python3 setup.py sdist bdist_wheel
     - pip install dist/*.whl;
 
     - pip show vja
@@ -80,7 +81,6 @@ release:
   script:
     - python --version
     - semantic-release
-  cache: {}
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: on_success
