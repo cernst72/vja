@@ -27,7 +27,7 @@ pylint:
 integration-test:
   stage: test
   image:
-    name: docker:stable
+    name: docker:20.10.23
   services:
     - name: docker:dind
   variables:
@@ -35,7 +35,7 @@ integration-test:
     DOCKER_TLS_CERTDIR: ""
   script:
     - docker --version
-    - apk add --no-cache python3 py3-pip docker-compose
+    - apk add --no-cache bash python3 py3-pip docker-compose
     - python3 --version
 
     - pip install -r requirements_dev.txt
