@@ -4,7 +4,7 @@ from vja import VjaError
 from vja.apiclient import ApiClient
 from vja.list_service import ListService
 from vja.model import Label
-from vja.parse import parse_date_arg_to_iso, parse_json_date, parse_date_arg_to_timedelta, format_datetime_to_json
+from vja.parse import parse_date_arg_to_iso, parse_json_date, parse_date_arg_to_timedelta, datetime_to_isoformat
 from vja.task_service import TaskService
 
 logger = logging.getLogger(__name__)
@@ -90,6 +90,8 @@ class CommandService:
         task_remote.update({'id': None})
         task_remote.update({'title': title})
 
+        # make sure we do not send back the old reminder_dates
+        task_remote.pop("reminder_dates", None)
         logger.debug('put task: %s', task_remote)
         task_json = self._api_client.put_task(task_remote['project_id'], task_remote)
         task = self._task_service.task_from_json(task_json)
@@ -166,18 +168,33 @@ class CommandService:
 
     def toggle_task_done(self, task_id):
         task_remote = self._api_client.get_task(task_id)
+        # make sure we do not send back the old reminder_dates
+        task_remote.pop("reminder_dates", None)
         task_remote.update({'done': not task_remote['done']})
         task_json = self._api_client.post_task(task_id, task_remote)
         return self._task_service.task_from_json(task_json)
 
     def defer_task(self, task_id, delay_by):
-        task_remote = self._api_client.get_task(task_id)
         timedelta = parse_date_arg_to_timedelta(delay_by)
+        args = {}
+
+        task_remote = self._api_client.get_task(task_id)
         due_date = parse_json_date(task_remote['due_date'])
         if due_date:
-            due_date = format_datetime_to_json(due_date + timedelta)
-            task_remote.update({'due_date': due_date})
-        # TODO update absolute reminders
+            args.update({'due': datetime_to_isoformat(due_date + timedelta)})
+        old_reminders = task_remote['reminders']
+        if old_reminders and len(old_reminders) > 0:
+            reminder_date = parse_json_date(old_reminders[0]['reminder'])
+            is_absolute_reminder = not old_reminders[0]['relative_to']
+            if reminder_date and is_absolute_reminder:
+                args.update({'reminder': datetime_to_isoformat(reminder_date + timedelta)})
+                self._update_reminder(args, task_remote)
+
+        payload = self._args_to_payload(args)
+        logger.debug('update fields: %s', payload)
+        task_remote.update(payload)
+        # make sure we do not send back the old reminder_dates
+        task_remote.pop("reminder_dates", None)
         task_json = self._api_client.post_task(task_id, task_remote)
         return self._task_service.task_from_json(task_json)
 
