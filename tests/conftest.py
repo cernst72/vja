@@ -43,7 +43,7 @@ def _create_list_and_task():
 def run_vja(command):
     result = subprocess.run(command.split(), capture_output=True, check=False)
     if result.returncode:
-        print('!!! Non-zero result from command: ' + command)
+        print(f'!!! Non-zero result ({result.returncode}) from command {command}')
         sys.stdout.write(result.stdout.decode('utf-8'))
         sys.stdout.write(result.stderr.decode('utf-8'))
         sys.exit(1)

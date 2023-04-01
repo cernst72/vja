@@ -14,7 +14,7 @@ services:
         exec /app/vikunja/vikunja
       "
   frontend:
-    image: vikunja/frontend:0.20.5
+    image: vikunja/frontend:unstable
     ports:
       - "8080:80"
     environment:
