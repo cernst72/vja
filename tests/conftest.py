@@ -1,3 +1,4 @@
+import logging
 import os
 import subprocess
 import sys
@@ -7,16 +8,23 @@ from click.testing import CliRunner
 
 from vja.cli import cli
 
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+
 
 @pytest.fixture(name='runner', scope='session')
 def setup_runner():
     return CliRunner()
 
 
-def invoke(runner, command, return_code=0, user_input=None, catch_exceptions=True):
+def invoke(runner, command, return_code=0, user_input=None, catch_exceptions=False):
     if isinstance(command, str):
         command = command.split()
     res = runner.invoke(cli, command, input=user_input, catch_exceptions=catch_exceptions)
+    sys.stdout.write(res.output)
+    if res.stderr_bytes:
+        sys.stdout.write(res.stderr_bytes)
+    if res.exception:
+        logging.warning(res.exception)
     assert res.exit_code == return_code, res
     return res
 
