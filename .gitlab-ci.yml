@@ -13,6 +13,7 @@ pylint:
   image: python:3.11-slim
   allow_failure: true
   script:
+    - echo $CI_COMMIT_BRANCH
     - pip install -r requirements_dev.txt
     - pip uninstall -y vja && python3 setup.py sdist bdist_wheel && pip install dist/*.whl
     - flake8 --max-line-length=120 vja/*.py || true
