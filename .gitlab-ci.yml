@@ -13,7 +13,6 @@ pylint:
   image: python:3.11-slim
   allow_failure: true
   script:
-    - echo $CI_COMMIT_BRANCH
     - pip install -r requirements_dev.txt
     - pip uninstall -y vja && python3 setup.py sdist bdist_wheel && pip install dist/*.whl
     - flake8 --max-line-length=120 vja/*.py || true
@@ -78,6 +77,6 @@ release:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: on_success
-    - if: $CI_COMMIT_BRANCH == "beta"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: manual
 
