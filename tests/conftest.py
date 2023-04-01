@@ -30,36 +30,23 @@ def invoke(runner, command, return_code=0, user_input=None, catch_exceptions=Fal
 
 
 def _login_as_test_user():
-    result = subprocess.run('vja logout'.split(), check=False)
-    if result.returncode:
-        print(result.stdout)
-        print(result.stderr)
-        return result.returncode
-
-    result = subprocess.run('vja --username=test --password=test user show'.split(), check=False)
-    if result.returncode:
-        print(result.stdout)
-        print(result.stderr)
-    return result.returncode
+    run_vja('vja logout')
+    run_vja('vja --username=test --password=test user show')
 
 
 def _create_list_and_task():
-    result = subprocess.run('vja list add test-list'.split(), check=False)
+    run_vja('vja list add test-list')
+    run_vja('vja add At least one task --force-create --priority=5 --due-date=today --tag=my_tag --favorite=True')
+    run_vja('vja add A task without a label --force-create')
+
+
+def run_vja(command):
+    result = subprocess.run(command.split(), capture_output=True, check=False)
     if result.returncode:
-        print(result.stdout)
-        print(result.stderr)
-        return result.returncode
-    result = subprocess.run('vja add At least one task --force-create '
-                            '--priority=5 --due-date=today --tag=my_tag --favorite=True'.split(), check=False)
-    if result.returncode:
-        print(result.stdout)
-        print(result.stderr)
-        return result.returncode
-    result = subprocess.run('vja add A task without a label --force-create'.split(), check=False)
-    if result.returncode:
-        print(result.stdout)
-        print(result.stderr)
-    return result.returncode
+        print('!!! Non-zero result from command: ' + command)
+        sys.stdout.write(result.stdout.decode('utf-8'))
+        sys.stdout.write(result.stderr.decode('utf-8'))
+        sys.exit(1)
 
 
 def pytest_configure():
@@ -67,10 +54,6 @@ def pytest_configure():
         print('!!! Precondition not met. You must set VJA_CONFIGDIR in environment variables !!!')
         sys.exit(1)
 
-    if _login_as_test_user() > 0:
-        print('!!! Precondition not met. Cannot connect to Vikunja with user test/test')
-        sys.exit(1)
+    _login_as_test_user()
 
-    if _create_list_and_task() > 0:
-        print('!!! Unable to create default list')
-        sys.exit(1)
+    _create_list_and_task()
