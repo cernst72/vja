@@ -134,16 +134,17 @@ class CommandService:
 
         # replace the first existing reminder with our entry
         new_reminder = args.pop('reminder')[0] if reminder_arg else None
-        old_reminders = task_remote['reminders']
-        if old_reminders and len(old_reminders) > 0:
-            if new_reminder:
-                old_reminders[0] = new_reminder  # overwrite first remote reminder
+        if new_reminder is not None:
+            old_reminders = task_remote['reminders']
+            if old_reminders and len(old_reminders) > 0:
+                if new_reminder:
+                    old_reminders[0] = new_reminder  # overwrite first remote reminder
+                else:
+                    old_reminders.pop(0)  # remove first remote reminder
             else:
-                old_reminders.pop(0)  # remove first remote reminder
-        else:
-            if new_reminder:
-                old_reminders = [new_reminder]  # create single reminder
-        args.update({'reminder': old_reminders})
+                if new_reminder:
+                    old_reminders = [new_reminder]  # create single reminder
+            args.update({'reminder': old_reminders})
 
     @staticmethod
     def _parse_reminder_arg(reminder_arg, args):
