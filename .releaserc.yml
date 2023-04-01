@@ -1,9 +1,9 @@
-# spec: https://semantic-release.gitbook.io/semantic-release/usage/configuration
 tagFormat: "${version}"
-branches: [ main, next ]
+branches:
+  - main
+  - { name: beta, prerelease: true }
+
 plugins:
-  # Determine the type of release by analyzing commits.
-  # ie: Major, Minor or Patch
   - - "@semantic-release/commit-analyzer"
     - preset: conventionalcommits
       releaseRules:
