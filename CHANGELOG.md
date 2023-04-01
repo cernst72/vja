@@ -1,14 +1,62 @@
-## [1.5.1](https://gitlab.com/ce72/vja/compare/1.5.0...1.5.1) (2023-04-27)
+## [2.0.0-beta.1](https://gitlab.com/ce72/vja/compare/1.5.0...2.0.0-beta.1) (2023-04-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* **api:** remove reminder_dates
+* **api:** New projects api (only backend side)
+* Preliminary support for new reminder array
+
+### Features
+
+* **api:** New projects api (only backend side) ([157aeb4](https://gitlab.com/ce72/vja/commit/157aeb483fa2b5d3b1d733f7682c97c8e449aebc))
+* **api:** remove reminder_dates ([76ffb20](https://gitlab.com/ce72/vja/commit/76ffb2007cf77d87e41b8cdb8bf16a0f9d4edf26))
+* defer reminder ([c493b07](https://gitlab.com/ce72/vja/commit/c493b07266affc2f6976a5682b1b33170c90e51b))
+* Preliminary support for new reminder array ([eb7e819](https://gitlab.com/ce72/vja/commit/eb7e819b08b897eeb55e0a18320a03a11442ce91))
+* **reminders:** Set relative reminders like "1h before due" ([f05438d](https://gitlab.com/ce72/vja/commit/f05438d9f8c61ee04cb5432b2e1e0d0a56ff2175))
+* Support for new reminder array (read) ([c323c76](https://gitlab.com/ce72/vja/commit/c323c76fcb52541a00e35d1e5c31a668eb061405))
+
+
+### Bug Fixes
+
+* do not unset reminder if missing in vja edit ([a3b81b0](https://gitlab.com/ce72/vja/commit/a3b81b0bae08841fd92e204d5557cc1ad46a59b3))
+* sharpen test ([4c59738](https://gitlab.com/ce72/vja/commit/4c59738a19bb4dabd1b871d54ba40f8833b2fe10))
 
 
 ### Misc
 
-* **deps:** update all dependencies ([546d995](https://gitlab.com/ce72/vja/commit/546d9953f3fba1289760b9d5b6bcd6f6ac4e2c99))
+* Remove redundant test ([2901848](https://gitlab.com/ce72/vja/commit/29018480b6a11c2ec3495ce6e44c4955fe6b13ec))
+
+
+### Documentation
+
+* Add table of contents to Features.md ([3a87061](https://gitlab.com/ce72/vja/commit/3a87061f39b2bf4d2a1194197f5cfef3c8d7d46e))
 
 
 ### Automation
 
-* wait for running api container ([fca176d](https://gitlab.com/ce72/vja/commit/fca176dfb72c8b3e7ef07a048093691c5c74f8c3))
+* automate beta releases ([8f19e48](https://gitlab.com/ce72/vja/commit/8f19e48db1312db3e6d27716a692b95805ef82d1))
+* automate beta releases ([1c74fda](https://gitlab.com/ce72/vja/commit/1c74fdab9e9b02fc116a1532b081b562e9dbf832))
+* automate beta releases ([8f7bb4f](https://gitlab.com/ce72/vja/commit/8f7bb4f9802ec6e199d5f7dd60790341550a1785))
+* automate beta releases ([68bd7d8](https://gitlab.com/ce72/vja/commit/68bd7d8ee3b3579c3f48b3b8d13d2780f5194641))
+* capture click output ([9aafa2c](https://gitlab.com/ce72/vja/commit/9aafa2c426757b2068a1199410db58899356eacd))
+* cleanup gitlab-ci ([450d13f](https://gitlab.com/ce72/vja/commit/450d13fe43987c3cf33c72bfa2303e452ee7be8b))
+* cleanup gitlab-ci ([543a479](https://gitlab.com/ce72/vja/commit/543a47928a9539982a91507ece4e9d3605bb2dbb))
+* cleanup gitlab-ci ([7145451](https://gitlab.com/ce72/vja/commit/714545181a76b15c4341df3a4ff6830416ddf897))
+* cleanup gitlab-ci ([9584cac](https://gitlab.com/ce72/vja/commit/9584cac6e18e81480231b34fabd46990249a2760))
+* cleanup test setup ([5e5040a](https://gitlab.com/ce72/vja/commit/5e5040a3254b8cc5dc75f0391352e0e1358fdeaa))
+* install coverage from requirements_dev.txt ([eab4b0f](https://gitlab.com/ce72/vja/commit/eab4b0f4ef879c64859c9796f2562b09eaa53320))
+* pipeline on branches only manual ([43fa7df](https://gitlab.com/ce72/vja/commit/43fa7df6ec8fe69eb8d9d27589b65b9541b0b71a))
+* pipeline on branches only manual ([8689f5e](https://gitlab.com/ce72/vja/commit/8689f5e0a36a536187a9df97dd38a2a0ece9ed01))
+* remove build stage ([3294b83](https://gitlab.com/ce72/vja/commit/3294b83e1b75b2b6826333104d91e71ee1b8d478))
+* remove build stage ([8bca866](https://gitlab.com/ce72/vja/commit/8bca866c60f3ed2cf62eeb87cd10dad06f9563e6))
+* remove build stage ([4638743](https://gitlab.com/ce72/vja/commit/46387430fe4c92a02b818e200672c86ed4190e1a))
+* remove build stage ([5b32e53](https://gitlab.com/ce72/vja/commit/5b32e53277c3ee95464eb1d60f2c270dccb5bf4b))
+* remove build stage ([7dd6dcb](https://gitlab.com/ce72/vja/commit/7dd6dcbf9f8c373a9d8b33b8c17d29c559cc1075))
+* remove redundant apk packages ([22a3f48](https://gitlab.com/ce72/vja/commit/22a3f48391bc8434fcb208d31e4db50f701b8c68))
+* remove redundant apk packages ([efb7016](https://gitlab.com/ce72/vja/commit/efb701685d11bad90eb844ac8636117225ab2f7c))
+* sleep 1s after starting api ([649a806](https://gitlab.com/ce72/vja/commit/649a8063a39f76f91196c0f6f8261f5033f95d52))
+* update semantic-release configuration ([572f519](https://gitlab.com/ce72/vja/commit/572f519a10bc97e9badb017f90b5e723eecc8e42))
 
 ## [1.5.0](https://gitlab.com/ce72/vja/compare/1.4.1...1.5.0) (2023-03-31)
 
