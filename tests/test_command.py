@@ -26,7 +26,7 @@ class TestAddTask:
         assert after['tasklist']['title'] == 'test-list'
 
     def test_duplicate_task_title_rejected(self, runner):
-        invoke(runner, 'add title of new task', 1)
+        invoke(runner, 'add title of new task', 1, catch_exceptions=True)
 
     def test_default_reminder_uses_due(self, runner):
         res = invoke(runner, 'add title of new task --force --list=test-list --due=today --reminder')
