@@ -1,3 +1,10 @@
+## [2.0.0-beta.2](https://gitlab.com/ce72/vja/compare/2.0.0-beta.1...2.0.0-beta.2) (2023-04-02)
+
+
+### Features
+
+* rename lists to project within vja ([f757117](https://gitlab.com/ce72/vja/commit/f75711797d887ffee8cd5b3ab7ec7edb8044494e))
+
 ## [2.0.0-beta.1](https://gitlab.com/ce72/vja/compare/1.5.0...2.0.0-beta.1) (2023-04-01)
 
 
