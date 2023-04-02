@@ -8,7 +8,7 @@ from vja.parse import rgetattr
 from vja.task_service import TaskService
 
 logger = logging.getLogger(__name__)
-DEFAULT_SORT_STRING = 'done, -urgency, due_date, -priority, tasklist.title, title'
+DEFAULT_SORT_STRING = 'done, -urgency, due_date, -priority, project.title, title'
 
 
 class QueryService:
@@ -25,16 +25,16 @@ class QueryService:
     def find_all_namespaces(self):
         return Namespace.from_json_array(self._api_client.get_namespaces())
 
-    # list
-    def find_all_lists(self):
-        return [self._list_service.convert_list_json(list_json) for list_json in (self._api_client.get_lists())]
+    # project
+    def find_all_projects(self):
+        return [self._list_service.convert_project_json(project_json) for project_json in (self._api_client.get_projects())]
 
-    def find_list_by_id(self, list_id):
-        return self._list_service.convert_list_json(self._api_client.get_list(list_id))
+    def find_project_by_id(self, project_id):
+        return self._list_service.convert_project_json(self._api_client.get_project(project_id))
 
     # bucket
-    def find_all_buckets_in_list(self, list_id):
-        return Bucket.from_json_array(self._api_client.get_buckets(list_id))
+    def find_all_buckets_in_project(self, project_id):
+        return Bucket.from_json_array(self._api_client.get_buckets(project_id))
 
     # label
     def find_all_labels(self):

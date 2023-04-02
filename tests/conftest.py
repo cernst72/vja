@@ -34,8 +34,8 @@ def _login_as_test_user():
     run_vja('vja --username=test --password=test user show')
 
 
-def _create_list_and_task():
-    run_vja('vja list add test-list')
+def _create_project_and_task():
+    run_vja('vja project add test-project')
     run_vja('vja add At least one task --force-create --priority=5 --due-date=today --tag=my_tag --favorite=True')
     run_vja('vja add A task without a label --force-create')
 
@@ -56,4 +56,4 @@ def pytest_configure():
 
     _login_as_test_user()
 
-    _create_list_and_task()
+    _create_project_and_task()

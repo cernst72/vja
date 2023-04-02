@@ -5,7 +5,7 @@ import re
 from tests.conftest import invoke
 from vja.cli import cli
 
-ADD_SUCCESS_PATTERN = re.compile(r'.*Created task (\d+) in list .*')
+ADD_SUCCESS_PATTERN = re.compile(r'.*Created task (\d+) in project .*')
 DATE_1 = datetime.datetime(2023, 3, 30, 15, 0, 0, 0)
 DATE_2 = DATE_1 + datetime.timedelta(days=1)
 DATE_1_ISO = DATE_1.isoformat()
@@ -15,27 +15,27 @@ TODAY_ISO = TODAY.isoformat()
 
 
 class TestAddTask:
-    def test_list_id(self, runner):
-        res = invoke(runner, 'add title of new task --force --list=1')
+    def test_project_id(self, runner):
+        res = invoke(runner, 'add title of new task --force --project=1')
         after = json_for_created_task(runner, res.output)
-        assert after['tasklist']['id'] == 1
+        assert after['project']['id'] == 1
 
-    def test_list_title(self, runner):
-        res = invoke(runner, 'add title of new task --force --list=test-list')
+    def test_project_title(self, runner):
+        res = invoke(runner, 'add title of new task --force --project=test-project')
         after = json_for_created_task(runner, res.output)
-        assert after['tasklist']['title'] == 'test-list'
+        assert after['project']['title'] == 'test-project'
 
     def test_duplicate_task_title_rejected(self, runner):
         invoke(runner, 'add title of new task', 1, catch_exceptions=True)
 
     def test_default_reminder_uses_due(self, runner):
-        res = invoke(runner, 'add title of new task --force --list=test-list --due=today --reminder')
+        res = invoke(runner, 'add title of new task --force --project=test-project --due=today --reminder')
         after = json_for_created_task(runner, res.output)
         assert after['reminders'][0]['relative_period'] == 0
         assert after['reminders'][0]['relative_to'] == 'due_date'
 
     def test_default_reminder_with_absolute_time(self, runner):
-        res = invoke(runner, f'add title of new task --force --list=test-list --reminder={DATE_2_ISO}')
+        res = invoke(runner, f'add title of new task --force --project=test-project --reminder={DATE_2_ISO}')
         after = json_for_created_task(runner, res.output)
         assert after['reminders'][0]['reminder'] == DATE_2_ISO
 
@@ -45,7 +45,7 @@ class TestCloneTask:
         before = json_for_task_id(runner, 1)
         res = invoke(runner, 'clone 1 title of new task cloned from 1')
         after = json_for_created_task(runner, res.output)
-        assert after['tasklist'] == before['tasklist']
+        assert after['project'] == before['project']
         assert after['due_date'] == before['due_date']
         assert after['title'] != before['title']
         assert after['id'] != before['id']
@@ -66,7 +66,7 @@ class TestEditGeneral:
         assert after['due_date'] == before['due_date']
         assert after['reminders'] == before['reminders']
         assert after['position'] == before['position']
-        assert after['tasklist']['id'] == before['tasklist']['id']
+        assert after['project']['id'] == before['project']['id']
         assert after['created'] == before['created']
 
     def test_edit_due_date(self, runner):
@@ -108,15 +108,15 @@ class TestEditGeneral:
         assert note_1 == 'line1'
         assert note_2 == 'line1\nline2'
 
-    def test_edit_list(self, runner):
-        invoke(runner, 'list add another list')
-        invoke(runner, 'edit 1 --list-id=1')
-        list_1 = json_for_task_id(runner, 1)['tasklist']['id']
+    def test_edit_project(self, runner):
+        invoke(runner, 'project add another project')
+        invoke(runner, 'edit 1 --project-id=1')
+        project_1 = json_for_task_id(runner, 1)['project']['id']
         invoke(runner, 'edit 1 -l 2')
-        list_2 = json_for_task_id(runner, 1)['tasklist']['id']
+        project_2 = json_for_task_id(runner, 1)['project']['id']
 
-        assert list_1 == 1
-        assert list_2 == 2
+        assert project_1 == 1
+        assert project_2 == 2
 
     @staticmethod
     def _has_label_with_title(labels, title):

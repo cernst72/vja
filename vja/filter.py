@@ -63,16 +63,16 @@ def _create_label_filter(value):
     return lambda x: any(label.title == value for label in x.labels)
 
 
-def _create_list_filter(value):
+def _create_project_filter(value):
     if str(value).isdigit():
-        return _create_general_filter([f'tasklist.id eq {value}'])
-    return _create_general_filter([f'tasklist.title eq {value}'])
+        return _create_general_filter([f'project.id eq {value}'])
+    return _create_general_filter([f'project.title eq {value}'])
 
 
 def _create_namespace_filter(value):
     if str(value).isdigit():
-        return _create_general_filter([f'tasklist.namespace.id eq {value}'])
-    return _create_general_filter([f'tasklist.namespace.title eq {value}'])
+        return _create_general_filter([f'project.namespace.id eq {value}'])
+    return _create_general_filter([f'project.namespace.title eq {value}'])
 
 
 def _create_title_filter(value):
@@ -105,7 +105,7 @@ _filter_mapping = {
     'favorite_filter': _create_favorite_filter,
     'general_filter': _create_general_filter,
     'label_filter': _create_label_filter,
-    'list_filter': _create_list_filter,
+    'project_filter': _create_project_filter,
     'namespace_filter': _create_namespace_filter,
     'title_filter': _create_title_filter,
     'priority_filter': _create_priority_filter,

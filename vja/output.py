@@ -3,11 +3,11 @@ import logging
 
 import click
 
-from vja.model import User, List, Task
+from vja.model import User, Task, Project
 
 NAMESPACE_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:20.20} {x.description:20.20}'
 
-LIST_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:20.20} {x.description:20.20}  ' \
+PROJECT_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:20.20} {x.description:20.20}  ' \
                            '{x.namespace.title:20.20} {x.namespace.id:5}'
 
 BUCKET_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:20.20} {x.is_done_bucket:2} {x.limit:3} {x.count_tasks:5}'
@@ -16,7 +16,7 @@ LABEL_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:20.20}'
 
 TASK_LIST_FORMAT_DEFAULT = '{x.id:5} ({x.priority}) {"*" if x.is_favorite else " "} {x.title:50.50} ' \
                            '{x.due_date.strftime("%a %d.%m %H:%M") if x.due_date else "":15.15} ' \
-                           '{"R" if x.reminders else " "} {x.tasklist.title:20.20} ' \
+                           '{"R" if x.reminders else " "} {x.project.title:20.20} ' \
                            '{x.label_titles:20.20} {x.urgency:3.1f}'
 
 logger = logging.getLogger(__name__)
@@ -27,8 +27,8 @@ class Output:
     def user(self, user: User, is_json, is_jsonvja):
         self._dump(user, is_json, is_jsonvja)
 
-    def list(self, task_list: List, is_json, is_jsonvja):
-        self._dump(task_list, is_json, is_jsonvja)
+    def project(self, project: Project, is_json, is_jsonvja):
+        self._dump(project, is_json, is_jsonvja)
 
     def task(self, task: Task, is_json, is_jsonvja):
         self._dump(task, is_json, is_jsonvja)
@@ -37,8 +37,8 @@ class Output:
         line_format = custom_format or NAMESPACE_LIST_FORMAT_DEFAULT
         self._dump_array(object_array, line_format, is_json, is_jsonvja)
 
-    def list_array(self, object_array, is_json, is_jsonvja, custom_format=None):
-        line_format = custom_format or LIST_LIST_FORMAT_DEFAULT
+    def project_array(self, object_array, is_json, is_jsonvja, custom_format=None):
+        line_format = custom_format or PROJECT_LIST_FORMAT_DEFAULT
         self._dump_array(object_array, line_format, is_json, is_jsonvja)
 
     def bucket_array(self, object_array, is_json, is_jsonvja, custom_format=None):

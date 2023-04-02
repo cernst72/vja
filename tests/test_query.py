@@ -18,47 +18,28 @@ class TestUser:
         assert json.loads(res.output)['username'] == 'test'
 
 
-class TestNamespace:
-    def test_namespace_ls(self, runner):
-        res = invoke(runner, 'namespace ls')
-        assert re.search(r'test\'s namespace', res.output)
+class TestProject:
+    def test_project_ls(self, runner):
+        res = invoke(runner, 'project ls')
+        assert re.search(r'test-project', res.output)
 
-    def test_namespace_ls_json(self, runner):
-        res = invoke(runner, 'namespace ls --json')
-        assert json.loads(res.output)[1]['title'] == 'test'
-
-    def test_namespace_ls_jsonvja(self, runner):
-        res = invoke(runner, 'namespace ls --jsonvja')
-        assert json.loads(res.output)[1]['title'] == 'test'
-
-    def test_namespace_ls_custom_format(self, runner):
-        res = invoke(runner, 'namespace ls --custom-format=ids_only')
-        for line in res.output:
-            assert re.match(r'^-?\d*$', line)
-
-
-class TestList:
-    def test_list_ls(self, runner):
-        res = invoke(runner, 'list ls')
-        assert re.search(r'test-list', res.output)
-
-    def test_list_show(self, runner):
-        res = invoke(runner, 'list show 1')
+    def test_project_show(self, runner):
+        res = invoke(runner, 'project show 1')
         assert len(res.output) > 0
 
-    def test_list_ls_custom_format(self, runner):
-        res = invoke(runner, 'list ls --custom-format=ids_only')
+    def test_project_ls_custom_format(self, runner):
+        res = invoke(runner, 'project ls --custom-format=ids_only')
         for line in res.output:
             assert re.match(r'^\d*$', line)
 
 
 class TestBucket:
     def test_bucket_ls(self, runner):
-        res = invoke(runner, 'bucket ls --list-id=1')
+        res = invoke(runner, 'bucket ls --project-id=1')
         assert re.search(r'Backlog', res.output)
 
     def test_bucket_ls_custom_format(self, runner):
-        res = invoke(runner, 'bucket ls --list-id=1 --custom-format=ids_only')
+        res = invoke(runner, 'bucket ls --project-id=1 --custom-format=ids_only')
         for line in res.output:
             assert re.match(r'^\d*$', line)
 
@@ -91,12 +72,12 @@ class TestSingleTask:
         assert data['position'] is not None
         assert data['kanban_position'] is not None
         assert data['bucket_id'] is not None
-        assert data['tasklist']['id'] is not None
+        assert data['project']['id'] is not None
         assert data['created'] is not None
         assert data['updated'] is not None
 
 
-class TestTaskList:
+class TestTaskLs:
     def test_task_ls(self, runner):
         res = invoke(runner, 'ls')
         assert re.search(r'At least one task', res.output)
@@ -119,7 +100,7 @@ class TestTaskList:
         assert data[0]['id'] > 1
 
     def test_sort_combined(self, runner):
-        res = invoke(runner, ['ls', '--jsonvja', '--sort=due_date, is_favorite, -priority, tasklist.title'])
+        res = invoke(runner, ['ls', '--jsonvja', '--sort=due_date, is_favorite, -priority, project.title'])
         data = json.loads(res.output)
         assert data[0]['due_date'] is not None
         assert data[-1]['due_date'] is None
@@ -130,7 +111,7 @@ class TestTaskList:
             assert re.match(r'^\d*$', line)
 
 
-class TestTaskListFilter:
+class TestTaskLsFilter:
     def test_task_filter_bucket(self, runner):
         res = invoke(runner, ['ls', '--jsonvja', '--bucket=1'])
         data = json.loads(res.output)
@@ -176,21 +157,12 @@ class TestTaskListFilter:
         assert len(data) > 0
         assert all(len(i['labels']) == 0 for i in data)
 
-    def test_task_filter_list(self, runner):
-        res = invoke(runner, ['ls', '--jsonvja', '--list=test-list'])
+    def test_task_filter_project(self, runner):
+        res = invoke(runner, ['ls', '--jsonvja', '--project=test-project'])
         data = json.loads(res.output)
         assert len(data) > 0
-        assert all(i['tasklist']['title'] == 'test-list' for i in data)
-        res = invoke(runner, ['ls', '--jsonvja', '--list=Not created'])
-        data = json.loads(res.output)
-        assert len(data) == 0
-
-    def test_task_filter_namespace(self, runner):
-        res = invoke(runner, ['ls', '--jsonvja', '--namespace=test'])
-        data = json.loads(res.output)
-        assert len(data) > 0
-        assert all(i['tasklist']['namespace']['title'] == 'test' for i in data)
-        res = invoke(runner, ['ls', '--jsonvja', '--namespace=Not created'])
+        assert all(i['project']['title'] == 'test-project' for i in data)
+        res = invoke(runner, ['ls', '--jsonvja', '--project=Not created'])
         data = json.loads(res.output)
         assert len(data) == 0
 

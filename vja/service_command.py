@@ -23,13 +23,13 @@ class CommandService:
         self._api_client.logout()
         logger.info('Logged out')
 
-    # list
-    def add_list(self, namespace_id, title):
+    # project
+    def add_project(self, namespace_id, title):
         if not namespace_id:
             namespaces = self._api_client.get_namespaces()
             namespace_id = min(namespace['id'] if namespace['id'] > 0 else 99999 for namespace in namespaces)
-        list_json = self._api_client.put_list(namespace_id, title)
-        return self._list_service.convert_list_json(list_json)
+        project_json = self._api_client.put_project(namespace_id, title)
+        return self._list_service.convert_project_json(project_json)
 
     # label
     def add_label(self, title):
@@ -44,7 +44,7 @@ class CommandService:
                     'favorite': {'field': 'is_favorite', 'mapping': bool},
                     'completed': {'field': 'done', 'mapping': bool},
                     'position': {'field': 'position', 'mapping': int},
-                    'list_id': {'field': 'project_id', 'mapping': int},
+                    'project_id': {'field': 'project_id', 'mapping': int},
                     'bucket_id': {'field': 'bucket_id', 'mapping': int},
                     'kanban_position': {'field': 'kanban_position', 'mapping': int},
                     'reminder': {'field': 'reminders', 'mapping': (lambda x: x)}
@@ -59,14 +59,14 @@ class CommandService:
 
     def add_task(self, title, args: dict):
         args.update({'title': title})
-        if args.get('list_id'):
-            list_arg = args.pop('list_id')
-            if str(list_arg).isdigit():
-                list_id = list_arg
+        if args.get('project_id'):
+            project_arg = args.pop('project_id')
+            if str(project_arg).isdigit():
+                project_id = project_arg
             else:
-                list_id = self._list_service.find_list_by_title(list_arg).id
+                project_id = self._list_service.find_project_by_title(project_arg).id
         else:
-            list_id = self._list_service.get_default_list().id
+            project_id = self._list_service.get_default_project().id
         tag_name = args.pop('tag') if args.get('tag') else None
         is_force = args.pop('force_create') if args.get('force_create') is not None else False
 
@@ -77,7 +77,7 @@ class CommandService:
         if not is_force:
             self._validate_add_task(title, tag_name)
         logger.debug('put task: %s', payload)
-        task_json = self._api_client.put_task(list_id, payload)
+        task_json = self._api_client.put_task(project_id, payload)
         task = self._task_service.task_from_json(task_json)
 
         label = self._label_from_name(tag_name, is_force) if tag_name else None

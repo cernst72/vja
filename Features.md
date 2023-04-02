@@ -1,6 +1,7 @@
 # Features
 
 <!-- TOC -->
+
 * [Features](#features)
   * [Create Task](#create-task)
     * [Clone](#clone)
@@ -15,18 +16,18 @@
     * [Reminders](#reminders)
     * [Batch editing](#batch-editing)
   * [Open Vikunja in browser](#open-vikunja-in-browser)
-  * [Manage lists, namespaces, labels, buckets](#manage-lists-namespaces-labels-buckets)
-    * [Manage namespaces](#manage-namespaces)
-    * [Manage lists (projects)](#manage-lists-projects)
+  * [Manage projects, labels, buckets](#manage-projects-labels-buckets)
+    * [Manage project)](#manage-projects)
     * [Manage kanban buckets](#manage-kanban-buckets)
     * [Manage labels](#manage-labels)
   * [Output format](#output-format)
   * [Terminate session](#terminate-session)
+
 <!-- TOC -->
 
 ## Create Task
 
-`vja add <Tasktitle>` allows to quickly add a new task to the default list. Several options exist to provide more
+`vja add <Tasktitle>` allows to quickly add a new task to the default project. Several options exist to provide more
 context:
 
 ```shell
@@ -73,14 +74,14 @@ vja ls --json
 ### Urgency
 
 By default, tasks are sorted (amongst others) by their urgency, which is displayed in the last column. Urgency is
-calculated by regarding due_date, priority and is_favorite of the task, as well as the occurence of keywords in the list
-title or the label titles. The weights of each factor and the keywords can be specified in the configuration file ~
-/.vjacli/vja.rc. See Configuration section in [Readme.md](Readme.md). See [.vjacli/vja.rc](.vjacli/vja.rc) for an
+calculated by regarding due_date, priority and is_favorite of the task, as well as the occurence of keywords in the
+project title or the label titles. The weights of each factor and the keywords can be specified in the configuration
+file ~/.vjacli/vja.rc. See Configuration section in [Readme.md](Readme.md). See [.vjacli/vja.rc](.vjacli/vja.rc) for an
 example.
 
 ### Filter
 
-The displayed tasks may be filtered by several arguments like list id or title, namespace and label
+The displayed tasks may be filtered by several arguments like project or title, namespace and label
 
 ```shell
 vja ls --label=@work
@@ -117,7 +118,7 @@ vja ls --sort=-id # reverse
 Sort criteria can be combined. The default sort order of vja is the same as
 
 ```shell
-vja ls --sort='done, -urgency, due_date, -priority, tasklist.title, title'
+vja ls --sort='done, -urgency, due_date, -priority, project.title, title'
 ```
 
 See `vja ls --help` for more.
@@ -239,36 +240,30 @@ Open task 42 in browser
 vja open 42
 ```
 
-## Manage lists, namespaces, labels, buckets
+## Manage projects, labels, buckets
 
-### Manage namespaces
-
-```shell
-vja namespace ls
-```
-
-### Manage lists (projects)
+### Manage projects
 
 ```shell
-vja list add New List
+vja project add New Project
 ```
 
 ```shell
-vja list add -n 2 Create list in namespace with index 2
+vja project add -n 2 Create project in namespace with index 2
 ```
 
 ```shell
-vja list ls
+vja project ls
 ```
 
 ```shell
-vja list show 1
+vja project show 1
 ```
 
 ### Manage kanban buckets
 
 ```shell
-vja bucket ls --list-id=1
+vja bucket ls --project-id=1
 ```
 
 ### Manage labels

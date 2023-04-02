@@ -116,20 +116,20 @@ class ApiClient:
             self._cache['namespaces'] = self._get_json(self._create_url('/namespaces')) or []
         return self._cache['namespaces']
 
-    def get_lists(self):
+    def get_projects(self):
         if self._cache['projects'] is None:
             self._cache['projects'] = self._get_json(self._create_url('/projects')) or []
         return self._cache['projects']
 
-    def get_list(self, list_id):
-        return self._get_json(self._create_url(f'/projects/{str(list_id)}'))
+    def get_project(self, project_id):
+        return self._get_json(self._create_url(f'/projects/{str(project_id)}'))
 
-    def put_list(self, namespace_id, title):
+    def put_project(self, namespace_id, title):
         payload = {'title': title}
         return self._put_json(self._create_url(f'/namespaces/{str(namespace_id)}/projects'), payload=payload)
 
-    def get_buckets(self, list_id):
-        return self._get_json(self._create_url(f'/projects/{str(list_id)}/buckets'))
+    def get_buckets(self, project_id):
+        return self._get_json(self._create_url(f'/projects/{str(project_id)}/buckets'))
 
     def get_labels(self):
         if self._cache['labels'] is None:
@@ -151,8 +151,8 @@ class ApiClient:
         url = self._create_url(f'/tasks/{str(task_id)}')
         return self._get_json(url)
 
-    def put_task(self, list_id, payload):
-        return self._put_json(self._create_url(f'/projects/{str(list_id)}'), payload=payload)
+    def put_task(self, project_id, payload):
+        return self._put_json(self._create_url(f'/projects/{str(project_id)}'), payload=payload)
 
     def post_task(self, task_id, payload):
         return self._post_json(self._create_url(f'/tasks/{str(task_id)}'), payload=payload)
