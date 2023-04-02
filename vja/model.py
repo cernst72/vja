@@ -51,7 +51,7 @@ class User:
     id: int
     username: str
     name: str
-    default_list_id: int
+    default_project_id: int
 
     @classmethod
     def from_json(cls, json):
@@ -78,7 +78,7 @@ class Namespace:
 
 @dataclass(frozen=True)
 @data_dict
-class List:
+class Project:
     json: dict = field(repr=False)
     id: int
     title: str
@@ -94,7 +94,7 @@ class List:
 
     @classmethod
     def from_json_array(cls, json_array, namespace):
-        return [List.from_json(x, namespace) for x in json_array or []]
+        return [Project.from_json(x, namespace) for x in json_array or []]
 
 
 @dataclass(frozen=True)
@@ -177,7 +177,7 @@ class Task:
     done: bool
     done_at: datetime
     labels: typing.List[Label]
-    tasklist: List
+    project: Project
     position: int
     bucket_id: int
     kanban_position: int
@@ -190,7 +190,7 @@ class Task:
         return ",".join(map(lambda label: label.title, self.labels or []))
 
     @classmethod
-    def from_json(cls, json, list_object, labels):
+    def from_json(cls, json, project_object, labels):
         return cls(json, json['id'], json['title'], json['description'],
                    json['priority'],
                    json['is_favorite'],
@@ -204,7 +204,7 @@ class Task:
                    json['done'],
                    parse_json_date(json['done_at']),
                    labels,
-                   list_object,
+                   project_object,
                    json['position'],
                    json['bucket_id'],
                    json['kanban_position'],
