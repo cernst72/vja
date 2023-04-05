@@ -3,25 +3,15 @@ from typing import Optional
 
 from vja import VjaError
 from vja.apiclient import ApiClient
-from vja.model import Namespace, Project, User
+from vja.model import Project, User
 
 logger = logging.getLogger(__name__)
 
 
-class ListService:
+class ProjectService:
     def __init__(self, api_client: ApiClient):
         self._api_client = api_client
-        self._namespace_by_id: Optional[dict] = None
         self._project_by_id: Optional[dict] = None
-
-    def find_namespace_by_id(self, namespace_id: int) -> Namespace:
-        if not self._namespace_by_id:
-            self._namespace_by_id = {x['id']: Namespace.from_json(x) for x in self._api_client.get_namespaces()}
-        namespace_object = self._namespace_by_id.get(namespace_id)
-        if not namespace_object:
-            logger.warning(
-                'Inconsistent data: namespace_id %s is referring to non existing cached Namespace.', str(namespace_id))
-        return namespace_object
 
     def find_project_by_id(self, project_id: int) -> Project:
         if not self._project_by_id:
@@ -53,5 +43,18 @@ class ListService:
         return project_found
 
     def convert_project_json(self, project_json: dict) -> Project:
-        namespace = self.find_namespace_by_id(project_json['namespace_id'])
-        return Project.from_json(project_json, namespace)
+        ancestor_projects = []
+        project_id = project_json['id']
+        parent_project_id = project_json['parent_project_id']
+        # if parent_project_id != id find parent and add it to the ancestors and proceed with parent the same way
+        ancestor = self.get_ancestor_project(project_id, parent_project_id)
+        while ancestor:
+            ancestor_projects.append(ancestor)
+            ancestor = self.get_ancestor_project(ancestor.id, ancestor.parent_project_id)
+        return Project.from_json(project_json, ancestor_projects)
+
+    def get_ancestor_project(self, project_id, parent_project_id) -> Optional[Project]:
+        if project_id == parent_project_id:
+            return None
+        ancestor = self.find_project_by_id(parent_project_id)
+        return ancestor

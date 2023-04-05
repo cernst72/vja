@@ -2,17 +2,17 @@ import logging
 
 from vja import VjaError
 from vja.apiclient import ApiClient
-from vja.list_service import ListService
 from vja.model import Label
 from vja.parse import parse_date_arg_to_iso, parse_json_date, parse_date_arg_to_timedelta, datetime_to_isoformat
+from vja.project_service import ProjectService
 from vja.task_service import TaskService
 
 logger = logging.getLogger(__name__)
 
 
 class CommandService:
-    def __init__(self, list_service: ListService, task_service: TaskService, api_client: ApiClient):
-        self._list_service = list_service
+    def __init__(self, project_service: ProjectService, task_service: TaskService, api_client: ApiClient):
+        self._project_service = project_service
         self._task_service = task_service
         self._api_client = api_client
 
@@ -24,12 +24,9 @@ class CommandService:
         logger.info('Logged out')
 
     # project
-    def add_project(self, namespace_id, title):
-        if not namespace_id:
-            namespaces = self._api_client.get_namespaces()
-            namespace_id = min(namespace['id'] if namespace['id'] > 0 else 99999 for namespace in namespaces)
-        project_json = self._api_client.put_project(namespace_id, title)
-        return self._list_service.convert_project_json(project_json)
+    def add_project(self, parent_project_id, title):
+        project_json = self._api_client.put_project(parent_project_id, title)
+        return self._project_service.convert_project_json(project_json)
 
     # label
     def add_label(self, title):
@@ -64,9 +61,9 @@ class CommandService:
             if str(project_arg).isdigit():
                 project_id = project_arg
             else:
-                project_id = self._list_service.find_project_by_title(project_arg).id
+                project_id = self._project_service.find_project_by_title(project_arg).id
         else:
-            project_id = self._list_service.get_default_project().id
+            project_id = self._project_service.get_default_project().id
         tag_name = args.pop('tag') if args.get('tag') else None
         is_force = args.pop('force_create') if args.get('force_create') is not None else False
 

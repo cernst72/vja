@@ -5,10 +5,8 @@ import click
 
 from vja.model import User, Task, Project
 
-NAMESPACE_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:20.20} {x.description:20.20}'
-
 PROJECT_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:20.20} {x.description:20.20}  ' \
-                           '{x.namespace.title:20.20} {x.namespace.id:5}'
+                              '{x.parent_project_id:5} '
 
 BUCKET_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:20.20} {x.is_done_bucket:2} {x.limit:3} {x.count_tasks:5}'
 
@@ -32,10 +30,6 @@ class Output:
 
     def task(self, task: Task, is_json, is_jsonvja):
         self._dump(task, is_json, is_jsonvja)
-
-    def namespace_array(self, object_array, is_json, is_jsonvja, custom_format=None):
-        line_format = custom_format or NAMESPACE_LIST_FORMAT_DEFAULT
-        self._dump_array(object_array, line_format, is_json, is_jsonvja)
 
     def project_array(self, object_array, is_json, is_jsonvja, custom_format=None):
         line_format = custom_format or PROJECT_LIST_FORMAT_DEFAULT

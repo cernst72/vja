@@ -10,6 +10,15 @@ This is a simple CLI for Vikunja > [The todo app to organize your life.](https:/
 It provides a command line interface for adding, viewing and editing todo tasks on a Vikunja Server.
 The goal is to support a command line based task workflow ~ similar to taskwarrior.
 
+> #### Breaking changes in vja 2.0
+> vja 2.0 supports (and requires) the most recent Vikunja API > 0.20.4.
+> In the wake of this transition the following breaking modifications to the vja command line interface have been introduced:
+> - Labels: Are now given with `-l` (`-label`). (`-t` and `--tag` are no longer supported).
+> - "Namespaces": Vikunja removed namespaces in favor of nested projects. `-n` (`--namespace`) was removed as option from `vja ls`.
+> - Projects (former "lists"): Must be given with `-o` (`--project`). `vja ls -u` may be used to filter on the project or an upper project. This more or less resembles the old namespaces.
+>
+> Examples and more details can be found in the updated [Features.md](https://gitlab.com/ce72/vja/-/blob/main/Features.md)
+
 ## Installation
 
 - Install from pypi:

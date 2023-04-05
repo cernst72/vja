@@ -13,8 +13,8 @@ run-test () {
   vja project show 1
   vja label add Next Action
   vja label ls
-  vja add "Look around" --prio=2 --tag="Next Action" --note="my note" --due="next monday at 15:00" --favorite=True --reminder="friday 12:00"
-  vja add "Stay at home" -p 4 -t "Next Action" -n "my note" -d "23:00" -f True --list=2
+  vja add "Look around" --prio=2 --label="Next Action" --note="my note" --due="next monday at 15:00" --favorite=True --reminder="friday 12:00"
+  vja add "Stay at home" -p 4 -l "Next Action" -n "my note" -d "23:00" -f True --project=2
   vja add Go home
   vja ls
   vja ls --project=1
@@ -32,7 +32,7 @@ run-test () {
   vja show 1 --jsonvja
   vja toggle 1
   vja project show 1 --json
-  vja bucket ls -l 1
+  vja bucket ls -o 1
   vja label ls
   vja -v logout
   vja -v -u test -p test ls
