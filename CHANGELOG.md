@@ -1,3 +1,10 @@
+## [2.0.0-beta.3](https://gitlab.com/ce72/vja/compare/2.0.0-beta.2...2.0.0-beta.3) (2023-04-10)
+
+
+### Features
+
+* fetch long_token when logging in (with a ttl of 30 days) ([04b8932](https://gitlab.com/ce72/vja/commit/04b8932288b8072ad85a6614147e3b835a4f8bff))
+
 ## [2.0.0-beta.2](https://gitlab.com/ce72/vja/compare/2.0.0-beta.1...2.0.0-beta.2) (2023-04-02)
 
 
