@@ -64,7 +64,8 @@ class Login:
 
     def _post_login_request(self, username, password, totp_passcode):
         login_url = self._create_url('/login')
-        payload = {'username': username,
+        payload = {'long_token': True,
+                   'username': username,
                    'password': password,
                    'totp_passcode': totp_passcode}
         return requests.post(login_url, json=payload, timeout=30)
