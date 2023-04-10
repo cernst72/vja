@@ -1,5 +1,3 @@
-# Features
-
 <!-- TOC -->
 * [Features](#features)
   * [Create Task](#create-task)
@@ -22,6 +20,8 @@
   * [Output format](#output-format)
   * [Terminate session](#terminate-session)
 <!-- TOC -->
+
+# Features
 
 ## Create Task
 
