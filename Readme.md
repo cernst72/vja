@@ -38,6 +38,9 @@ Before using vja you must provide a configuration.
   Especially, the api_url must be reachable from your client. This can be verified, for example
   by `curl https://mydomain.com/api/v1/info`
 
+You may change the location of the configuration directory with an environment variable
+like `VJA_CONFIGDIR=/not/my/home`
+
 ### Description of configuration
 
 #### Required options
