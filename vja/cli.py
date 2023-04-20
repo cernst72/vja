@@ -222,7 +222,7 @@ def task_add(ctx, application, title, **args):
              help='Clone task with given task_id. Set the new title')
 @click.argument('task_id', required=True, type=click.INT)
 @click.argument('title', required=True, nargs=-1)
-@click.option('is_clone_bucket', '--bucket', is_flag=True,
+@click.option('is_clone_bucket', '-b', '--bucket', is_flag=True,
               help='Clone kanban bucket too. Default: False')
 @with_application
 @click.pass_context
