@@ -222,10 +222,12 @@ def task_add(ctx, application, title, **args):
              help='Clone task with given task_id. Set the new title')
 @click.argument('task_id', required=True, type=click.INT)
 @click.argument('title', required=True, nargs=-1)
+@click.option('is_clone_bucket', '--bucket', is_flag=True,
+              help='Clone kanban bucket too. Default: False')
 @with_application
 @click.pass_context
-def task_clone(ctx, application, task_id, title):
-    task = application.command_service.clone_task(task_id, " ".join(title))
+def task_clone(ctx, application, task_id, title, is_clone_bucket=False):
+    task = application.command_service.clone_task(task_id, " ".join(title), is_clone_bucket)
     click.echo(f'Created task {task.id} in project {task.project.id} as clone from {task_id}')
     ctx.invoke(task_show, tasks=[task.id])
 
