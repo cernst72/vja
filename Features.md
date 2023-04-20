@@ -1,28 +1,26 @@
 # Features
 
 <!-- TOC -->
-
-- [Features](#features)
-  - [Create Task](#create-task)
-    - [Clone](#clone)
-  - [List tasks](#list-tasks)
-    - [Urgency](#urgency)
-    - [Filter](#filter)
-    - [Sort](#sort)
-    - [Select](#select)
-  - [Show single task by id](#show-single-task-by-id)
-  - [Modify tasks](#modify-tasks)
-    - [Defer task](#defer-task)
-    - [Reminders](#reminders)
-    - [Batch editing](#batch-editing)
-  - [Open Vikunja in browser](#open-vikunja-in-browser)
-  - [Manage projects, labels, buckets](#manage-projects-labels-buckets)
-    - [Manage projects](#manage-projects)
-    - [Manage kanban buckets](#manage-kanban-buckets)
-    - [Manage labels](#manage-labels)
-  - [Output format](#output-format)
-  - [Terminate session](#terminate-session)
-
+* [Features](#features)
+  * [Create Task](#create-task)
+    * [Clone](#clone)
+  * [List tasks](#list-tasks)
+    * [Urgency](#urgency)
+    * [Filter](#filter)
+    * [Sort](#sort)
+    * [Select](#select)
+  * [Show single task by id](#show-single-task-by-id)
+  * [Modify tasks](#modify-tasks)
+    * [Defer task](#defer-task)
+    * [Reminders](#reminders)
+    * [Batch editing](#batch-editing)
+  * [Open Vikunja in browser](#open-vikunja-in-browser)
+  * [Manage projects, labels, buckets](#manage-projects-labels-buckets)
+    * [Manage projects](#manage-projects)
+    * [Manage kanban buckets](#manage-kanban-buckets)
+    * [Manage labels](#manage-labels)
+  * [Output format](#output-format)
+  * [Terminate session](#terminate-session)
 <!-- TOC -->
 
 ## Create Task
@@ -55,7 +53,7 @@ Another option to create a new task is cloning an existing task
 ```shell
 vja clone 1 Clone a new task
 ```
-By default, the kanban bucket is not cloned so that cloned tasks should appear in the leftmost Kanban lane of the project. Call `vja clone 1 New task --bucket` to clone the Kanban bucket too.
+By default, the kanban bucket is not cloned so that cloned tasks should appear in the leftmost Kanban column of the project. Call `vja clone 1 New task --bucket` to clone the Kanban bucket too.
 
 See
 
