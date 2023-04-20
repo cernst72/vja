@@ -47,9 +47,20 @@ class TestCloneTask:
         after = json_for_created_task(runner, res.output)
         assert after['project'] == before['project']
         assert after['due_date'] == before['due_date']
+#        assert after['labels'] == before['labels']
         assert after['title'] != before['title']
         assert after['id'] != before['id']
         assert after['created'] != before['created']
+        assert after['position'] != before['position']
+        assert after['kanban_position'] != before['kanban_position']
+#        assert after['bucket_id'] != before['bucket_id'] # TODO: Need to create a second bucket to test this
+
+
+    def test_clone_task_keeping_bucket(self, runner):
+        before = json_for_task_id(runner, 1)
+        res = invoke(runner, 'clone 1 --bucket title of new task with labels cloned from 1')
+        after = json_for_created_task(runner, res.output)
+        assert after['bucket_id'] == before['bucket_id']
 
 
 class TestEditGeneral:
