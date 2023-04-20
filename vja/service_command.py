@@ -85,10 +85,14 @@ class CommandService:
             self._api_client.add_label_to_task(task.id, label.id)
         return task
 
-    def clone_task(self, task_id: int, title):
+    def clone_task(self, task_id: int, title, is_clone_bucket):
         task_remote = self._api_client.get_task(task_id)
         task_remote.update({'id': None})
         task_remote.update({'title': title})
+        task_remote.update({'position': 0})
+        task_remote.update({'kanban_position': 0})
+        if is_clone_bucket:
+            task_remote.update({'bucket_id': 0})
 
         # make sure we do not send back the old reminder_dates
         task_remote.pop("reminder_dates", None)
