@@ -1,3 +1,17 @@
+## [2.0.0-beta.4](https://gitlab.com/ce72/vja/compare/2.0.0-beta.3...2.0.0-beta.4) (2023-04-24)
+
+
+### Bug Fixes
+
+* **clone:** clone labels too ([22bf1c0](https://gitlab.com/ce72/vja/commit/22bf1c075888d931ceefc989d50eb49282adccf5))
+* **clone:** do not clone positions and have --bucket ([bc382c2](https://gitlab.com/ce72/vja/commit/bc382c2aa9ca4b8109e62b8fce6f792b49c18fce))
+* **clone:** do not clone positions and have --bucket ([5edeaba](https://gitlab.com/ce72/vja/commit/5edeaba7cad2695fdf5470f6568bd4048d23c568))
+
+
+### Documentation
+
+* describe env variable VJA_CONFIGDIR ([11e1a97](https://gitlab.com/ce72/vja/commit/11e1a979dbfb169b5559145adc735df65ef09838))
+
 ## [2.0.0-beta.3](https://gitlab.com/ce72/vja/compare/2.0.0-beta.2...2.0.0-beta.3) (2023-04-10)
 
 
