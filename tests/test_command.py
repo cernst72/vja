@@ -47,7 +47,7 @@ class TestCloneTask:
         after = json_for_created_task(runner, res.output)
         assert after['project'] == before['project']
         assert after['due_date'] == before['due_date']
-#        assert after['labels'] == before['labels']
+        assert after['labels'] == before['labels']
         assert after['title'] != before['title']
         assert after['id'] != before['id']
         assert after['created'] != before['created']
