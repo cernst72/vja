@@ -100,6 +100,8 @@ class CommandService:
         task_json = self._api_client.put_task(task_remote['project_id'], task_remote)
         task = self._task_service.task_from_json(task_json)
 
+        for label in task_remote['labels']:
+            self._api_client.add_label_to_task(task.id, label['id'])
         return task
 
     def edit_task(self, task_id: int, args: dict):
