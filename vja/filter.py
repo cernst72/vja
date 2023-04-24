@@ -29,7 +29,7 @@ def _create_single_general_filter(value: str):
     field = arguments[0]
     operation = _operators[arguments[1]]
     value = arguments[2]
-    logger.debug("filter %s: %s %s", field, operation.__name__, value)
+    logger.debug("general filter %s: %s %s", field, operation.__name__, value)
     return lambda x: _general_filter(x, field, operation, value)
 
 

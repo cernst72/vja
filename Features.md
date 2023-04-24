@@ -83,24 +83,32 @@ example.
 The displayed tasks may be filtered by several arguments like project or title, namespace and label
 
 ```shell
-vja ls --label=@work
-vja ls --title=ask
-vja ls --priority="gt 3"
-vja ls --priority="eq 5"
+vja ls --bucket_id=1
 vja ls --due-date="before today"
 vja ls --due-date="ge in 0 days" --due-date="before 5 days"
-vja ls -u   # show Tasks with minimum urgency
-vja ls --urgency=8 # show quite urgent tasks
+vja ls --favorite=True
+vja ls --label=@work
+vja ls --priority="gt 3"
+vja ls --priority="eq 5"
+vja ls --title=ask # matches regex string
+vja ls -u   # show Tasks with minimum urgency of 3
+vja ls --urgency=8 # show only quite urgent tasks
 ```
 
 In addition to these shortcut filters, more general filtering can be done by `--filter=<field_name> <operator> <value>`:
 
 ```shell
-vja ls --filter="priority gt 2"
-vja ls --filter="title contains clean up"
-vja ls --filter="labels contains @work"
 vja ls --filter="created after 2 days ago"
 vja ls --filter="due_date before today in 7 days"
+vja ls --filter="label_titles contains @work"
+vja ls --filter="label_titles ne @work"
+vja ls --filter="priority gt 2"
+vja ls --filter="title contains clean up"
+```
+
+All filters can be combined (and operation):
+```shell
+vja ls --filter="label_titles ne @work" --project=1 --urgent
 ```
 
 See `vja ls --help` for more.

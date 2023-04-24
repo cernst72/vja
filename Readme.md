@@ -35,8 +35,8 @@ Before using vja you must provide a configuration.
   (If you cloned from git, you may copy the folder .vjacli to your `$HOME` directory instead.)
 - Adjust to your needs.
   `frontend_url` and `api_url` must point to your own Vikunja server.
-  Especially, the api_url must be reachable from your client. This can be verified, for example
-  by `curl https://mydomain.com/api/v1/info`
+  Especially, the api_url must be reachable from your client. This can be verified, for example,
+  by `curl https://mydomain.com/api/v1/info`.
 
 You may change the location of the configuration directory with an environment variable
 like `VJA_CONFIGDIR=/not/my/home`
