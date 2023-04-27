@@ -1,3 +1,15 @@
+## [1.5.1](https://gitlab.com/ce72/vja/compare/1.5.0...1.5.1) (2023-04-27)
+
+
+### Misc
+
+* **deps:** update all dependencies ([546d995](https://gitlab.com/ce72/vja/commit/546d9953f3fba1289760b9d5b6bcd6f6ac4e2c99))
+
+
+### Automation
+
+* wait for running api container ([fca176d](https://gitlab.com/ce72/vja/commit/fca176dfb72c8b3e7ef07a048093691c5c74f8c3))
+
 ## [1.5.0](https://gitlab.com/ce72/vja/compare/1.4.1...1.5.0) (2023-03-31)
 
 
