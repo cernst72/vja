@@ -59,6 +59,8 @@ integration-test:
     - which vja
 
     - docker-compose -f tests/docker-compose.yml up -d api
+    - curl --retry 5 --retry-all-errors --retry-delay 1 "http://docker:3456/api/v1/info"
+
     - export VJA_CONFIGDIR=tests/.vjatest_dind
     - tests/run.sh test
     - coverage run --omit='*test*' -m pytest
@@ -66,7 +68,7 @@ integration-test:
     - coverage xml --omit='*test*'
     - docker-compose -f tests/docker-compose.yml down
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
-  cache: { }
+  cache: {}
   artifacts:
     reports:
       coverage_report:
@@ -88,8 +90,7 @@ release:
   script:
     - python --version
     - semantic-release
-  cache: { }
+  cache: {}
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: on_success
-
