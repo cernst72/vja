@@ -6,12 +6,15 @@ from tests.conftest import invoke
 from vja.cli import cli
 
 ADD_SUCCESS_PATTERN = re.compile(r'.*Created task (\d+) in project .*')
-DATE_1 = datetime.datetime(2023, 3, 30, 15, 0, 0, 0)
+TODAY = datetime.datetime.now().replace(microsecond=0)
+TODAY_ISO = TODAY.isoformat()
+YESTERDAY = TODAY + datetime.timedelta(days=-1)
+YESTERDAY_ISO = YESTERDAY.isoformat()
+TOMORROW_ISO = (TODAY + datetime.timedelta(days=1)).isoformat()
+DATE_1 = TODAY + datetime.timedelta(days=10)
 DATE_2 = DATE_1 + datetime.timedelta(days=1)
 DATE_1_ISO = DATE_1.isoformat()
 DATE_2_ISO = DATE_2.isoformat()
-TODAY = datetime.datetime.now()
-TODAY_ISO = TODAY.isoformat()
 
 
 class TestAddTask:
@@ -219,7 +222,7 @@ class TestDeferTask:
         assert after['due_date'] == DATE_2_ISO
         assert after['reminders'][0]['reminder'] == DATE_2_ISO
 
-    def test_dont_modify_relative_reminder(self, runner):
+    def test_dont_defer_relative_reminder(self, runner):
         invoke(runner, f'edit 2 --due-date={DATE_1_ISO} -r')
 
         invoke(runner, 'defer 2 1d')
@@ -229,6 +232,13 @@ class TestDeferTask:
         assert after['reminders'][0]['relative_period'] == 0
         assert after['reminders'][0]['relative_to'] == 'due_date'
 
+    def test_defer_past_due_realtive_to_now(self, runner):
+        invoke(runner, f'edit 2 --due-date={YESTERDAY_ISO}')
+
+        invoke(runner, 'defer 2 1d')
+
+        after = json_for_task_id(runner, 2)
+        assert after['due_date'][:10] == TOMORROW_ISO[:10]
 
 class TestMultipleTasks:
     def test_edit_three_tasks(self, runner):

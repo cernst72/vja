@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 from vja import VjaError
@@ -188,7 +189,12 @@ class CommandService:
         task_remote = self._api_client.get_task(task_id)
         due_date = parse_json_date(task_remote['due_date'])
         if due_date:
-            args.update({'due': datetime_to_isoformat(due_date + timedelta)})
+            now = datetime.datetime.now().replace(microsecond=0)
+            if due_date < now:
+                args.update({'due': datetime_to_isoformat(now + timedelta)})
+            else:
+                args.update({'due': datetime_to_isoformat(due_date + timedelta)})
+
         old_reminders = task_remote['reminders']
         if old_reminders and len(old_reminders) > 0:
             reminder_date = parse_json_date(old_reminders[0]['reminder'])

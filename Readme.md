@@ -108,7 +108,6 @@ Run integration test (requires docker and docker-compose)
 
 ```shell
 docker-compose -f tests/docker-compose.yml up -d
-./run.sh
 VJA_CONFIGDIR=tests/.vjatest pytest
 docker-compose -f tests/docker-compose.yml down
 ```
