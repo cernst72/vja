@@ -83,4 +83,6 @@ release:
       when: on_success
     - if: $CI_COMMIT_BRANCH == "beta"
       when: manual
+    - if: $CI_COMMIT_BRANCH == "rc"
+      when: manual
 
