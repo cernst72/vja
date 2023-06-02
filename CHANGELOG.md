@@ -1,3 +1,11 @@
+## [2.0.0-rc.2](https://gitlab.com/ce72/vja/compare/2.0.0-rc.1...2.0.0-rc.2) (2023-06-02)
+
+
+### Features
+
+* **filter, sort:** Rename "label-titles" to "labels" ([0a452ac](https://gitlab.com/ce72/vja/commit/0a452acbd727762ec660faa6c268582c4111d01f))
+* **task ls:** filter tasks by --base-project ([2740e73](https://gitlab.com/ce72/vja/commit/2740e7361aaeab79d952ce8bc87299c58ddea8d2))
+
 ## [2.0.0-rc.1](https://gitlab.com/ce72/vja/compare/1.5.1...2.0.0-rc.1) (2023-06-02)
 
 
