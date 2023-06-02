@@ -57,10 +57,10 @@ def _create_favorite_filter(value):
 def _create_label_filter(value):
     logger.debug("filter labels %s", value)
     if str(value).isdigit():
-        return lambda x: any(label.id == int(value) for label in x.labels)
+        return lambda x: any(label.id == int(value) for label in x.label_objects)
     if str(value).strip() == '':
-        return lambda x: not x.labels
-    return lambda x: any(label.title == value for label in x.labels)
+        return lambda x: not x.label_objects
+    return lambda x: any(label.title == value for label in x.label_objects)
 
 
 def _create_project_filter(value):

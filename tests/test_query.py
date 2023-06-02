@@ -146,7 +146,7 @@ class TestTaskLsFilter:
         res = invoke(runner, ['ls', '--jsonvja', '--label=my_tag'])
         data = json.loads(res.output)
         assert len(data) > 0
-        assert data[0]['labels'][0]['title'] == 'my_tag'
+        assert data[0]['label_objects'][0]['title'] == 'my_tag'
         res = invoke(runner, ['ls', '--jsonvja', '--label=unknown_label'])
         data = json.loads(res.output)
         assert len(data) == 0
@@ -155,7 +155,7 @@ class TestTaskLsFilter:
         res = invoke(runner, ['ls', '--jsonvja', '--label='''''''])
         data = json.loads(res.output)
         assert len(data) > 0
-        assert all(len(i['labels']) == 0 for i in data)
+        assert all(len(i['label_objects']) == 0 for i in data)
 
     def test_task_filter_project(self, runner):
         res = invoke(runner, ['ls', '--jsonvja', '--project=test-project'])
@@ -227,11 +227,11 @@ class TestTaskLsFilter:
         assert len(json.loads(res.output)) == 0
 
     def test_task_filter_general_label(self, runner):
-        res = invoke(runner, ['ls', '--json', '--filter=label_titles contains my_tag'])
+        res = invoke(runner, ['ls', '--jsonvja', '--filter=labels contains my_tag'])
         data = json.loads(res.output)
         assert len(data) > 0
         assert all('my_tag' in _labels_from_task_json(task) for task in data)
-        res = invoke(runner, ['ls', '--jsonvja', '--filter=label_titles ne my_tag'])
+        res = invoke(runner, ['ls', '--jsonvja', '--filter=labels ne my_tag'])
         data = json.loads(res.output)
         assert len(data) > 0
         assert all('my_tag' not in _labels_from_task_json(task) for task in data)
@@ -244,4 +244,4 @@ class TestTaskLsFilter:
 
 
 def _labels_from_task_json(task):
-    return ' '.join(map(lambda label: label['title'], task['labels'] or []))
+    return ' '.join(map(lambda label: label['title'], task['label_objects'] or []))

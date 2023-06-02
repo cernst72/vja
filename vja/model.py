@@ -161,7 +161,7 @@ class Task:
     percent_done: float
     done: bool
     done_at: datetime
-    labels: typing.List[Label]
+    label_objects: typing.List[Label]
     project: Project
     position: int
     bucket_id: int
@@ -171,8 +171,8 @@ class Task:
     urgency: float = field(init=False)
 
     @property
-    def label_titles(self):
-        return ",".join(map(lambda label: label.title, self.labels or []))
+    def labels(self):
+        return ",".join(map(lambda label: label.title, self.label_objects or []))
 
     @classmethod
     def from_json(cls, json, project_object, labels):
@@ -198,4 +198,4 @@ class Task:
                    )
 
     def has_label(self, label):
-        return any(x.id == label.id for x in self.labels)
+        return any(x.id == label.id for x in self.label_objects)

@@ -102,15 +102,15 @@ In addition to these shortcut filters, more general filtering can be done by `--
 ```shell
 vja ls --filter="created after 2 days ago"
 vja ls --filter="due_date before today in 7 days"
-vja ls --filter="label_titles contains @work"
-vja ls --filter="label_titles ne @work"
+vja ls --filter="labels contains @work"
+vja ls --filter="labels ne @work"
 vja ls --filter="priority gt 2"
 vja ls --filter="title contains clean up"
 ```
 
 All filters can be combined (and operation):
 ```shell
-vja ls --filter="label_titles ne @work" --project=1 --urgent
+vja ls --filter="labels ne @work" --project=1 --urgent
 ```
 
 See `vja ls --help` for more.

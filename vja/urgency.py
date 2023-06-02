@@ -23,7 +23,7 @@ class Urgency:
         return 1 + due_date_score + priority_score + favorite_score + project_name_score + lable_name_score
 
     def _get_label_score(self, task):
-        task_label_title = task.label_titles.lower()
+        task_label_title = task.labels.lower()
         return int(any(label_name.lower() in task_label_title for label_name in
                        self._label_keywords)) if self._label_keywords else 0
 

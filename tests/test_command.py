@@ -3,7 +3,6 @@ import json
 import re
 
 from tests.conftest import invoke
-from vja.cli import cli
 
 ADD_SUCCESS_PATTERN = re.compile(r'.*Created task (\d+) in project .*')
 TODAY = datetime.datetime.now().replace(microsecond=0)
@@ -51,7 +50,7 @@ class TestCloneTask:
         after = json_for_created_task(runner, res.output)
         assert after['project'] == before['project']
         assert after['due_date'] == before['due_date']
-        assert after['labels'] == before['labels']
+        assert after['label_objects'] == before['label_objects']
         assert after['title'] != before['title']
         assert after['id'] != before['id']
         assert after['created'] != before['created']
@@ -107,11 +106,11 @@ class TestEditGeneral:
         assert after['due_date'] is None
 
     def test_toggle_label(self, runner):
-        labels_0 = json_for_task_id(runner, 1)['labels']
+        labels_0 = json_for_task_id(runner, 1)['label_objects']
         invoke(runner, 'edit 1 --label=tag1 --force-create')
-        labels_1 = json_for_task_id(runner, 1)['labels']
+        labels_1 = json_for_task_id(runner, 1)['label_objects']
         invoke(runner, 'edit 1 --label=tag1')
-        labels_2 = json_for_task_id(runner, 1)['labels']
+        labels_2 = json_for_task_id(runner, 1)['label_objects']
 
         assert labels_0 != labels_1
         assert labels_0 == labels_2

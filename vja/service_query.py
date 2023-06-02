@@ -68,7 +68,7 @@ class QueryService:
 def sortable_task_value(task, field):
     field_name = field
     if field in ('label', 'labels'):
-        field_name = 'label_titles'
+        field_name = 'labels'
     field_value = rgetattr(task, field_name)
     if isinstance(field_value, str):
         return field_value.upper()
