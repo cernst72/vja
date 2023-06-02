@@ -3,7 +3,7 @@
 
 ### ⚠ BREAKING CHANGES
 
-* remove namespaces
+* **api:** remove namespaces
 * **api:** remove reminder_dates
 * **api:** New projects api (only backend side)
 * Preliminary support for new reminder array
@@ -41,14 +41,6 @@
 
 ### Misc
 
-* **release:** Release 2.0.0-beta.1 update changelog [skip ci] ([5f35c3a](https://gitlab.com/ce72/vja/commit/5f35c3a2bced9bd44b4b8528295b6f5f23b4a467))
-* **release:** Release 2.0.0-beta.1 update changelog [skip ci] ([a96579c](https://gitlab.com/ce72/vja/commit/a96579c02a01f66008283e4178aa2a389e1d7da1))
-* **release:** Release 2.0.0-beta.1 update changelog [skip ci] ([8745e3a](https://gitlab.com/ce72/vja/commit/8745e3a9374a5185c1fd884411ae2e338e77720d))
-* **release:** Release 2.0.0-beta.1 update changelog [skip ci] ([8fa7747](https://gitlab.com/ce72/vja/commit/8fa7747305cff1e22934dc260534deda890d8c54))
-* **release:** Release 2.0.0-beta.1 update changelog [skip ci] ([9d27ea2](https://gitlab.com/ce72/vja/commit/9d27ea2639c0ffec7582199f004508006479385e))
-* **release:** Release 2.0.0-beta.2 update changelog [skip ci] ([ed78554](https://gitlab.com/ce72/vja/commit/ed78554db8f5adaec000fca4358d709755ee20a5))
-* **release:** Release 2.0.0-beta.3 update changelog [skip ci] ([1d10ce6](https://gitlab.com/ce72/vja/commit/1d10ce675ab4dd4305196e7048261b018c4dd9f7))
-* **release:** Release 2.0.0-beta.4 update changelog [skip ci] ([65b7fbe](https://gitlab.com/ce72/vja/commit/65b7fbe811cd2d2e3ab78cdc54e8f7c0980731f8))
 * Remove redundant test ([719943a](https://gitlab.com/ce72/vja/commit/719943a9d1b77a7663d87abac602f8d869c246b1))
 
 
@@ -84,174 +76,6 @@
 * update semantic-release configuration ([de4df86](https://gitlab.com/ce72/vja/commit/de4df867ec80fbead7e8831edbc8d38fd46e0a76))
 * wait for running api container ([60d6915](https://gitlab.com/ce72/vja/commit/60d6915845050c5b5b8e528feea69a42f8bbe5d3))
 
-## [2.0.0-beta.1](https://gitlab.com/ce72/vja/compare/1.5.1...2.0.0-beta.1) (2023-06-02)
-
-
-### ⚠ BREAKING CHANGES
-
-* remove namespaces
-* **api:** remove reminder_dates
-* **api:** New projects api (only backend side)
-* Preliminary support for new reminder array
-
-### Features
-
-* **api:** New projects api (only backend side) ([b1df704](https://gitlab.com/ce72/vja/commit/b1df70496a070b827c7431c68181d4ec18aa5190))
-* **api:** remove reminder_dates ([6f18cff](https://gitlab.com/ce72/vja/commit/6f18cff9ffae2e95dafd9c936400b5e216b44008))
-* **cli:** alias --urgent for --urgency ([3701ab2](https://gitlab.com/ce72/vja/commit/3701ab25ddeebc7f07959c0ac2bdca9833b5d15f))
-* defer reminder ([aec5f53](https://gitlab.com/ce72/vja/commit/aec5f53ed530a3e1a486b7cad56a9c1613ae100a))
-* **defer task:** defer passed due date relative to now ([f6a70e5](https://gitlab.com/ce72/vja/commit/f6a70e58506104f5c0fd6eb421baf9017f31feb9))
-* fetch long_token when logging in (with a ttl of 30 days) ([1e8a7b8](https://gitlab.com/ce72/vja/commit/1e8a7b86ae4781b812909132d1574380965e99d3))
-* Preliminary support for new reminder array ([fe2c332](https://gitlab.com/ce72/vja/commit/fe2c33281206fcf4e121875164ab36ea78369987))
-* **reminders:** Set relative reminders like "1h before due" ([18534b4](https://gitlab.com/ce72/vja/commit/18534b4921a04e603ad4003a4a3f3ad9196de10c))
-* remove namespaces ([3c027b0](https://gitlab.com/ce72/vja/commit/3c027b09b996dcfc8ff650b75c565d6500a124b4))
-* rename lists to project within vja ([54b0b0a](https://gitlab.com/ce72/vja/commit/54b0b0a46cfaaa20236fe79580a9a28909056d7c))
-* Support for new reminder array (read) ([5caff10](https://gitlab.com/ce72/vja/commit/5caff109bf444087ec83f8f6e3257d5ffddefaa1))
-
-
-### Bug Fixes
-
-* **clone:** clone labels too ([0516908](https://gitlab.com/ce72/vja/commit/05169086c09ff4b77d597799defff00b01f4b591))
-* **clone:** do not clone positions and have --bucket ([15fac96](https://gitlab.com/ce72/vja/commit/15fac96ec4f34fbde4906eef925646fef8ba0d6e))
-* **clone:** do not clone positions and have --bucket ([9e0a9aa](https://gitlab.com/ce72/vja/commit/9e0a9aa8ce9e8d6b845063888c22ece7f40b1028))
-* do not unset reminder if missing in vja edit ([7b8c922](https://gitlab.com/ce72/vja/commit/7b8c922acaf726060c9de5ad574da585bc8e2e9a))
-* sharpen test ([c5dbf43](https://gitlab.com/ce72/vja/commit/c5dbf43d582b244f8b17787ed12a06d160a20856))
-
-
-### Documentation
-
-* Add table of contents to Features.md ([e394ca5](https://gitlab.com/ce72/vja/commit/e394ca5e3959a77e1a8bb39285f4dc348d997cbd))
-* describe env variable VJA_CONFIGDIR ([ef0c2bd](https://gitlab.com/ce72/vja/commit/ef0c2bd9b6b38414a091787c3d641cc9e9799f9a))
-* **filters:** improve documentation (and tests) ([2c2b967](https://gitlab.com/ce72/vja/commit/2c2b967f736055f6ab65a3ef7f03c05cc6798344))
-
-
-### Misc
-
-* **release:** Release 2.0.0-beta.1 update changelog [skip ci] ([a96579c](https://gitlab.com/ce72/vja/commit/a96579c02a01f66008283e4178aa2a389e1d7da1))
-* **release:** Release 2.0.0-beta.1 update changelog [skip ci] ([8745e3a](https://gitlab.com/ce72/vja/commit/8745e3a9374a5185c1fd884411ae2e338e77720d))
-* **release:** Release 2.0.0-beta.1 update changelog [skip ci] ([8fa7747](https://gitlab.com/ce72/vja/commit/8fa7747305cff1e22934dc260534deda890d8c54))
-* **release:** Release 2.0.0-beta.1 update changelog [skip ci] ([9d27ea2](https://gitlab.com/ce72/vja/commit/9d27ea2639c0ffec7582199f004508006479385e))
-* **release:** Release 2.0.0-beta.2 update changelog [skip ci] ([ed78554](https://gitlab.com/ce72/vja/commit/ed78554db8f5adaec000fca4358d709755ee20a5))
-* **release:** Release 2.0.0-beta.3 update changelog [skip ci] ([1d10ce6](https://gitlab.com/ce72/vja/commit/1d10ce675ab4dd4305196e7048261b018c4dd9f7))
-* **release:** Release 2.0.0-beta.4 update changelog [skip ci] ([65b7fbe](https://gitlab.com/ce72/vja/commit/65b7fbe811cd2d2e3ab78cdc54e8f7c0980731f8))
-* Remove redundant test ([719943a](https://gitlab.com/ce72/vja/commit/719943a9d1b77a7663d87abac602f8d869c246b1))
-
-
-### Automation
-
-* automate beta releases ([a325254](https://gitlab.com/ce72/vja/commit/a32525446577421f95b51cb578390d2c72d114c3))
-* automate beta releases ([a3fed80](https://gitlab.com/ce72/vja/commit/a3fed80753d817a8026d1ac8eb65291576c5a10f))
-* automate beta releases ([f2dc40a](https://gitlab.com/ce72/vja/commit/f2dc40ae6d731b96946c999f3f9d639b38f2b601))
-* automate beta releases ([c57f4bc](https://gitlab.com/ce72/vja/commit/c57f4bcd40fcbad44b1d364884864bf764b012e9))
-* capture click output ([727c282](https://gitlab.com/ce72/vja/commit/727c2823f2adab62e4e91835ed39219f2b274fe2))
-* cleanup gitlab-ci ([cb6f743](https://gitlab.com/ce72/vja/commit/cb6f743f14ab85afd8059c8c9f4baa68e492b215))
-* cleanup gitlab-ci ([cab2530](https://gitlab.com/ce72/vja/commit/cab2530d7bdfe9261acf9ae4f30d304e8279b6aa))
-* cleanup gitlab-ci ([0716eb9](https://gitlab.com/ce72/vja/commit/0716eb94ebd32ebe4c6fbea7b75f35d66d9e2439))
-* cleanup gitlab-ci ([017cf44](https://gitlab.com/ce72/vja/commit/017cf444633a7f800c6f8d1960ea84e093a79c65))
-* cleanup test setup ([c8a3872](https://gitlab.com/ce72/vja/commit/c8a387244ee86728241970d86e8b59d259a90c40))
-* fix version number ([a985a5e](https://gitlab.com/ce72/vja/commit/a985a5e28f2b1212a4a4f48aa41eadb0dacebcd3))
-* fix version number ([4518c3f](https://gitlab.com/ce72/vja/commit/4518c3fa5343762c2eaaa05ab2e60c61294b9b6a))
-* fix version number ([cc346c7](https://gitlab.com/ce72/vja/commit/cc346c7aea5b2486a79be2f142801c209adf82d7))
-* install coverage from requirements_dev.txt ([9b03ba1](https://gitlab.com/ce72/vja/commit/9b03ba180ceb1a9d8125a4713a5e2799777e4e36))
-* pipeline on branches only manual ([9b05c2d](https://gitlab.com/ce72/vja/commit/9b05c2ddaf778f179a7ddd16a56fa1d5d9b5b5fc))
-* pipeline on branches only manual ([3a936d9](https://gitlab.com/ce72/vja/commit/3a936d9a0425ca3c6c87c61b526e87b7474398c3))
-* remove build stage ([8e4f36c](https://gitlab.com/ce72/vja/commit/8e4f36cee4ebaff4fcf3c703e6e1b265d955d302))
-* remove build stage ([e4858e3](https://gitlab.com/ce72/vja/commit/e4858e363aed6369ef29ef0fe3ed56115083a11b))
-* remove build stage ([e27df75](https://gitlab.com/ce72/vja/commit/e27df75b220380148aab79e75af0e5194041d381))
-* remove build stage ([49d2fe2](https://gitlab.com/ce72/vja/commit/49d2fe2d4261fa993aa06365fd004876d8fff055))
-* remove build stage ([1661721](https://gitlab.com/ce72/vja/commit/166172141e63f3ef22c576196aacaf7de5bea227))
-* remove redundant apk packages ([bf6c0ea](https://gitlab.com/ce72/vja/commit/bf6c0eae179929555ecba1315d19683f052a046e))
-* remove redundant apk packages ([a34a24d](https://gitlab.com/ce72/vja/commit/a34a24d396bb508d4635bc1cb405d3ab9d6bbdc7))
-* update semantic-release configuration ([de4df86](https://gitlab.com/ce72/vja/commit/de4df867ec80fbead7e8831edbc8d38fd46e0a76))
-* wait for running api container ([60d6915](https://gitlab.com/ce72/vja/commit/60d6915845050c5b5b8e528feea69a42f8bbe5d3))
-
-## [2.0.0-beta.4](https://gitlab.com/ce72/vja/compare/2.0.0-beta.3...2.0.0-beta.4) (2023-04-24)
-
-
-### Bug Fixes
-
-* **clone:** clone labels too ([22bf1c0](https://gitlab.com/ce72/vja/commit/22bf1c075888d931ceefc989d50eb49282adccf5))
-* **clone:** do not clone positions and have --bucket ([bc382c2](https://gitlab.com/ce72/vja/commit/bc382c2aa9ca4b8109e62b8fce6f792b49c18fce))
-* **clone:** do not clone positions and have --bucket ([5edeaba](https://gitlab.com/ce72/vja/commit/5edeaba7cad2695fdf5470f6568bd4048d23c568))
-
-
-### Documentation
-
-* describe env variable VJA_CONFIGDIR ([11e1a97](https://gitlab.com/ce72/vja/commit/11e1a979dbfb169b5559145adc735df65ef09838))
-
-## [2.0.0-beta.3](https://gitlab.com/ce72/vja/compare/2.0.0-beta.2...2.0.0-beta.3) (2023-04-10)
-
-
-### Features
-
-* fetch long_token when logging in (with a ttl of 30 days) ([04b8932](https://gitlab.com/ce72/vja/commit/04b8932288b8072ad85a6614147e3b835a4f8bff))
-
-## [2.0.0-beta.2](https://gitlab.com/ce72/vja/compare/2.0.0-beta.1...2.0.0-beta.2) (2023-04-02)
-
-
-### Features
-
-* rename lists to project within vja ([f757117](https://gitlab.com/ce72/vja/commit/f75711797d887ffee8cd5b3ab7ec7edb8044494e))
-
-## [2.0.0-beta.1](https://gitlab.com/ce72/vja/compare/1.5.0...2.0.0-beta.1) (2023-04-01)
-
-
-### ⚠ BREAKING CHANGES
-
-* **api:** remove reminder_dates
-* **api:** New projects api (only backend side)
-* Preliminary support for new reminder array
-
-### Features
-
-* **api:** New projects api (only backend side) ([157aeb4](https://gitlab.com/ce72/vja/commit/157aeb483fa2b5d3b1d733f7682c97c8e449aebc))
-* **api:** remove reminder_dates ([76ffb20](https://gitlab.com/ce72/vja/commit/76ffb2007cf77d87e41b8cdb8bf16a0f9d4edf26))
-* defer reminder ([c493b07](https://gitlab.com/ce72/vja/commit/c493b07266affc2f6976a5682b1b33170c90e51b))
-* Preliminary support for new reminder array ([eb7e819](https://gitlab.com/ce72/vja/commit/eb7e819b08b897eeb55e0a18320a03a11442ce91))
-* **reminders:** Set relative reminders like "1h before due" ([f05438d](https://gitlab.com/ce72/vja/commit/f05438d9f8c61ee04cb5432b2e1e0d0a56ff2175))
-* Support for new reminder array (read) ([c323c76](https://gitlab.com/ce72/vja/commit/c323c76fcb52541a00e35d1e5c31a668eb061405))
-
-
-### Bug Fixes
-
-* do not unset reminder if missing in vja edit ([a3b81b0](https://gitlab.com/ce72/vja/commit/a3b81b0bae08841fd92e204d5557cc1ad46a59b3))
-* sharpen test ([4c59738](https://gitlab.com/ce72/vja/commit/4c59738a19bb4dabd1b871d54ba40f8833b2fe10))
-
-
-### Misc
-
-* Remove redundant test ([2901848](https://gitlab.com/ce72/vja/commit/29018480b6a11c2ec3495ce6e44c4955fe6b13ec))
-
-
-### Documentation
-
-* Add table of contents to Features.md ([3a87061](https://gitlab.com/ce72/vja/commit/3a87061f39b2bf4d2a1194197f5cfef3c8d7d46e))
-
-
-### Automation
-
-* automate beta releases ([8f19e48](https://gitlab.com/ce72/vja/commit/8f19e48db1312db3e6d27716a692b95805ef82d1))
-* automate beta releases ([1c74fda](https://gitlab.com/ce72/vja/commit/1c74fdab9e9b02fc116a1532b081b562e9dbf832))
-* automate beta releases ([8f7bb4f](https://gitlab.com/ce72/vja/commit/8f7bb4f9802ec6e199d5f7dd60790341550a1785))
-* automate beta releases ([68bd7d8](https://gitlab.com/ce72/vja/commit/68bd7d8ee3b3579c3f48b3b8d13d2780f5194641))
-* capture click output ([9aafa2c](https://gitlab.com/ce72/vja/commit/9aafa2c426757b2068a1199410db58899356eacd))
-* cleanup gitlab-ci ([450d13f](https://gitlab.com/ce72/vja/commit/450d13fe43987c3cf33c72bfa2303e452ee7be8b))
-* cleanup gitlab-ci ([543a479](https://gitlab.com/ce72/vja/commit/543a47928a9539982a91507ece4e9d3605bb2dbb))
-* cleanup gitlab-ci ([7145451](https://gitlab.com/ce72/vja/commit/714545181a76b15c4341df3a4ff6830416ddf897))
-* cleanup gitlab-ci ([9584cac](https://gitlab.com/ce72/vja/commit/9584cac6e18e81480231b34fabd46990249a2760))
-* cleanup test setup ([5e5040a](https://gitlab.com/ce72/vja/commit/5e5040a3254b8cc5dc75f0391352e0e1358fdeaa))
-* install coverage from requirements_dev.txt ([eab4b0f](https://gitlab.com/ce72/vja/commit/eab4b0f4ef879c64859c9796f2562b09eaa53320))
-* pipeline on branches only manual ([43fa7df](https://gitlab.com/ce72/vja/commit/43fa7df6ec8fe69eb8d9d27589b65b9541b0b71a))
-* pipeline on branches only manual ([8689f5e](https://gitlab.com/ce72/vja/commit/8689f5e0a36a536187a9df97dd38a2a0ece9ed01))
-* remove build stage ([3294b83](https://gitlab.com/ce72/vja/commit/3294b83e1b75b2b6826333104d91e71ee1b8d478))
-* remove build stage ([8bca866](https://gitlab.com/ce72/vja/commit/8bca866c60f3ed2cf62eeb87cd10dad06f9563e6))
-* remove build stage ([4638743](https://gitlab.com/ce72/vja/commit/46387430fe4c92a02b818e200672c86ed4190e1a))
-* remove build stage ([5b32e53](https://gitlab.com/ce72/vja/commit/5b32e53277c3ee95464eb1d60f2c270dccb5bf4b))
-* remove build stage ([7dd6dcb](https://gitlab.com/ce72/vja/commit/7dd6dcbf9f8c373a9d8b33b8c17d29c559cc1075))
-* remove redundant apk packages ([22a3f48](https://gitlab.com/ce72/vja/commit/22a3f48391bc8434fcb208d31e4db50f701b8c68))
-* remove redundant apk packages ([efb7016](https://gitlab.com/ce72/vja/commit/efb701685d11bad90eb844ac8636117225ab2f7c))
-* sleep 1s after starting api ([649a806](https://gitlab.com/ce72/vja/commit/649a8063a39f76f91196c0f6f8261f5033f95d52))
-* update semantic-release configuration ([572f519](https://gitlab.com/ce72/vja/commit/572f519a10bc97e9badb017f90b5e723eecc8e42))
 
 ## [1.5.0](https://gitlab.com/ce72/vja/compare/1.4.1...1.5.0) (2023-03-31)
 
