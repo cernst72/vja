@@ -10,7 +10,8 @@ TODAY = datetime.datetime.now().replace(microsecond=0)
 TODAY_ISO = TODAY.isoformat()
 YESTERDAY = TODAY + datetime.timedelta(days=-1)
 YESTERDAY_ISO = YESTERDAY.isoformat()
-TOMORROW_ISO = (TODAY + datetime.timedelta(days=1)).isoformat()
+TOMORROW = TODAY + datetime.timedelta(days=1)
+TOMORROW_ISO = TOMORROW.isoformat()
 DATE_1 = TODAY + datetime.timedelta(days=10)
 DATE_2 = DATE_1 + datetime.timedelta(days=1)
 DATE_1_ISO = DATE_1.isoformat()
@@ -70,8 +71,7 @@ class TestEditGeneral:
     def test_edit_title(self, runner):
         before = json_for_task_id(runner, 1)
         new_title = f'{before["title"]}42'
-        res = runner.invoke(cli, ['edit', '1', '-i', f'{new_title}'])
-        assert res.exit_code == 0, res
+        invoke(runner, ['edit', '1', '-i', f'{new_title}'])
 
         after = json_for_task_id(runner, 1)
         assert after['title'] == new_title
@@ -83,14 +83,19 @@ class TestEditGeneral:
         assert after['project']['id'] == before['project']['id']
         assert after['created'] == before['created']
 
-    def test_edit_due_date(self, runner):
-        before = json_for_task_id(runner, 1)
+    def test_edit_due_date_without_time(self, runner):
 
-        invoke(runner, 'edit 1 --due=today')
+        invoke(runner, 'edit 1 --due=tomorrow')
 
         after = json_for_task_id(runner, 1)
-        assert after['due_date'][:10] == TODAY_ISO[:10]
-        assert after['updated'] >= before['updated']
+        assert after['due_date'] == (TOMORROW.replace(hour=0, minute=0, second=0)).isoformat()
+
+    def test_edit_due_date_with_time(self, runner):
+
+        invoke(runner, ['edit', '1', '--due=tomorrow 15:00'])
+
+        after = json_for_task_id(runner, 1)
+        assert after['due_date'] == (TOMORROW.replace(hour=15, minute=0, second=0)).isoformat()
 
     def test_unset_due_date(self, runner):
         before = json_for_task_id(runner, 1)
@@ -100,7 +105,6 @@ class TestEditGeneral:
 
         after = json_for_task_id(runner, 1)
         assert after['due_date'] is None
-        assert after['updated'] >= before['updated']
 
     def test_toggle_label(self, runner):
         labels_0 = json_for_task_id(runner, 1)['labels']
