@@ -2,6 +2,7 @@ tagFormat: "${version}"
 branches:
   - main
   - { name: beta, prerelease: true }
+  - { name: rc, prerelease: true }
 
 plugins:
   - - "@semantic-release/commit-analyzer"
