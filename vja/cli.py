@@ -9,8 +9,8 @@ from click_aliases import ClickAliasedGroup
 
 from vja.apiclient import ApiClient
 from vja.config import VjaConfiguration
-from vja.list_service import ListService
 from vja.output import Output
+from vja.project_service import ProjectService
 from vja.service_command import CommandService
 from vja.service_query import QueryService
 from vja.task_service import TaskService
@@ -23,11 +23,11 @@ class Application:
     def __init__(self):
         self._configuration = VjaConfiguration()
         api_client = ApiClient(self._configuration.get_api_url(), self._configuration.get_token_file())
-        list_service = ListService(api_client)
+        project_service = ProjectService(api_client)
         urgency_service = Urgency.from_config(self._configuration)
-        task_service = TaskService(list_service, urgency_service)
-        self._command_service = CommandService(list_service, task_service, api_client)
-        self._query_service = QueryService(list_service, task_service, api_client)
+        task_service = TaskService(project_service, urgency_service)
+        self._command_service = CommandService(project_service, task_service, api_client)
+        self._query_service = QueryService(project_service, task_service, api_client)
         self._output = Output()
 
     @property
@@ -100,15 +100,16 @@ def project_group():
 
 
 @project_group.command('add', help='Add project with title')
-@click.option('namespace_id', '-n', '--namespace-id', help='Create project in namespace, default: first namespace found')
+@click.option('parent_project_id', '-o', '--parent-project-id', '--parent_project_id', type=click.INT,
+              help='Create project as child of parent project id')
 @click.argument('title', nargs=-1, required=True)
 @with_application
-def project_add(application, title, namespace_id=None):
-    project = application.command_service.add_project(namespace_id, " ".join(title))
+def project_add(application, title, parent_project_id=None):
+    project = application.command_service.add_project(parent_project_id, " ".join(title))
     click.echo(f'Created project {project.id}')
 
 
-@project_group.command('ls', help='Print projects ... (id; title; description; namespace; namespace_id)')
+@project_group.command('ls', help='Print projects ... (id; title; description; parent_project_id)')
 @click.option('is_json', '--json', default=False, is_flag=True,
               help='Print as Vikunja json')
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True,
@@ -142,7 +143,7 @@ def bucket_group():
 
 
 @bucket_group.command('ls', help='Print kanban buckets of given project ... (id; title; is_done; limit; count tasks)')
-@click.option('project_id', '-l', '--list', '--project-id', '--project_id', required=True, type=click.INT,
+@click.option('project_id', '-o', '--project', '--project-id', '--project_id', required=True, type=click.INT,
               help='Show buckets of project with id')
 @click.option('is_json', '--json', default=False, is_flag=True,
               help='Print as Vikunja json')
@@ -191,7 +192,7 @@ def label_add(application, title):
 @cli.command('add', aliases=['create'],
              help='Add new task')
 @click.argument('title', required=True, nargs=-1)
-@click.option('project_id', '-l', '--folder', '--project', '--list',
+@click.option('project_id', '-o', '--project', '--project-id', '--project_id',
               help='Project (id or name), defaults to project from user settings, than to first favorite project')
 @click.option('note', '-n', '--note', '--description',
               help='Set description (note)')
@@ -201,7 +202,7 @@ def label_add(application, title):
               help='Set due date (supports parsedatetime expressions)')
 @click.option('favorite', '-f', '--star', '--favorite', type=click.BOOL,
               help='Mark as favorite')
-@click.option('tag', '-t', '--tag', '--label',
+@click.option('label', '-l', '--label',
               help='Set label (label must exist on server)')
 @click.option('reminder', '-r', '--alarm', '--remind', '--reminder', is_flag=False, flag_value='due',
               help='Set reminder (supports parsedatetime and timedelta expressions). '
@@ -243,7 +244,7 @@ def task_clone(ctx, application, task_id, title, is_clone_bucket=False):
               help='Append note to existing description separated by new line')
 @click.option('prio', '-p', '--prio', '--priority', type=click.INT,
               help='Set priority')
-@click.option('project_id', '-l', '--folder-id', '--project-id', '--list-id', '--project_id', type=click.INT,
+@click.option('project_id', '-o', '--project', '--project-id', '--project_id',
               help='Move to project with id')
 @click.option('position', '--project-position', '--project_position', '--position', type=click.INT,
               help='Set project position')
@@ -257,7 +258,7 @@ def task_clone(ctx, application, task_id, title, is_clone_bucket=False):
               help='Mark as favorite')
 @click.option('completed', '-c', '--completed', '--done', type=click.BOOL,
               help='Mark as completed')
-@click.option('tag', '-t', '--tag', '--label',
+@click.option('label', '-l', '--label',
               help='Set label (label must exist on server unless called with --force-create)')
 @click.option('reminder', '-r', '--alarm', '--remind', '--reminder', is_flag=False, flag_value='due',
               help='Set reminder (supports parsedatetime and timedelta expressions). '
@@ -302,7 +303,7 @@ def task_defer(ctx, application, task_ids, delay_by):
 
 
 @cli.command('ls', help='List tasks ... (task-id; priority; is_favorite; title; due_date; '
-                        'has reminder; namespace; project; labels; urgency)')
+                        'has reminder; parent-project; project; labels; urgency)')
 @click.option('is_json', '--json', default=False, is_flag=True,
               help='Print as Vikunja json')
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True,
@@ -325,12 +326,13 @@ def task_defer(ctx, application, task_ids, delay_by):
               help='General filter. Must be like <field> <operator> <value> e.g. --filter="priority ge 2" '
                    'where <operator> in (eq, ne, gt, lt, ge, le, before, after, contains). '
                    'Multiple occurrences of --filter are allowed and will be combined with logical AND.')
-@click.option('label_filter', '-t', '--tag', '--label',
+@click.option('label_filter', '-l', '--label',
               help='Filter by label (name or id)')
-@click.option('project_filter', '-l', '--project',
+@click.option('project_filter', '-o', '--project', '--project-id', '--project_id',
               help='Filter by project (name or id)')
-@click.option('namespace_filter', '-n', '--namespace',
-              help='Filter by namespace (name or id)')
+@click.option('upper_project_filter', '-u', '--base-project', '--base', '--upper-project',
+              help='Filter by base project (name or id). '
+                   'All tasks whose project has the given argument as a ancestor are considered.')
 @click.option('priority_filter', '-p', '--prio', '--priority',
               help='Filter by priority. The TEXT value must be like <operator> <value>, '
                    'Shortcut for --filter="priority <operator> <value>"')

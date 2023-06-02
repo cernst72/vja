@@ -60,24 +60,6 @@ class User:
 
 @dataclass(frozen=True)
 @data_dict
-class Namespace:
-    json: dict = field(repr=False)
-    id: int
-    title: str
-    description: str
-    is_archived: bool
-
-    @classmethod
-    def from_json(cls, json):
-        return cls(json, json['id'], json['title'], json['description'], json['is_archived'])
-
-    @classmethod
-    def from_json_array(cls, json_array):
-        return [Namespace.from_json(x) for x in json_array or []]
-
-
-@dataclass(frozen=True)
-@data_dict
 class Project:
     json: dict = field(repr=False)
     id: int
@@ -85,16 +67,18 @@ class Project:
     description: str
     is_favorite: bool
     is_archived: bool
-    namespace: Namespace
+    parent_project_id: int
+    ancestor_projects: typing.List['Project']
 
     @classmethod
-    def from_json(cls, json, namespace):
+    def from_json(cls, json, ancestor_projects):
         return cls(json, json['id'], json['title'], json['description'], json['is_archived'], json['is_favorite'],
-                   namespace)
+                   json['parent_project_id'],
+                   ancestor_projects)
 
     @classmethod
-    def from_json_array(cls, json_array, namespace):
-        return [Project.from_json(x, namespace) for x in json_array or []]
+    def from_json_array(cls, json_array, ancestor_projects):
+        return [Project.from_json(x, ancestor_projects) for x in json_array or []]
 
 
 @dataclass(frozen=True)

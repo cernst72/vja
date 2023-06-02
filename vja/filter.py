@@ -69,10 +69,10 @@ def _create_project_filter(value):
     return _create_general_filter([f'project.title eq {value}'])
 
 
-def _create_namespace_filter(value):
+def _create_upper_project_filter(value):
     if str(value).isdigit():
-        return _create_general_filter([f'project.namespace.id eq {value}'])
-    return _create_general_filter([f'project.namespace.title eq {value}'])
+        return lambda x: x.id == int(value) or any(ancestor.id == int(value) for ancestor in x.ancestor_projects)
+    return lambda x: x.title == value or any(ancestor.title == int(value) for ancestor in x.ancestor_projects)
 
 
 def _create_title_filter(value):
@@ -106,7 +106,7 @@ _filter_mapping = {
     'general_filter': _create_general_filter,
     'label_filter': _create_label_filter,
     'project_filter': _create_project_filter,
-    'namespace_filter': _create_namespace_filter,
+    'upper_project_filter': _create_upper_project_filter,
     'title_filter': _create_title_filter,
     'priority_filter': _create_priority_filter,
     'urgency_filter': _create_urgency_filter,

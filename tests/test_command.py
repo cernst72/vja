@@ -104,9 +104,9 @@ class TestEditGeneral:
 
     def test_toggle_label(self, runner):
         labels_0 = json_for_task_id(runner, 1)['labels']
-        invoke(runner, 'edit 1 --tag=tag1 --force-create')
+        invoke(runner, 'edit 1 --label=tag1 --force-create')
         labels_1 = json_for_task_id(runner, 1)['labels']
-        invoke(runner, 'edit 1 --tag=tag1')
+        invoke(runner, 'edit 1 --label=tag1')
         labels_2 = json_for_task_id(runner, 1)['labels']
 
         assert labels_0 != labels_1
@@ -126,7 +126,7 @@ class TestEditGeneral:
         invoke(runner, 'project add another project')
         invoke(runner, 'edit 1 --project-id=1')
         project_1 = json_for_task_id(runner, 1)['project']['id']
-        invoke(runner, 'edit 1 -l 2')
+        invoke(runner, 'edit 1 -o 2')
         project_2 = json_for_task_id(runner, 1)['project']['id']
 
         assert project_1 == 1

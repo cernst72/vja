@@ -29,13 +29,13 @@
 context:
 
 ```shell
-vja add Getting things done --note="find out how" -priority=3 --favorite=True --due="tomorrow at 11:00" --reminder --tag=@work
+vja add Getting things done --note="find out how" -priority=3 --favorite=True --due="tomorrow at 11:00" --reminder --label=@work
 ```
 
 or more concise
 
 ```shell
-vja add One more task -l 1 -p 4 -t "Label1" -n "my note" -d "23:00" -f True
+vja add One more task -o 1 -p 4 -l "Label1" -n "my note" -d "23:00" -f True
 ```
 
 See
@@ -83,6 +83,8 @@ example.
 The displayed tasks may be filtered by several arguments like project or title, namespace and label
 
 ```shell
+vja ls --project=1
+vja ls --base-project=myproject
 vja ls --bucket_id=1
 vja ls --due-date="before today"
 vja ls --due-date="ge in 0 days" --due-date="before 5 days"
@@ -158,10 +160,10 @@ Set new due_date and set reminder=due_date
 vja edit 1 --due="in 4 days at 15:00" -r
 ```
 
-Toggle tag (=label). Use with --force to create new label:
+Toggle label. Use with --force to create new label:
 
 ```shell
-vja edit 1 -t @work
+vja edit 1 -l @work
 ```
 
 Mark as done
@@ -170,6 +172,14 @@ Mark as done
 vja edit 1 --done="true"
 vja check 1 # Shortcut to toggle the done flag of task 1
 ```
+
+See
+
+```shell
+vja edit --help
+```
+
+for more.
 
 ### Defer task
 
@@ -218,20 +228,12 @@ The same goes for `vja add`.
 
 ### Batch editing
 
-Multiple edits and defers are possible by giving more task ids
+Multiple edits and defers are possible by giving more task ids. Take care though, there is no confirmation request.
 
 ```shell
 vja edit 1 5 8 --due="next monday 14:00"
 vja defer 1 2 3 1d
 ```
-
-See
-
-```shell
-vja edit --help
-```
-
-for more.
 
 ## Open Vikunja in browser
 
@@ -249,7 +251,11 @@ vja open 42
 
 ## Manage projects, labels, buckets
 
+There is only a very basic support for managing entities other than tasks. I believe it is better to use the frontend.
+
 ### Manage projects
+
+Projects can be added and be shown but not be modified:
 
 ```shell
 vja project add New Project
@@ -296,7 +302,7 @@ Do not use `--custom-format` if you feel uncomfortable with that.
 
 ## Terminate session
 
-You may remove your traces by logging out. This will remove the local access token so that during subsequent execution
+You may remove your traces by logging out. This will remove the local access token so that at a subsequent execution
 vja will prompt you again.
 
 ```shell

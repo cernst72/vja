@@ -30,7 +30,7 @@ class TestProject:
     def test_project_ls_custom_format(self, runner):
         res = invoke(runner, 'project ls --custom-format=ids_only')
         for line in res.output:
-            assert re.match(r'^\d*$', line)
+            assert re.match(r'^-?\d*$', line)
 
 
 class TestBucket:
