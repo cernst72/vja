@@ -20,6 +20,8 @@ pylint:
   rules:
     - if: $CI_COMMIT_BRANCH == "beta"
       when: on_success
+    - if: $CI_COMMIT_BRANCH == "rc"
+      when: on_success
     - if: $CI_COMMIT_BRANCH && $CI_COMMIT_REF_SLUG !~ /renovate.*/
       when: manual
     - when: on_success
@@ -60,6 +62,8 @@ integration-test:
         path: coverage.xml
   rules:
     - if: $CI_COMMIT_BRANCH == "beta"
+      when: on_success
+    - if: $CI_COMMIT_BRANCH == "rc"
       when: on_success
     - if: $CI_COMMIT_BRANCH && $CI_COMMIT_REF_SLUG !~ /renovate.*/
       when: manual
