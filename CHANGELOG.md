@@ -1,4 +1,4 @@
-## [2.0.0-beta.1](https://gitlab.com/ce72/vja/compare/1.5.1...2.0.0-beta.1) (2023-06-02)
+## [2.0.0-beta.5](https://gitlab.com/ce72/vja/compare/1.5.1...2.0.0-beta.1) (2023-06-02)
 
 
 ### ⚠ BREAKING CHANGES
