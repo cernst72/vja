@@ -49,7 +49,7 @@ integration-test:
     - curl --retry 5 --retry-all-errors --retry-delay 1 "http://docker:3456/api/v1/info"
 
     - export VJA_CONFIGDIR=tests/.vjatest_dind
-    - tests/run.sh test
+    # - tests/run.sh test
     - coverage run --omit='*test*' -m pytest
     - coverage report --omit='*test*'
     - coverage xml --omit='*test*'

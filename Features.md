@@ -80,7 +80,7 @@ example.
 
 ### Filter
 
-The displayed tasks may be filtered by several arguments like project or title, namespace and label
+The displayed tasks may be filtered by several arguments like project or title, base_project and label
 
 ```shell
 vja ls --project=1
@@ -262,7 +262,7 @@ vja project add New Project
 ```
 
 ```shell
-vja project add -n 2 Create project in namespace with index 2
+vja project add -o 2 Create project in parent project with index 2
 ```
 
 ```shell

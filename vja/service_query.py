@@ -23,11 +23,10 @@ class QueryService:
 
     # project
     def find_all_projects(self):
-        return [self._project_service.convert_project_json(project_json) for project_json in
-                (self._api_client.get_projects())]
+        return self._project_service.find_all_projects()
 
     def find_project_by_id(self, project_id):
-        return self._project_service.convert_project_json(self._api_client.get_project(project_id))
+        return self._project_service.find_project_by_id(project_id)
 
     # bucket
     def find_all_buckets_in_project(self, project_id):

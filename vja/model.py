@@ -58,8 +58,9 @@ class User:
         return cls(json, json['id'], json['username'], json['name'], json['settings']['default_project_id'])
 
 
-@dataclass(frozen=True)
+@dataclass
 @data_dict
+# pylint: disable=too-many-instance-attributes
 class Project:
     json: dict = field(repr=False)
     id: int

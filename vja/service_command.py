@@ -27,7 +27,7 @@ class CommandService:
     # project
     def add_project(self, parent_project_id, title):
         project_json = self._api_client.put_project(parent_project_id, title)
-        return self._project_service.convert_project_json(project_json)
+        return self._project_service.find_project_by_id(project_json['id'])
 
     # label
     def add_label(self, title):

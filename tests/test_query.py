@@ -166,6 +166,15 @@ class TestTaskLsFilter:
         data = json.loads(res.output)
         assert len(data) == 0
 
+    def test_task_filter_base_project(self, runner):
+        res = invoke(runner, ['ls', '--jsonvja', '--base-project=test-project'])
+        data = json.loads(res.output)
+        assert len(data) > 0
+        assert all(i['project']['title'] == 'test-project' or i['project']['title'] == 'grand-child' for i in data)
+        res = invoke(runner, ['ls', '--jsonvja', '--project=Not created'])
+        data = json.loads(res.output)
+        assert len(data) == 0
+
     def test_task_filter_priority(self, runner):
         res = invoke(runner, ['ls', '--jsonvja', '--priority=eq 5'])
         data = json.loads(res.output)

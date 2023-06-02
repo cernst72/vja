@@ -71,8 +71,8 @@ def _create_project_filter(value):
 
 def _create_upper_project_filter(value):
     if str(value).isdigit():
-        return lambda x: x.id == int(value) or any(ancestor.id == int(value) for ancestor in x.ancestor_projects)
-    return lambda x: x.title == value or any(ancestor.title == int(value) for ancestor in x.ancestor_projects)
+        return lambda x: x.project.id == int(value) or any(ancestor.id == int(value) for ancestor in x.project.ancestor_projects)
+    return lambda x: x.project.title == value or any(ancestor.title == value for ancestor in x.project.ancestor_projects)
 
 
 def _create_title_filter(value):

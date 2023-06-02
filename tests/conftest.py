@@ -36,10 +36,10 @@ def _login_as_test_user():
 
 def _create_project_and_task():
     run_vja('vja project add test-project')
-    run_vja('vja project add child --parent-project-id=1')
-    run_vja('vja project add grand-child --parent-project-id=2')
+    run_vja('vja project add child --parent-project-id=2')
+    run_vja('vja project add grand-child --parent-project-id=3')
     run_vja('vja add At least one task --force-create --priority=5 --due-date=today --label=my_tag --favorite=True --project-id=1')
-    run_vja('vja add Task in subproject --force-create --project-id=3')
+    run_vja('vja add Task in subproject --force-create --project-id=4')
     run_vja('vja add A task without a label --force-create')
 
 

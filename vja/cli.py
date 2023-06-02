@@ -330,7 +330,7 @@ def task_defer(ctx, application, task_ids, delay_by):
               help='Filter by label (name or id)')
 @click.option('project_filter', '-o', '--project', '--project-id', '--project_id',
               help='Filter by project (name or id)')
-@click.option('upper_project_filter', '-u', '--base-project', '--base', '--upper-project',
+@click.option('upper_project_filter', '-t', '--base-project', '--top', '--base', '--upper-project',
               help='Filter by base project (name or id). '
                    'All tasks whose project has the given argument as a ancestor are considered.')
 @click.option('priority_filter', '-p', '--prio', '--priority',
