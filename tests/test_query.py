@@ -171,6 +171,8 @@ class TestTaskLsFilter:
         data = json.loads(res.output)
         assert len(data) > 0
         assert all(i['project']['title'] == 'test-project' or i['project']['title'] == 'grand-child' for i in data)
+        assert any(i['project']['title'] == 'test-project' for i in data)
+        assert any(i['project']['title'] == 'grand-child' for i in data)
         res = invoke(runner, ['ls', '--jsonvja', '--project=Not created'])
         data = json.loads(res.output)
         assert len(data) == 0

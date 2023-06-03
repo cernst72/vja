@@ -255,14 +255,15 @@ There is only a very basic support for managing entities other than tasks. I bel
 
 ### Manage projects
 
-Projects can be added and be shown but not be modified:
+Projects can be added and be shown, but not be modified:
 
 ```shell
 vja project add New Project
 ```
 
 ```shell
-vja project add -o 2 Create project in parent project with index 2
+vja project add Create project in parent project by id -o 2 
+vja project add Create project in parent project by title -o my-parent 
 ```
 
 ```shell

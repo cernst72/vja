@@ -3,7 +3,7 @@ import logging
 
 from vja import VjaError
 from vja.apiclient import ApiClient
-from vja.model import Label
+from vja.model import Label, Project
 from vja.parse import parse_date_arg_to_iso, parse_json_date, parse_date_arg_to_timedelta, datetime_to_isoformat
 from vja.project_service import ProjectService
 from vja.task_service import TaskService
@@ -25,9 +25,16 @@ class CommandService:
         logger.info('Logged out')
 
     # project
-    def add_project(self, parent_project_id, title):
+    def add_project(self, parent_project, title):
+        if parent_project:
+            if str(parent_project).isdigit():
+                parent_project_id = parent_project
+            else:
+                parent_project_id = self._project_service.find_project_by_title(parent_project).id
+        else:
+            parent_project_id = None
         project_json = self._api_client.put_project(parent_project_id, title)
-        return self._project_service.find_project_by_id(project_json['id'])
+        return Project.from_json(project_json, [])
 
     # label
     def add_label(self, title):

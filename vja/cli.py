@@ -100,12 +100,12 @@ def project_group():
 
 
 @project_group.command('add', help='Add project with title')
-@click.option('parent_project_id', '-o', '--parent-project-id', '--parent_project_id', type=click.INT,
-              help='Create project as child of parent project id')
+@click.option('parent_project', '-o', '--parent-project', '--parent_project',
+              help='Create project as child of parent project. May be given by id or title of parent-project.')
 @click.argument('title', nargs=-1, required=True)
 @with_application
-def project_add(application, title, parent_project_id=None):
-    project = application.command_service.add_project(parent_project_id, " ".join(title))
+def project_add(application, title, parent_project=None):
+    project = application.command_service.add_project(parent_project, " ".join(title))
     click.echo(f'Created project {project.id}')
 
 
