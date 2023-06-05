@@ -76,7 +76,7 @@ def _create_upper_project_filter(value):
 
 
 def _create_title_filter(value):
-    return lambda x: bool(re.search(re.compile(value), x.title, re.IGNORECASE))
+    return lambda x: bool(re.search(re.compile(value, re.IGNORECASE), x.title))
 
 
 def _create_priority_filter(value):
