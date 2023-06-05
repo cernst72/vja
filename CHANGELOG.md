@@ -1,3 +1,17 @@
+## [2.0.0-rc.3](https://gitlab.com/ce72/vja/compare/2.0.0-rc.2...2.0.0-rc.3) (2023-06-05)
+
+
+### Features
+
+* **ls -i:** filter by title case-insensitive ([511a807](https://gitlab.com/ce72/vja/commit/511a807866936914ebc0d33880232fec538b2e64))
+* **ls:** output flags for alarm, repeat, description ([2b01087](https://gitlab.com/ce72/vja/commit/2b010877d1582408722f719ab985ce10318f9182))
+* **project:** add project to parent-project by title ([ba67a8a](https://gitlab.com/ce72/vja/commit/ba67a8a6a985eacb8e5402f3b0f770dd4e4393b6))
+
+
+### Bug Fixes
+
+* **ls -i:** correctly filter by title case-insensitive ([44cda6e](https://gitlab.com/ce72/vja/commit/44cda6e39e100804b330c7f7f31af2823562bc0e))
+
 ## [2.0.0-rc.2](https://gitlab.com/ce72/vja/compare/2.0.0-rc.1...2.0.0-rc.2) (2023-06-02)
 
 
