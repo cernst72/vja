@@ -14,8 +14,8 @@ LABEL_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:20.20}'
 
 TASK_LIST_FORMAT_DEFAULT = '{x.id:5} ({x.priority}) {"*" if x.is_favorite else " "} {x.title:50.50} ' \
                            '{x.due_date.strftime("%a %d.%m %H:%M") if x.due_date else "":15.15} ' \
-                           '{"R" if x.reminders else " "} {x.project.title:20.20} ' \
-                           '{x.labels:20.20} {x.urgency:3.1f}'
+                           '{"A" if x.reminders else " "}{"R" if x.repeat_after else " "}{"D" if x.description else " "} ' \
+                           '{x.project.title:20.20} {x.labels:20.20} {x.urgency:3.1f}'
 
 logger = logging.getLogger(__name__)
 
