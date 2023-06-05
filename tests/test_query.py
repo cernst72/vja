@@ -191,7 +191,7 @@ class TestTaskLsFilter:
         assert len(data) == 0
 
     def test_task_filter_title(self, runner):
-        res = invoke(runner, ['ls', '--jsonvja', '--title=At least one'])
+        res = invoke(runner, ['ls', '--jsonvja', '--title=at least one'])
         data = json.loads(res.output)
         assert len(data) > 0
         assert all('At least one task' in i['title'] for i in data)
