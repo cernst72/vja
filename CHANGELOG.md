@@ -1,3 +1,10 @@
+## [2.0.0-rc.4](https://gitlab.com/ce72/vja/compare/2.0.0-rc.3...2.0.0-rc.4) (2023-06-12)
+
+
+### Features
+
+* **reminders:** remove legacy reminder_dates ([66491d0](https://gitlab.com/ce72/vja/commit/66491d046997881dfec5f9e01a27b771685c4a19))
+
 ## [2.0.0-rc.3](https://gitlab.com/ce72/vja/compare/2.0.0-rc.2...2.0.0-rc.3) (2023-06-05)
 
 
