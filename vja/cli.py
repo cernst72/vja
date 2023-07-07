@@ -9,8 +9,8 @@ from click_aliases import ClickAliasedGroup
 
 from vja.apiclient import ApiClient
 from vja.config import VjaConfiguration
-from vja.list_service import ListService
 from vja.output import Output
+from vja.project_service import ProjectService
 from vja.service_command import CommandService
 from vja.service_query import QueryService
 from vja.task_service import TaskService
@@ -23,11 +23,11 @@ class Application:
     def __init__(self):
         self._configuration = VjaConfiguration()
         api_client = ApiClient(self._configuration.get_api_url(), self._configuration.get_token_file())
-        list_service = ListService(api_client)
+        project_service = ProjectService(api_client)
         urgency_service = Urgency.from_config(self._configuration)
-        task_service = TaskService(list_service, urgency_service)
-        self._command_service = CommandService(list_service, task_service, api_client)
-        self._query_service = QueryService(list_service, task_service, api_client)
+        task_service = TaskService(project_service, urgency_service)
+        self._command_service = CommandService(project_service, task_service, api_client)
+        self._query_service = QueryService(project_service, task_service, api_client)
         self._output = Output()
 
     @property
@@ -93,43 +93,23 @@ def user_show(application, is_json=False, is_jsonvja=False):
         application.query_service.find_current_user(), is_json, is_jsonvja)
 
 
-# namespaces
-@cli.group('namespace', help='Subcommand: namespace (see help)')
-def namespace_group():
+# projects
+@cli.group('project', help='Subcommand: project (see help)')
+def project_group():
     pass
 
 
-@namespace_group.command('ls', help='Print namespaces ... (id; title; description)')
-@click.option('is_json', '--json', default=False, is_flag=True,
-              help='Print as Vikunja json')
-@click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True,
-              help='Print as vja application json')
-@click.option('custom_format', '--custom-format',
-              help='Format with template from .vjacli/vja.rc')
-@with_application
-def namespace_ls(application, is_json, is_jsonvja, custom_format):
-    if custom_format:
-        custom_format = application.configuration.get_custom_format_string(custom_format)
-    application.output.namespace_array(
-        application.query_service.find_all_namespaces(), is_json, is_jsonvja, custom_format)
-
-
-# lists
-@cli.group('list', help='Subcommand: list (see help)')
-def list_group():
-    pass
-
-
-@list_group.command('add', help='Add list with title')
-@click.option('namespace_id', '-n', '--namespace-id', help='Create list in namespace, default: first list found')
+@project_group.command('add', help='Add project with title')
+@click.option('parent_project', '-o', '--parent-project', '--parent_project',
+              help='Create project as child of parent project. May be given by id or title of parent-project.')
 @click.argument('title', nargs=-1, required=True)
 @with_application
-def list_add(application, title, namespace_id=None):
-    tasklist = application.command_service.add_list(namespace_id, " ".join(title))
-    click.echo(f'Created list {tasklist.id}')
+def project_add(application, title, parent_project=None):
+    project = application.command_service.add_project(parent_project, " ".join(title))
+    click.echo(f'Created project {project.id}')
 
 
-@list_group.command('ls', help='Print lists ... (id; title; description; namespace; namespace_id)')
+@project_group.command('ls', help='Print projects ... (id; title; description; parent_project_id)')
 @click.option('is_json', '--json', default=False, is_flag=True,
               help='Print as Vikunja json')
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True,
@@ -137,23 +117,23 @@ def list_add(application, title, namespace_id=None):
 @click.option('custom_format', '--custom-format',
               help='Format with template from .vjacli/vja.rc')
 @with_application
-def list_ls(application, is_json, is_jsonvja, custom_format):
+def project_ls(application, is_json, is_jsonvja, custom_format):
     if custom_format:
         custom_format = application.configuration.get_custom_format_string(custom_format)
-    application.output.list_array(
-        application.query_service.find_all_lists(), is_json, is_jsonvja, custom_format)
+    application.output.project_array(
+        application.query_service.find_all_projects(), is_json, is_jsonvja, custom_format)
 
 
-@list_group.command('show', help='Show list details')
-@click.argument('list_id', required=True, type=click.INT)
+@project_group.command('show', help='Show project details')
+@click.argument('project_id', required=True, type=click.INT)
 @click.option('is_json', '--json', default=False, is_flag=True,
               help='Print as Vikunja json')
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True,
               help='Print as vja application json')
 @with_application
-def list_show(application, list_id, is_json, is_jsonvja):
-    application.output.list(
-        application.query_service.find_list_by_id(list_id), is_json, is_jsonvja)
+def project_show(application, project_id, is_json, is_jsonvja):
+    application.output.project(
+        application.query_service.find_project_by_id(project_id), is_json, is_jsonvja)
 
 
 # buckets
@@ -162,9 +142,9 @@ def bucket_group():
     pass
 
 
-@bucket_group.command('ls', help='Print kanban buckets of given list ... (id; title; is_done; limit; count tasks)')
-@click.option('list_id', '-l', '--list', '--list-id', '--list_id', required=True, type=click.INT,
-              help='Show buckets of list with id')
+@bucket_group.command('ls', help='Print kanban buckets of given project ... (id; title; is_done; limit; count tasks)')
+@click.option('project_id', '-o', '--project', '--project-id', '--project_id', required=True, type=click.INT,
+              help='Show buckets of project with id')
 @click.option('is_json', '--json', default=False, is_flag=True,
               help='Print as Vikunja json')
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True,
@@ -172,11 +152,11 @@ def bucket_group():
 @click.option('custom_format', '--custom-format',
               help='Format with template from .vjacli/vja.rc')
 @with_application
-def bucket_ls(application, list_id, is_json, is_jsonvja, custom_format):
+def bucket_ls(application, project_id, is_json, is_jsonvja, custom_format):
     if custom_format:
         custom_format = application.configuration.get_custom_format_string(custom_format)
     application.output.bucket_array(
-        application.query_service.find_all_buckets_in_list(list_id), is_json, is_jsonvja, custom_format)
+        application.query_service.find_all_buckets_in_project(project_id), is_json, is_jsonvja, custom_format)
 
 
 # labels
@@ -212,8 +192,8 @@ def label_add(application, title):
 @cli.command('add', aliases=['create'],
              help='Add new task')
 @click.argument('title', required=True, nargs=-1)
-@click.option('list_id', '-l', '--folder', '--project', '--list',
-              help='List (id or name), defaults to list from user settings, than to first favorite list')
+@click.option('project_id', '-o', '--project', '--project-id', '--project_id',
+              help='Project (id or name), defaults to project from user settings, than to first favorite project')
 @click.option('note', '-n', '--note', '--description',
               help='Set description (note)')
 @click.option('prio', '-p', '--prio', '--priority',
@@ -222,10 +202,12 @@ def label_add(application, title):
               help='Set due date (supports parsedatetime expressions)')
 @click.option('favorite', '-f', '--star', '--favorite', type=click.BOOL,
               help='Mark as favorite')
-@click.option('tag', '-t', '--tag', '--label',
+@click.option('label', '-l', '--label',
               help='Set label (label must exist on server)')
 @click.option('reminder', '-r', '--alarm', '--remind', '--reminder', is_flag=False, flag_value='due',
-              help='Set reminder (supports parsedatetime expressions). Leave empty to set to due date.')
+              help='Set reminder (supports parsedatetime and timedelta expressions). '
+                   'Absolute: "in 3 days at 18:00" or relative: "1h before due_date" or just -r to set equal to '
+                   'due date.')
 @click.option('force_create', '--force-create', '--force', is_flag=True,
               help='Force creation of non existing label')
 @with_application
@@ -233,7 +215,7 @@ def label_add(application, title):
 def task_add(ctx, application, title, **args):
     args_present = {k: v for k, v in args.items() if v is not None}
     task = application.command_service.add_task(" ".join(title), args_present.copy())
-    click.echo(f'Created task {task.id} in list {task.tasklist.id}')
+    click.echo(f'Created task {task.id} in project {task.project.id}')
     ctx.invoke(task_show, tasks=[task.id])
 
 
@@ -241,11 +223,13 @@ def task_add(ctx, application, title, **args):
              help='Clone task with given task_id. Set the new title')
 @click.argument('task_id', required=True, type=click.INT)
 @click.argument('title', required=True, nargs=-1)
+@click.option('is_clone_bucket', '-b', '--bucket', is_flag=True,
+              help='Clone kanban bucket too. Default: False')
 @with_application
 @click.pass_context
-def task_clone(ctx, application, task_id, title):
-    task = application.command_service.clone_task(task_id, " ".join(title))
-    click.echo(f'Created task {task.id} in list {task.tasklist.id} as clone from {task_id}')
+def task_clone(ctx, application, task_id, title, is_clone_bucket=False):
+    task = application.command_service.clone_task(task_id, " ".join(title), is_clone_bucket)
+    click.echo(f'Created task {task.id} in project {task.project.id} as clone from {task_id}')
     ctx.invoke(task_show, tasks=[task.id])
 
 
@@ -257,13 +241,13 @@ def task_clone(ctx, application, task_id, title):
 @click.option('note', '-n', '--note', '--description',
               help='Set description (note)')
 @click.option('note_append', '-a', '--note-append', '--append-note', '--description-append', '--append-description',
-              help='Append description to existing note separated by new line')
+              help='Append note to existing description separated by new line')
 @click.option('prio', '-p', '--prio', '--priority', type=click.INT,
               help='Set priority')
-@click.option('list_id', '-l', '--folder-id', '--project-id', '--list-id', '--list_id', type=click.INT,
-              help='Move to list with id')
-@click.option('position', '--list-position', '--list_position', '--position', type=click.INT,
-              help='Set list position')
+@click.option('project_id', '-o', '--project', '--project-id', '--project_id',
+              help='Move to project with id')
+@click.option('position', '--project-position', '--project_position', '--position', type=click.INT,
+              help='Set project position')
 @click.option('bucket_id', '--bucket-id', '--bucket_id', type=click.INT,
               help='Set bucket id')
 @click.option('kanban_position', '--kanban-position', '--kanban_position', type=click.INT,
@@ -274,10 +258,12 @@ def task_clone(ctx, application, task_id, title):
               help='Mark as favorite')
 @click.option('completed', '-c', '--completed', '--done', type=click.BOOL,
               help='Mark as completed')
-@click.option('tag', '-t', '--tag', '--label',
+@click.option('label', '-l', '--label',
               help='Set label (label must exist on server unless called with --force-create)')
 @click.option('reminder', '-r', '--alarm', '--remind', '--reminder', is_flag=False, flag_value='due',
-              help='Set reminder (supports parsedatetime expressions). Leave empty to set to due date.')
+              help='Set reminder (supports parsedatetime and timedelta expressions). '
+                   'Absolute: "in 3 days at 18:00" or relative: "1h30m before due_date" or just -r to set equal to '
+                   'due date.')
 @click.option('force_create', '--force-create', '--force', is_flag=True, default=None,
               help='Force creation of non existing label')
 @with_application
@@ -287,7 +273,7 @@ def task_edit(ctx, application, task_ids, **args):
     for task_id in task_ids:
         if args_present:
             task = application.command_service.edit_task(task_id, args_present.copy())
-            click.echo(f'Modified task {task.id} in list {task.tasklist.id}')
+            click.echo(f'Modified task {task.id} in project {task.project.id}')
             ctx.invoke(task_show, tasks=[task.id])
         else:
             application.open_browser(task_id)
@@ -299,12 +285,12 @@ def task_edit(ctx, application, task_ids, **args):
 @click.pass_context
 def task_toggle(ctx, application, task_id):
     task = application.command_service.toggle_task_done(task_id)
-    click.echo(f'Modified task {task.id} in list {task.tasklist.id}')
+    click.echo(f'Modified task {task.id} in project {task.project.id}')
     ctx.invoke(task_show, tasks=[task_id])
 
 
 @cli.command('defer', aliases=['delay'], help='Shortcut for moving the due_date and the reminders of the task. '
-                                              'Valid delay values are 2d, 1h30m.')
+                                              'Examples for valid delay values are 2d, 1h30m.')
 @click.argument('task_ids', required=True, type=click.INT, nargs=-1)
 @click.argument('delay_by', required=True)
 @with_application
@@ -312,12 +298,12 @@ def task_toggle(ctx, application, task_id):
 def task_defer(ctx, application, task_ids, delay_by):
     for task_id in task_ids:
         task = application.command_service.defer_task(task_id, delay_by)
-        click.echo(f'Modified task {task.id} in list {task.tasklist.id}')
+        click.echo(f'Modified task {task.id} in project {task.project.id}')
         ctx.invoke(task_show, tasks=[task_id])
 
 
 @cli.command('ls', help='List tasks ... (task-id; priority; is_favorite; title; due_date; '
-                        'has reminder; namespace; list; labels; urgency)')
+                        'has reminder; parent-project; project; labels; urgency)')
 @click.option('is_json', '--json', default=False, is_flag=True,
               help='Print as Vikunja json')
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True,
@@ -340,18 +326,19 @@ def task_defer(ctx, application, task_ids, delay_by):
               help='General filter. Must be like <field> <operator> <value> e.g. --filter="priority ge 2" '
                    'where <operator> in (eq, ne, gt, lt, ge, le, before, after, contains). '
                    'Multiple occurrences of --filter are allowed and will be combined with logical AND.')
-@click.option('label_filter', '-t', '--tag', '--label',
+@click.option('label_filter', '-l', '--label',
               help='Filter by label (name or id)')
-@click.option('list_filter', '-l', '--list',
-              help='Filter by list (name or id)')
-@click.option('namespace_filter', '-n', '--namespace',
-              help='Filter by namespace (name or id)')
+@click.option('project_filter', '-o', '--project', '--project-id', '--project_id',
+              help='Filter by project (name or id)')
+@click.option('upper_project_filter', '-t', '--base-project', '--top', '--base', '--upper-project',
+              help='Filter by base project (name or id). '
+                   'All tasks whose project has the given argument as a ancestor are considered.')
 @click.option('priority_filter', '-p', '--prio', '--priority',
               help='Filter by priority. The TEXT value must be like <operator> <value>, '
                    'Shortcut for --filter="priority <operator> <value>"')
 @click.option('title_filter', '-i', '--title',
               help='Filter title (regex)')
-@click.option('urgency_filter', '-u', '--urgency', is_flag=False, flag_value=3, type=click.INT,
+@click.option('urgency_filter', '-u', '--urgent', '--urgency', is_flag=False, flag_value=3, type=click.INT,
               help='Filter by minimum urgency.  Shortcut for --filter="urgency ge <value>"')
 @with_application
 def task_ls(application, is_json, is_jsonvja, custom_format, include_completed, sort_string=None, **filter_args):

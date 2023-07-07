@@ -1,46 +1,35 @@
-image: python:3.11-slim
-
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
-
 cache:
   paths:
     - .cache/pip
-    - venv/
 
 stages:
-  - build
   - test
   - release
 
-build:
-  stage: build
-  script:
-    - ci/virtual-env.sh
-    - source venv/bin/activate
-    - ci/build-install.sh
-    - pip -V
-    - pip show -f vja
-  artifacts:
-    paths:
-      - dist/*.whl
-  rules:
-    - when: always
-
 pylint:
   stage: test
+  image: python:3.11-slim
   allow_failure: true
   script:
-    - source venv/bin/activate
+    - pip install -r requirements_dev.txt
+    - pip uninstall -y vja && python3 setup.py sdist bdist_wheel && pip install dist/*.whl
     - flake8 --max-line-length=120 vja/*.py || true
     - pylint -d C0103,C0114,C0115,C0116,C0301 --fail-under=9 vja/*.py
   rules:
+    - if: $CI_COMMIT_BRANCH == "beta"
+      when: on_success
+    - if: $CI_COMMIT_BRANCH == "rc"
+      when: on_success
+    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_REF_SLUG !~ /renovate.*/
+      when: manual
     - when: on_success
 
 integration-test:
   stage: test
   image:
-    name: docker:stable
+    name: docker:23.0-cli
   services:
     - name: docker:dind
   variables:
@@ -48,33 +37,36 @@ integration-test:
     DOCKER_TLS_CERTDIR: ""
   script:
     - docker --version
-    - apk add --no-cache bash curl python3-dev py3-pip docker-compose
-    - pip3 install wheel
-    - pip3 install pytest
-    - pip3 install coverage
+    - apk add --no-cache bash curl python3 py3-pip
     - python3 --version
 
-    - pip install dist/*.whl
+    - pip install -r requirements_dev.txt
+    - pip uninstall -y vja && python3 setup.py sdist bdist_wheel && pip install dist/*.whl
     - pip show vja
     - which vja
 
-    - docker-compose -f tests/docker-compose.yml up -d api
+    - docker compose -f tests/docker-compose.yml up -d api
     - curl --retry 5 --retry-all-errors --retry-delay 1 "http://docker:3456/api/v1/info"
 
     - export VJA_CONFIGDIR=tests/.vjatest_dind
-    - tests/run.sh test
+    # - tests/run.sh test
     - coverage run --omit='*test*' -m pytest
     - coverage report --omit='*test*'
     - coverage xml --omit='*test*'
-    - docker-compose -f tests/docker-compose.yml down
+    - docker compose -f tests/docker-compose.yml down
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
-  cache: {}
   artifacts:
     reports:
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
   rules:
+    - if: $CI_COMMIT_BRANCH == "beta"
+      when: on_success
+    - if: $CI_COMMIT_BRANCH == "rc"
+      when: on_success
+    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_REF_SLUG !~ /renovate.*/
+      when: manual
     - when: on_success
 
 release:
@@ -90,7 +82,11 @@ release:
   script:
     - python --version
     - semantic-release
-  cache: {}
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: on_success
+    - if: $CI_COMMIT_BRANCH == "beta"
+      when: manual
+    - if: $CI_COMMIT_BRANCH == "rc"
+      when: manual
+

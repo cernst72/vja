@@ -10,6 +10,19 @@ This is a simple CLI for Vikunja > [The todo app to organize your life.](https:/
 It provides a command line interface for adding, viewing and editing todo tasks on a Vikunja Server.
 The goal is to support a command line based task workflow ~ similar to taskwarrior.
 
+> #### Breaking changes in vja 2.0
+> vja 2.0 supports (and requires) Vikunja API rlease >= 0.21.0, which removed namespaces and introduced sub  projects. 
+> In the wake of this transition the following breaking modifications to the vja command line interface have been
+> introduced:
+> - Labels: Are now given with `-l` (`-label`). (`-t` and `--tag` are no longer supported).
+> - "Namespaces": Vikunja removed namespaces in favor of nested projects. `-n` (`--namespace`) was removed as option
+    from `vja ls`.
+> - Projects (former "lists"): Must be given with `-o` (`--project`). `vja ls -t` may be used to filter on the project
+    or an upper project. This more or less resembles the old namespaces.
+>
+> Examples and more details can be found in the
+> updated [Features.md](https://gitlab.com/ce72/vja/-/blob/main/Features.md)
+
 ## Installation
 
 - Install from pypi:
@@ -35,8 +48,11 @@ Before using vja you must provide a configuration.
   (If you cloned from git, you may copy the folder .vjacli to your `$HOME` directory instead.)
 - Adjust to your needs.
   `frontend_url` and `api_url` must point to your own Vikunja server.
-  Especially, the api_url must be reachable from your client. This can be verified, for example
-  by `curl https://mydomain.com/api/v1/info`
+  Especially, the api_url must be reachable from your client. This can be verified, for example,
+  by `curl https://mydomain.com/api/v1/info`.
+
+You may change the location of the configuration directory with an environment variable
+like `VJA_CONFIGDIR=/not/my/home`
 
 ### Description of configuration
 
@@ -49,17 +65,17 @@ Before using vja you must provide a configuration.
 
 #### Optional options
 
-| Section                | Option          | Description                                                                                                                                                                                                                                                                                                  |
-|------------------------|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [output]               | arbitrary_name  | Python format strings which may be referenced on the command line by `--custom-format=<option_name>`. May contain any valid python f-Format string.<br>Take care: The format string may provide code which will be executed at runtime! Do not use `--custom-format` if you are unsure.<br> Default: missing |
-| [output]               | another_format  | Multiple formats can be defined for reference. (see above)                                                                                                                                                                                                                                                   |
-| [urgency_coefficients] | due_date_weight | Weight of dueness in urgency score. Default: 1.0                                                                                                                                                                                                                                                             |
-| [urgency_coefficients] | priority_weight | Weight of priority in urgency score. Default: 1.0                                                                                                                                                                                                                                                            |
-| [urgency_coefficients] | favorite_weight | Weight of is_favorite in urgency score. Default: 1.0                                                                                                                                                                                                                                                         |
-| [urgency_coefficients] | list_weight     | Weight of keyword occurrence in list title in urgency score. Default: 1.0                                                                                                                                                                                                                                    |
-| [urgency_coefficients] | label_weight    | Weight of keyword occurrence in label title in urgency score. Default: 1.0                                                                                                                                                                                                                                   |
-| [urgency_keywords]     | list_keywords   | Tasks in lists with a title containing these keywords are considered more urgent. Default: None                                                                                                                                                                                                              |
-| [urgency_keywords]     | label_keywords  | Tasks labeled with one of these keywords are considered more urgent. Default: None                                                                                                                                                                                                                           |
+| Section                | Option              | Description                                                                                                                                                                                                                                                                                                  |
+|------------------------|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [output]               | arbitrary_name      | Python format strings which may be referenced on the command line by `--custom-format=<option_name>`. May contain any valid python f-Format string.<br>Take care: The format string may provide code which will be executed at runtime! Do not use `--custom-format` if you are unsure.<br> Default: missing |
+| [output]               | another_format      | Multiple formats can be defined for reference. (see above)                                                                                                                                                                                                                                                   |
+| [urgency_coefficients] | due_date_weight     | Weight of dueness in urgency score. Default: 1.0                                                                                                                                                                                                                                                             |
+| [urgency_coefficients] | priority_weight     | Weight of priority in urgency score. Default: 1.0                                                                                                                                                                                                                                                            |
+| [urgency_coefficients] | favorite_weight     | Weight of is_favorite in urgency score. Default: 1.0                                                                                                                                                                                                                                                         |
+| [urgency_coefficients] | project_weight      | Weight of keyword occurrence in project title in urgency score. Default: 1.0                                                                                                                                                                                                                                 |
+| [urgency_coefficients] | label_weight        | Weight of keyword occurrence in label title in urgency score. Default: 1.0                                                                                                                                                                                                                                   |
+| [urgency_keywords]     | lisproject_keywords | Tasks in projects with a title containing these keywords are considered more urgent. Default: None                                                                                                                                                                                                           |
+| [urgency_keywords]     | label_keywords      | Tasks labeled with one of these keywords are considered more urgent. Default: None                                                                                                                                                                                                                           |
 
 ## Usage
 
@@ -105,7 +121,6 @@ Run integration test (requires docker and docker-compose)
 
 ```shell
 docker-compose -f tests/docker-compose.yml up -d
-./run.sh
 VJA_CONFIGDIR=tests/.vjatest pytest
 docker-compose -f tests/docker-compose.yml down
 ```

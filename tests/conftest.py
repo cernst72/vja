@@ -1,3 +1,4 @@
+import logging
 import os
 import subprocess
 import sys
@@ -7,51 +8,48 @@ from click.testing import CliRunner
 
 from vja.cli import cli
 
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+
 
 @pytest.fixture(name='runner', scope='session')
 def setup_runner():
     return CliRunner()
 
 
-def invoke(runner, command, return_code=0, user_input=None, catch_exceptions=True):
+def invoke(runner, command, return_code=0, user_input=None, catch_exceptions=False):
     if isinstance(command, str):
         command = command.split()
     res = runner.invoke(cli, command, input=user_input, catch_exceptions=catch_exceptions)
+    sys.stdout.write(res.output)
+    if res.stderr_bytes:
+        sys.stdout.write(res.stderr_bytes)
+    if res.exception:
+        logging.warning(res.exception)
     assert res.exit_code == return_code, res
     return res
 
 
 def _login_as_test_user():
-    result = subprocess.run('vja logout'.split(), check=False)
-    if result.returncode:
-        print(result.stdout)
-        print(result.stderr)
-        return result.returncode
-
-    result = subprocess.run('vja --username=test --password=test user show'.split(), check=False)
-    if result.returncode:
-        print(result.stdout)
-        print(result.stderr)
-    return result.returncode
+    run_vja('vja logout')
+    run_vja('vja --username=test --password=test user show')
 
 
-def _create_list_and_task():
-    result = subprocess.run('vja list add test-list'.split(), check=False)
+def _create_project_and_task():
+    run_vja('vja project add test-project')
+    run_vja('vja project add child --parent-project=test-project')
+    run_vja('vja project add grand-child --parent-project=child')
+    run_vja('vja add At least one task --force-create --priority=5 --due-date=today --label=my_tag --favorite=True --project-id=test-project')
+    run_vja('vja add Task in subproject --force-create --project-id=grand-child')
+    run_vja('vja add A task without a label --force-create')
+
+
+def run_vja(command):
+    result = subprocess.run(command.split(), capture_output=True, check=False)
     if result.returncode:
-        print(result.stdout)
-        print(result.stderr)
-        return result.returncode
-    result = subprocess.run('vja add At least one task --force-create '
-                            '--priority=5 --due-date=today --tag=my_tag --favorite=True'.split(), check=False)
-    if result.returncode:
-        print(result.stdout)
-        print(result.stderr)
-        return result.returncode
-    result = subprocess.run('vja add A task without a label --force-create'.split(), check=False)
-    if result.returncode:
-        print(result.stdout)
-        print(result.stderr)
-    return result.returncode
+        print(f'!!! Non-zero result ({result.returncode}) from command {command}')
+        sys.stdout.write(result.stdout.decode('utf-8'))
+        sys.stdout.write(result.stderr.decode('utf-8'))
+        sys.exit(1)
 
 
 def pytest_configure():
@@ -59,10 +57,6 @@ def pytest_configure():
         print('!!! Precondition not met. You must set VJA_CONFIGDIR in environment variables !!!')
         sys.exit(1)
 
-    if _login_as_test_user() > 0:
-        print('!!! Precondition not met. Cannot connect to Vikunja with user test/test')
-        sys.exit(1)
+    _login_as_test_user()
 
-    if _create_list_and_task() > 0:
-        print('!!! Unable to create default list')
-        sys.exit(1)
+    _create_project_and_task()

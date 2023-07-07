@@ -1,18 +1,19 @@
+import datetime
 import logging
 
 from vja import VjaError
 from vja.apiclient import ApiClient
-from vja.list_service import ListService
-from vja.model import Label
-from vja.parse import parse_date_arg_to_iso, parse_json_date, parse_date_arg_to_timedelta, format_datetime_to_json
+from vja.model import Label, Project
+from vja.parse import parse_date_arg_to_iso, parse_json_date, parse_date_arg_to_timedelta, datetime_to_isoformat
+from vja.project_service import ProjectService
 from vja.task_service import TaskService
 
 logger = logging.getLogger(__name__)
 
 
 class CommandService:
-    def __init__(self, list_service: ListService, task_service: TaskService, api_client: ApiClient):
-        self._list_service = list_service
+    def __init__(self, project_service: ProjectService, task_service: TaskService, api_client: ApiClient):
+        self._project_service = project_service
         self._task_service = task_service
         self._api_client = api_client
 
@@ -23,13 +24,17 @@ class CommandService:
         self._api_client.logout()
         logger.info('Logged out')
 
-    # list
-    def add_list(self, namespace_id, title):
-        if not namespace_id:
-            namespaces = self._api_client.get_namespaces()
-            namespace_id = min(namespace['id'] if namespace['id'] > 0 else 99999 for namespace in namespaces)
-        list_json = self._api_client.put_list(namespace_id, title)
-        return self._list_service.convert_list_json(list_json)
+    # project
+    def add_project(self, parent_project, title):
+        if parent_project:
+            if str(parent_project).isdigit():
+                parent_project_id = parent_project
+            else:
+                parent_project_id = self._project_service.find_project_by_title(parent_project).id
+        else:
+            parent_project_id = None
+        project_json = self._api_client.put_project(parent_project_id, title)
+        return Project.from_json(project_json, [])
 
     # label
     def add_label(self, title):
@@ -44,10 +49,10 @@ class CommandService:
                     'favorite': {'field': 'is_favorite', 'mapping': bool},
                     'completed': {'field': 'done', 'mapping': bool},
                     'position': {'field': 'position', 'mapping': int},
-                    'list_id': {'field': 'list_id', 'mapping': int},
+                    'project_id': {'field': 'project_id', 'mapping': int},
                     'bucket_id': {'field': 'bucket_id', 'mapping': int},
                     'kanban_position': {'field': 'kanban_position', 'mapping': int},
-                    'reminder': {'field': 'reminder_dates', 'mapping': (lambda x: x)}
+                    'reminder': {'field': 'reminders', 'mapping': (lambda x: x)}
                     }
 
     def _args_to_payload(self, args: dict):
@@ -59,48 +64,52 @@ class CommandService:
 
     def add_task(self, title, args: dict):
         args.update({'title': title})
-        if args.get('list_id'):
-            list_arg = args.pop('list_id')
-            if str(list_arg).isdigit():
-                list_id = list_arg
+        if args.get('project_id'):
+            project_arg = args.pop('project_id')
+            if str(project_arg).isdigit():
+                project_id = project_arg
             else:
-                list_id = self._list_service.find_list_by_title(list_arg).id
+                project_id = self._project_service.find_project_by_title(project_arg).id
         else:
-            list_id = self._list_service.get_default_list().id
-        tag_name = args.pop('tag') if args.get('tag') else None
+            project_id = self._project_service.get_default_project().id
+        label_name = args.pop('label') if args.get('label') else None
         is_force = args.pop('force_create') if args.get('force_create') is not None else False
-        if args.get('reminder') == 'due':
-            args.update({'reminder': args.get('due') or 'tomorrow'})
-        if args.get('reminder'):
-            args.update({'reminder': [parse_date_arg_to_iso(args.get('reminder'))]})
+
+        self._parse_reminder_arg(args.get('reminder'), args)
 
         payload = self._args_to_payload(args)
 
         if not is_force:
-            self._validate_add_task(title, tag_name)
+            self._validate_add_task(title, label_name)
         logger.debug('put task: %s', payload)
-        task_json = self._api_client.put_task(list_id, payload)
+        task_json = self._api_client.put_task(project_id, payload)
         task = self._task_service.task_from_json(task_json)
 
-        label = self._label_from_name(tag_name, is_force) if tag_name else None
+        label = self._label_from_name(label_name, is_force) if label_name else None
         if label:
             self._api_client.add_label_to_task(task.id, label.id)
         return task
 
-    def clone_task(self, task_id: int, title):
+    def clone_task(self, task_id: int, title, is_clone_bucket):
         task_remote = self._api_client.get_task(task_id)
         task_remote.update({'id': None})
         task_remote.update({'title': title})
+        task_remote.update({'position': 0})
+        task_remote.update({'kanban_position': 0})
+        if is_clone_bucket:
+            task_remote.update({'bucket_id': 0})
 
         logger.debug('put task: %s', task_remote)
-        task_json = self._api_client.put_task(task_remote['list_id'], task_remote)
+        task_json = self._api_client.put_task(task_remote['project_id'], task_remote)
         task = self._task_service.task_from_json(task_json)
 
+        for label in task_remote['labels']:
+            self._api_client.add_label_to_task(task.id, label['id'])
         return task
 
     def edit_task(self, task_id: int, args: dict):
         task_remote = self._api_client.get_task(task_id)
-        tag_name = args.pop('tag') if args.get('tag') else None
+        label_name = args.pop('label') if args.get('label') else None
         is_force = args.pop('force_create') if args.get('force_create') is not None else False
 
         self._update_reminder(args, task_remote)
@@ -111,12 +120,13 @@ class CommandService:
             })
 
         payload = self._args_to_payload(args)
-        logger.debug('post task: %s', payload)
+        logger.debug('update fields: %s', payload)
         task_remote.update(payload)
+        logger.debug('post task: %s', task_remote)
         task_json = self._api_client.post_task(task_id, task_remote)
         task_new = self._task_service.task_from_json(task_json)
 
-        label = self._label_from_name(tag_name, is_force) if tag_name else None
+        label = self._label_from_name(label_name, is_force) if label_name else None
         if label:
             if task_new.has_label(label):
                 self._api_client.remove_label_from_task(task_new.id, label.id)
@@ -126,27 +136,43 @@ class CommandService:
 
     @staticmethod
     def _update_reminder(args, task_remote):
-        if args.get('reminder') == 'due':
-            if args.get('due'):
-                args.update({'reminder': args.get('due')})  # reminder = cli argument --due
-            else:
-                if parse_json_date(task_remote['due_date']):
-                    args.update({'reminder': task_remote['due_date']})  # reminder = due_date
-                else:
-                    args.update({'reminder': 'tomorrow'})  # reminder default
-        if args.get('reminder') is not None:
-            # replace the first existing reminder
-            new_reminder = parse_date_arg_to_iso(args.pop('reminder'))
-            old_reminders = task_remote['reminder_dates']
+        reminder_arg = args.get('reminder')
+        CommandService._parse_reminder_arg(reminder_arg, args)
+
+        # replace the first existing reminder with our entry
+        new_reminder = args.pop('reminder')[0] if reminder_arg else None
+        if new_reminder is not None:
+            old_reminders = task_remote['reminders']
             if old_reminders and len(old_reminders) > 0:
                 if new_reminder:
-                    old_reminders[0] = new_reminder  # overwrite first remote reminder_date
+                    old_reminders[0] = new_reminder  # overwrite first remote reminder
                 else:
-                    old_reminders.pop(0)  # remove first remote reminder_date
+                    old_reminders.pop(0)  # remove first remote reminder
             else:
                 if new_reminder:
-                    old_reminders = [new_reminder]  # create single reminder_date
+                    old_reminders = [new_reminder]  # create single reminder
             args.update({'reminder': old_reminders})
+
+    @staticmethod
+    def _parse_reminder_arg(reminder_arg, args):
+        if reminder_arg is None:
+            return
+        if reminder_arg == 'due':
+            args.update(
+                {'reminder': [{'relative_to': 'due_date', 'relative_period': 0}]})  # --reminder=due or --reminder
+        elif 'due' in reminder_arg:
+            reminder_due_args = reminder_arg.split(" ", 2)
+            duration = int(parse_date_arg_to_timedelta(reminder_due_args[0]).total_seconds())
+            sign = -1 if reminder_due_args[1] == 'before' else 1
+            args.update(
+                {'reminder': [{'relative_to': 'due_date',
+                               'relative_period': sign * duration}]})  # --reminder="1h before due_date"
+        elif reminder_arg == '':
+            args.update(
+                {'reminder': None})  # --reminder=""
+        else:
+            args.update(
+                {'reminder': [{'reminder': parse_date_arg_to_iso(reminder_arg)}]})
 
     def toggle_task_done(self, task_id):
         task_remote = self._api_client.get_task(task_id)
@@ -155,13 +181,29 @@ class CommandService:
         return self._task_service.task_from_json(task_json)
 
     def defer_task(self, task_id, delay_by):
-        task_remote = self._api_client.get_task(task_id)
         timedelta = parse_date_arg_to_timedelta(delay_by)
+        args = {}
+
+        task_remote = self._api_client.get_task(task_id)
         due_date = parse_json_date(task_remote['due_date'])
         if due_date:
-            due_date = format_datetime_to_json(due_date + timedelta)
-            task_remote.update({'due_date': due_date})
-        # TODO update absolute reminders
+            now = datetime.datetime.now().replace(microsecond=0)
+            if due_date < now:
+                args.update({'due': datetime_to_isoformat(now + timedelta)})
+            else:
+                args.update({'due': datetime_to_isoformat(due_date + timedelta)})
+
+        old_reminders = task_remote['reminders']
+        if old_reminders and len(old_reminders) > 0:
+            reminder_date = parse_json_date(old_reminders[0]['reminder'])
+            is_absolute_reminder = not old_reminders[0]['relative_to']
+            if reminder_date and is_absolute_reminder:
+                args.update({'reminder': datetime_to_isoformat(reminder_date + timedelta)})
+                self._update_reminder(args, task_remote)
+
+        payload = self._args_to_payload(args)
+        logger.debug('update fields: %s', payload)
+        task_remote.update(payload)
         task_json = self._api_client.post_task(task_id, task_remote)
         return self._task_service.task_from_json(task_json)
 
@@ -177,12 +219,12 @@ class CommandService:
             return None
         return label_found[0]
 
-    def _validate_add_task(self, title, tag_name):
+    def _validate_add_task(self, title, label_name):
         tasks_remote = self._api_client.get_tasks(exclude_completed=True)
         if any(task for task in tasks_remote if task['title'] == title):
             raise VjaError("Task with title does exist. You may want to run with --force-create.")
-        if tag_name:
+        if label_name:
             labels_remote = Label.from_json_array(self._api_client.get_labels())
-            if not any(label for label in labels_remote if label.title == tag_name):
+            if not any(label for label in labels_remote if label.title == label_name):
                 raise VjaError(
                     "Label does not exist. You may want to execute \"label add\" or run with --force-create.")

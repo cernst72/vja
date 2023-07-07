@@ -14,7 +14,11 @@ def custom_output(cls):
                          if attribute.name != 'json' and getattr(self, attribute.name))
 
     def _str_value(attribute_value):
-        return [_str_value(x) for x in attribute_value] if isinstance(attribute_value, list) else str(attribute_value)
+        if isinstance(attribute_value, datetime):
+            return attribute_value.isoformat()
+        if isinstance(attribute_value, list):
+            return [_str_value(x) for x in attribute_value]
+        return str(attribute_value)
 
     setattr(cls, '__str__', str_function)
     return cls
@@ -25,6 +29,8 @@ def data_dict(cls):
         return {k: _transform_value(v) for k, v in self.__dict__.items() if k != 'json'}
 
     def _transform_value(v):
+        if isinstance(v, datetime):
+            return v.isoformat()
         if _is_data_dict(v):
             return v.data_dict()
         if isinstance(v, list):
@@ -45,50 +51,35 @@ class User:
     id: int
     username: str
     name: str
-    default_list_id: int
+    default_project_id: int
 
     @classmethod
     def from_json(cls, json):
-        return cls(json, json['id'], json['username'], json['name'], json['settings']['default_list_id'])
+        return cls(json, json['id'], json['username'], json['name'], json['settings']['default_project_id'])
 
 
-@dataclass(frozen=True)
+@dataclass
 @data_dict
-class Namespace:
-    json: dict = field(repr=False)
-    id: int
-    title: str
-    description: str
-    is_archived: bool
-
-    @classmethod
-    def from_json(cls, json):
-        return cls(json, json['id'], json['title'], json['description'], json['is_archived'])
-
-    @classmethod
-    def from_json_array(cls, json_array):
-        return [Namespace.from_json(x) for x in json_array or []]
-
-
-@dataclass(frozen=True)
-@data_dict
-class List:
+# pylint: disable=too-many-instance-attributes
+class Project:
     json: dict = field(repr=False)
     id: int
     title: str
     description: str
     is_favorite: bool
     is_archived: bool
-    namespace: Namespace
+    parent_project_id: int
+    ancestor_projects: typing.List['Project']
 
     @classmethod
-    def from_json(cls, json, namespace):
+    def from_json(cls, json, ancestor_projects):
         return cls(json, json['id'], json['title'], json['description'], json['is_archived'], json['is_favorite'],
-                   namespace)
+                   json['parent_project_id'],
+                   ancestor_projects)
 
     @classmethod
-    def from_json_array(cls, json_array, namespace):
-        return [List.from_json(x, namespace) for x in json_array or []]
+    def from_json_array(cls, json_array, ancestor_projects):
+        return [Project.from_json(x, ancestor_projects) for x in json_array or []]
 
 
 @dataclass(frozen=True)
@@ -135,6 +126,25 @@ class Label:
 @custom_output
 @data_dict
 # pylint: disable=too-many-instance-attributes
+class TaskReminder:
+    json: dict = field(repr=False)
+    reminder: datetime
+    relative_period: int
+    relative_to: str
+
+    @classmethod
+    def from_json(cls, json):
+        return cls(json, parse_json_date(json['reminder']), json['relative_period'], json['relative_to'])
+
+    @classmethod
+    def from_json_array(cls, json_array):
+        return [TaskReminder.from_json(x) for x in json_array or []]
+
+
+@dataclass
+@custom_output
+@data_dict
+# pylint: disable=too-many-instance-attributes
 class Task:
     json: dict = field(repr=False)
     id: int
@@ -143,7 +153,7 @@ class Task:
     priority: int
     is_favorite: bool
     due_date: datetime
-    reminder_dates: typing.List[datetime]
+    reminders: typing.List[TaskReminder]
     repeat_mode: int
     repeat_after: timedelta
     start_date: datetime
@@ -151,8 +161,8 @@ class Task:
     percent_done: float
     done: bool
     done_at: datetime
-    labels: typing.List[Label]
-    tasklist: List
+    label_objects: typing.List[Label]
+    project: Project
     position: int
     bucket_id: int
     kanban_position: int
@@ -161,16 +171,16 @@ class Task:
     urgency: float = field(init=False)
 
     @property
-    def label_titles(self):
-        return ",".join(map(lambda label: label.title, self.labels or []))
+    def labels(self):
+        return ",".join(map(lambda label: label.title, self.label_objects or []))
 
     @classmethod
-    def from_json(cls, json, list_object, labels):
+    def from_json(cls, json, project_object, labels):
         return cls(json, json['id'], json['title'], json['description'],
                    json['priority'],
                    json['is_favorite'],
                    parse_json_date(json['due_date']),
-                   [parse_json_date(reminder) for reminder in json['reminder_dates'] or []],
+                   TaskReminder.from_json_array(json["reminders"]),
                    json['repeat_mode'],
                    timedelta(seconds=json['repeat_after']),
                    parse_json_date(json['start_date']),
@@ -179,7 +189,7 @@ class Task:
                    json['done'],
                    parse_json_date(json['done_at']),
                    labels,
-                   list_object,
+                   project_object,
                    json['position'],
                    json['bucket_id'],
                    json['kanban_position'],
@@ -188,4 +198,4 @@ class Task:
                    )
 
     def has_label(self, label):
-        return any(x.id == label.id for x in self.labels)
+        return any(x.id == label.id for x in self.label_objects)

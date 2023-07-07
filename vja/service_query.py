@@ -2,18 +2,18 @@ import logging
 
 from vja.apiclient import ApiClient
 from vja.filter import create_filters
-from vja.list_service import ListService
-from vja.model import Namespace, Label, User, Bucket
+from vja.model import Label, User, Bucket
 from vja.parse import rgetattr
+from vja.project_service import ProjectService
 from vja.task_service import TaskService
 
 logger = logging.getLogger(__name__)
-DEFAULT_SORT_STRING = 'done, -urgency, due_date, -priority, tasklist.title, title'
+DEFAULT_SORT_STRING = 'done, -urgency, due_date, -priority, project.title, title'
 
 
 class QueryService:
-    def __init__(self, list_service: ListService, task_service: TaskService, api_client: ApiClient):
-        self._list_service = list_service
+    def __init__(self, project_service: ProjectService, task_service: TaskService, api_client: ApiClient):
+        self._project_service = project_service
         self._task_service = task_service
         self._api_client = api_client
 
@@ -21,20 +21,16 @@ class QueryService:
     def find_current_user(self):
         return User.from_json(self._api_client.get_user())
 
-    # namespace
-    def find_all_namespaces(self):
-        return Namespace.from_json_array(self._api_client.get_namespaces())
+    # project
+    def find_all_projects(self):
+        return self._project_service.find_all_projects()
 
-    # list
-    def find_all_lists(self):
-        return [self._list_service.convert_list_json(list_json) for list_json in (self._api_client.get_lists())]
-
-    def find_list_by_id(self, list_id):
-        return self._list_service.convert_list_json(self._api_client.get_list(list_id))
+    def find_project_by_id(self, project_id):
+        return self._project_service.find_project_by_id(project_id)
 
     # bucket
-    def find_all_buckets_in_list(self, list_id):
-        return Bucket.from_json_array(self._api_client.get_buckets(list_id))
+    def find_all_buckets_in_project(self, project_id):
+        return Bucket.from_json_array(self._api_client.get_buckets(project_id))
 
     # label
     def find_all_labels(self):
@@ -71,8 +67,8 @@ class QueryService:
 
 def sortable_task_value(task, field):
     field_name = field
-    if field in ('label', 'labels', 'tag', 'tags'):
-        field_name = 'label_titles'
+    if field in ('label', 'labels'):
+        field_name = 'labels'
     field_value = rgetattr(task, field_name)
     if isinstance(field_value, str):
         return field_value.upper()

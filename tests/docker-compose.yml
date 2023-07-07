@@ -2,21 +2,22 @@ version: '3'
 
 services:
   api:
-    image: vikunja/api:0.20.4
+    image: vikunja/api:latest
     ports:
       - "3456:3456"
     environment:
       VIKUNJA_SERVICE_FRONTENDURL: http://localhost:8080/
       VIKUNJA_RATELIMIT_LIMIT: 10000
+      #VIKUNJA_LOG_LEVEL: DEBUG
+      #VIKUNJA_LOG_DATABASELEVEL: DEBUG
     entrypoint: >
       /bin/sh -c "
         /app/vikunja/vikunja user create -u test -p test -e test@test.test
         exec /app/vikunja/vikunja
       "
   frontend:
-    image: vikunja/frontend:0.20.5
+    image: vikunja/frontend:latest
     ports:
       - "8080:80"
     environment:
       VIKUNJA_API_URL: http://localhost:3456/api/v1
-

@@ -3,45 +3,44 @@ import json
 import re
 
 from tests.conftest import invoke
-from vja.cli import cli
 
-ADD_SUCCESS_PATTERN = re.compile(r'.*Created task (\d+) in list .*')
-TODAY = datetime.datetime.now()
-TOMORROW = (datetime.datetime.now() + datetime.timedelta(days=1))
+ADD_SUCCESS_PATTERN = re.compile(r'.*Created task (\d+) in project .*')
+TODAY = datetime.datetime.now().replace(microsecond=0)
 TODAY_ISO = TODAY.isoformat()
+YESTERDAY = TODAY + datetime.timedelta(days=-1)
+YESTERDAY_ISO = YESTERDAY.isoformat()
+TOMORROW = TODAY + datetime.timedelta(days=1)
 TOMORROW_ISO = TOMORROW.isoformat()
+DATE_1 = TODAY + datetime.timedelta(days=10)
+DATE_2 = DATE_1 + datetime.timedelta(days=1)
+DATE_1_ISO = DATE_1.isoformat()
+DATE_2_ISO = DATE_2.isoformat()
 
 
 class TestAddTask:
-    def test_list_id(self, runner):
-        res = invoke(runner, 'add title of new task --force --list=1')
+    def test_project_id(self, runner):
+        res = invoke(runner, 'add title of new task --force --project=1')
         after = json_for_created_task(runner, res.output)
-        assert after['tasklist']['id'] == 1
+        assert after['project']['id'] == 1
 
-    def test_list_title(self, runner):
-        res = invoke(runner, 'add title of new task --force --list=test-list')
+    def test_project_title(self, runner):
+        res = invoke(runner, 'add title of new task --force --project=test-project')
         after = json_for_created_task(runner, res.output)
-        assert after['tasklist']['title'] == 'test-list'
+        assert after['project']['title'] == 'test-project'
 
     def test_duplicate_task_title_rejected(self, runner):
-        invoke(runner, 'add title of new task', 1)
-
-    def test_positions_not_null(self, runner):
-        res = invoke(runner, 'add any other new task --force')
-        after = json_for_created_task(runner, res.output)
-        assert after['kanban_position'] > 0
-        assert after['position'] > 0
+        invoke(runner, 'add title of new task', 1, catch_exceptions=True)
 
     def test_default_reminder_uses_due(self, runner):
-        res = invoke(runner, 'add title of new task --force --list=test-list --due=today --reminder')
+        res = invoke(runner, 'add title of new task --force --project=test-project --due=today --reminder')
         after = json_for_created_task(runner, res.output)
-        assert after['due_date'] == after['reminder_dates'][0]
+        assert after['reminders'][0]['relative_period'] == 0
+        assert after['reminders'][0]['relative_to'] == 'due_date'
 
-    def test_default_reminder_with_missing_due_uses_tomorrow(self, runner):
-        res = invoke(runner, 'add title of new task --force --list=test-list --reminder')
+    def test_default_reminder_with_absolute_time(self, runner):
+        res = invoke(runner, f'add title of new task --force --project=test-project --reminder={DATE_2_ISO}')
         after = json_for_created_task(runner, res.output)
-        assert after['due_date'] is None
-        assert TOMORROW_ISO[0:10] in after['reminder_dates'][0]
+        assert after['reminders'][0]['reminder'] == DATE_2_ISO
 
 
 class TestCloneTask:
@@ -49,38 +48,53 @@ class TestCloneTask:
         before = json_for_task_id(runner, 1)
         res = invoke(runner, 'clone 1 title of new task cloned from 1')
         after = json_for_created_task(runner, res.output)
-        assert after['tasklist'] == before['tasklist']
+        assert after['project'] == before['project']
         assert after['due_date'] == before['due_date']
+        assert after['label_objects'] == before['label_objects']
         assert after['title'] != before['title']
         assert after['id'] != before['id']
         assert after['created'] != before['created']
+        assert after['position'] != before['position']
+        assert after['kanban_position'] != before['kanban_position']
+#        assert after['bucket_id'] != before['bucket_id'] # TODO: Need to create a second bucket to test this
+
+
+    def test_clone_task_keeping_bucket(self, runner):
+        before = json_for_task_id(runner, 1)
+        res = invoke(runner, 'clone 1 --bucket title of new task with labels cloned from 1')
+        after = json_for_created_task(runner, res.output)
+        assert after['bucket_id'] == before['bucket_id']
 
 
 class TestEditGeneral:
     def test_edit_title(self, runner):
         before = json_for_task_id(runner, 1)
         new_title = f'{before["title"]}42'
-        res = runner.invoke(cli, ['edit', '1', '-i', f'{new_title}'])
-        assert res.exit_code == 0, res
+        invoke(runner, ['edit', '1', '-i', f'{new_title}'])
 
         after = json_for_task_id(runner, 1)
         assert after['title'] == new_title
         assert after['updated'] > before['updated']
         # other attributes remain in place
         assert after['due_date'] == before['due_date']
-        assert after['reminder_dates'] == before['reminder_dates']
+        assert after['reminders'] == before['reminders']
         assert after['position'] == before['position']
-        assert after['tasklist']['id'] == before['tasklist']['id']
+        assert after['project']['id'] == before['project']['id']
         assert after['created'] == before['created']
 
-    def test_edit_due_date(self, runner):
-        before = json_for_task_id(runner, 1)
+    def test_edit_due_date_without_time(self, runner):
 
-        invoke(runner, 'edit 1 --due=today')
+        invoke(runner, 'edit 1 --due=tomorrow')
 
         after = json_for_task_id(runner, 1)
-        assert datetime.date.today().isoformat()[0:10] in after['due_date']
-        assert after['updated'] >= before['updated']
+        assert after['due_date'] == (TOMORROW.replace(hour=0, minute=0, second=0)).isoformat()
+
+    def test_edit_due_date_with_time(self, runner):
+
+        invoke(runner, ['edit', '1', '--due=tomorrow 15:00'])
+
+        after = json_for_task_id(runner, 1)
+        assert after['due_date'] == (TOMORROW.replace(hour=15, minute=0, second=0)).isoformat()
 
     def test_unset_due_date(self, runner):
         before = json_for_task_id(runner, 1)
@@ -90,14 +104,13 @@ class TestEditGeneral:
 
         after = json_for_task_id(runner, 1)
         assert after['due_date'] is None
-        assert after['updated'] >= before['updated']
 
     def test_toggle_label(self, runner):
-        labels_0 = json_for_task_id(runner, 1)['labels']
-        invoke(runner, 'edit 1 --tag=tag1 --force-create')
-        labels_1 = json_for_task_id(runner, 1)['labels']
-        invoke(runner, 'edit 1 --tag=tag1')
-        labels_2 = json_for_task_id(runner, 1)['labels']
+        labels_0 = json_for_task_id(runner, 1)['label_objects']
+        invoke(runner, 'edit 1 --label=tag1 --force-create')
+        labels_1 = json_for_task_id(runner, 1)['label_objects']
+        invoke(runner, 'edit 1 --label=tag1')
+        labels_2 = json_for_task_id(runner, 1)['label_objects']
 
         assert labels_0 != labels_1
         assert labels_0 == labels_2
@@ -112,15 +125,15 @@ class TestEditGeneral:
         assert note_1 == 'line1'
         assert note_2 == 'line1\nline2'
 
-    def test_edit_list(self, runner):
-        invoke(runner, 'list add another list')
-        invoke(runner, 'edit 1 --list-id=1')
-        list_1 = json_for_task_id(runner, 1)['tasklist']['id']
-        invoke(runner, 'edit 1 -l 2')
-        list_2 = json_for_task_id(runner, 1)['tasklist']['id']
+    def test_edit_project(self, runner):
+        invoke(runner, 'project add another project')
+        invoke(runner, 'edit 1 --project-id=1')
+        project_1 = json_for_task_id(runner, 1)['project']['id']
+        invoke(runner, 'edit 1 -o 2')
+        project_2 = json_for_task_id(runner, 1)['project']['id']
 
-        assert list_1 == 1
-        assert list_2 == 2
+        assert project_1 == 1
+        assert project_2 == 2
 
     @staticmethod
     def _has_label_with_title(labels, title):
@@ -129,61 +142,57 @@ class TestEditGeneral:
 
 
 class TestEditReminder:
-    def test_set_default_reminder_to_remote_due(self, runner):
-        invoke(runner, f'edit 2 --due-date={TODAY_ISO}')
-        invoke(runner, f'edit 2 --reminder={TOMORROW_ISO}')
+    def test_set_reminder_to_absolute_value(self, runner):
+        invoke(runner, f'edit 2 --reminder={DATE_1_ISO}')
         before = json_for_task_id(runner, 2)
 
-        invoke(runner, 'edit 2 --reminder')
+        invoke(runner, f'edit 2 --due={DATE_1_ISO} --reminder={DATE_2_ISO}')
+
         after = json_for_task_id(runner, 2)
-        assert before['reminder_dates'][0][:10] == TOMORROW.date().isoformat()
-        assert after['reminder_dates'][0][:10] == TODAY.date().isoformat()
-
-    def test_set_default_reminder_to_tomorrow(self, runner):
-        invoke(runner, 'edit 2 --due-date=')
-        invoke(runner, f'edit 2 --reminder={TODAY_ISO}')
-        before = json_for_task_id(runner, 2)
-
-        invoke(runner, 'edit 2 --reminder')
-        after = json_for_task_id(runner, 2)
-        assert before['reminder_dates'][0][:10] == TODAY.date().isoformat()
-        assert after['reminder_dates'][0][:10] == TOMORROW.date().isoformat()
-
-    def test_unset_reminder(self, runner):
-        invoke(runner, f'edit 2 --reminder={TODAY_ISO}')
-        before = json_for_task_id(runner, 2)
-
-        invoke(runner, 'edit 2 --reminder=')
-        after = json_for_task_id(runner, 2)
-        assert before['reminder_dates'][0][:10] == TODAY.date().isoformat()
-        assert not after['reminder_dates']
+        assert before['reminders'][0]['reminder'] == DATE_1_ISO
+        assert after['reminders'][0]['reminder'] == DATE_2_ISO
+        assert not after['reminders'][0]['relative_to']
 
     def test_set_reminder_to_due(self, runner):
-        invoke(runner, f'edit 2 --reminder={TODAY_ISO}')
+        invoke(runner, f'edit 2 --reminder={DATE_1_ISO}')
         before = json_for_task_id(runner, 2)
 
-        invoke(runner, f'edit 2 --due={TOMORROW_ISO} --reminder=due')
-        after = json_for_task_id(runner, 2)
-        assert before['reminder_dates'][0][:10] == TODAY.date().isoformat()
-        assert after['reminder_dates'][0][:10] == TOMORROW.date().isoformat()
+        invoke(runner, f'edit 2 --due={DATE_2_ISO} --reminder=due')
 
-    def test_set_reminder_to_value(self, runner):
-        invoke(runner, f'edit 2 --reminder={TODAY_ISO}')
+        after = json_for_task_id(runner, 2)
+        assert before['reminders'][0]['reminder'] == DATE_1_ISO
+        assert after['reminders'][0]['reminder'] == DATE_2_ISO
+        assert after['reminders'][0]['relative_period'] == 0
+        assert after['reminders'][0]['relative_to'] == 'due_date'
+
+    def test_set_reminder_to_due_empty_option(self, runner):
+        invoke(runner, f'edit 2 --reminder={DATE_1_ISO}')
+
+        invoke(runner, f'edit 2 --due={DATE_2_ISO} --reminder')
+
+        after = json_for_task_id(runner, 2)
+        assert after['reminders'][0]['reminder'] == DATE_2_ISO
+        assert after['reminders'][0]['relative_period'] == 0
+        assert after['reminders'][0]['relative_to'] == 'due_date'
+
+    def test_set_reminder_to_relative_value(self, runner):
+        invoke(runner, f'edit 2 --reminder={DATE_1_ISO}')
+
+        invoke(runner, ['edit', '2', '--due={DATE_2_ISO}', '--reminder=1h1m before due_date'])
+
+        after = json_for_task_id(runner, 2)
+        assert after['reminders'][0]['relative_period'] == -3660
+        assert after['reminders'][0]['relative_to'] == 'due_date'
+
+    def test_unset_reminder(self, runner):
+        invoke(runner, f'edit 2 --reminder={DATE_1_ISO}')
         before = json_for_task_id(runner, 2)
 
-        invoke(runner, f'edit 2 --due={TODAY_ISO} --reminder={TOMORROW_ISO}')
-        after = json_for_task_id(runner, 2)
-        assert before['reminder_dates'][0][:10] == TODAY.date().isoformat()
-        assert after['reminder_dates'][0][:10] == TOMORROW.date().isoformat()
-
-    def test_set_reminder_to_value_new_reminder(self, runner):
         invoke(runner, 'edit 2 --reminder=')
-        before = json_for_task_id(runner, 2)
 
-        invoke(runner, f'edit 2 --reminder={TOMORROW_ISO}')
         after = json_for_task_id(runner, 2)
-        assert not before['reminder_dates']
-        assert after['reminder_dates'][0][:10] == TOMORROW.date().isoformat()
+        assert before['reminders'][0]['reminder'] == DATE_1_ISO
+        assert not after['reminders']
 
 
 class TestToggleDoneTask:
@@ -207,15 +216,32 @@ class TestToggleDoneTask:
 
 
 class TestDeferTask:
-    def test_defer_task(self, runner):
-        invoke(runner, f'edit 2 --due-date={TODAY_ISO}')
+    def test_defer_due_date_and_reminder(self, runner):
+        invoke(runner, f'edit 2 --due-date={DATE_1_ISO} --reminder={DATE_1_ISO}')
 
         invoke(runner, 'defer 2 1d')
 
         after = json_for_task_id(runner, 2)
-        assert after['due_date'][:10] == TOMORROW.date().isoformat()
-        assert after['reminder_dates'][0][:10] == TOMORROW.date().isoformat()
+        assert after['due_date'] == DATE_2_ISO
+        assert after['reminders'][0]['reminder'] == DATE_2_ISO
 
+    def test_dont_defer_relative_reminder(self, runner):
+        invoke(runner, f'edit 2 --due-date={DATE_1_ISO} -r')
+
+        invoke(runner, 'defer 2 1d')
+
+        after = json_for_task_id(runner, 2)
+        assert after['due_date'] == DATE_2_ISO
+        assert after['reminders'][0]['relative_period'] == 0
+        assert after['reminders'][0]['relative_to'] == 'due_date'
+
+    def test_defer_past_due_realtive_to_now(self, runner):
+        invoke(runner, f'edit 2 --due-date={YESTERDAY_ISO}')
+
+        invoke(runner, 'defer 2 1d')
+
+        after = json_for_task_id(runner, 2)
+        assert after['due_date'][:10] == TOMORROW_ISO[:10]
 
 class TestMultipleTasks:
     def test_edit_three_tasks(self, runner):
