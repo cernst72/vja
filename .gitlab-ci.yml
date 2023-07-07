@@ -76,9 +76,8 @@ release:
     PYPI_USERNAME: __token__
     PYPI_TOKEN: ${PYPI_VJA_TOKEN}
   before_script:
-    - apt-get update && apt-get install -y --no-install-recommends git-core ca-certificates python-is-python3 python3-pip
+    - apt-get update && apt-get install -y --no-install-recommends git-core ca-certificates python-is-python3 python3-pip twine
     - npm install -g semantic-release @semantic-release/gitlab @semantic-release/changelog conventional-changelog-conventionalcommits @semantic-release/commit-analyzer @semantic-release/git semantic-release-pypi
-    - pip install -r requirements_ci.txt
   script:
     - python --version
     - semantic-release
