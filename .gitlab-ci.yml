@@ -31,7 +31,7 @@ pylint:
 integration-test:
   stage: test
   image:
-    name: docker:23.0-cli
+    name: docker:cli
   services:
     - name: docker:dind
   variables:
@@ -87,7 +87,7 @@ release:
     - semantic-release
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: on_success
+      when: manual
     - if: $CI_COMMIT_BRANCH == "beta"
       when: manual
     - if: $CI_COMMIT_BRANCH == "rc"
