@@ -192,6 +192,10 @@ def label_add(application, title):
 @cli.command('add', aliases=['create'],
              help='Add new task')
 @click.argument('title', required=True, nargs=-1)
+@click.option('quiet_show', '-q', '--quiet-show', '--quiet', is_flag=True,
+              help='Hide confirmation message')
+@click.option('verbose_show', '-v', '--verbose-show', '--verbose', is_flag=True,
+              help='Show resulting task when finished')
 @click.option('project_id', '-o', '--project', '--project-id', '--project_id',
               help='Project (id or name), defaults to project from user settings, than to first favorite project')
 @click.option('note', '-n', '--note', '--description',
@@ -212,30 +216,42 @@ def label_add(application, title):
               help='Force creation of non existing label')
 @with_application
 @click.pass_context
-def task_add(ctx, application, title, **args):
+def task_add(ctx, application, title, quiet_show=False, verbose_show=False, **args):
     args_present = {k: v for k, v in args.items() if v is not None}
     task = application.command_service.add_task(" ".join(title), args_present.copy())
-    click.echo(f'Created task {task.id} in project {task.project.id}')
-    ctx.invoke(task_show, tasks=[task.id])
+    if verbose_show or not quiet_show:
+        click.echo(f'Created task {task.id} in project {task.project.id}')
+    if verbose_show:
+        ctx.invoke(task_show, tasks=[task.id])
 
 
 @cli.command('clone', aliases=['copy'],
              help='Clone task with given task_id. Set the new title')
 @click.argument('task_id', required=True, type=click.INT)
 @click.argument('title', required=True, nargs=-1)
+@click.option('quiet_show', '-q', '--quiet-show', '--quiet', is_flag=True,
+              help='Hide confirmation message')
+@click.option('verbose_show', '-v', '--verbose-show', '--verbose', is_flag=True,
+              help='Show resulting task when finished')
 @click.option('is_clone_bucket', '-b', '--bucket', is_flag=True,
               help='Clone kanban bucket too. Default: False')
 @with_application
 @click.pass_context
-def task_clone(ctx, application, task_id, title, is_clone_bucket=False):
+def task_clone(ctx, application, task_id, title, quiet_show=False, verbose_show=False, is_clone_bucket=False):
     task = application.command_service.clone_task(task_id, " ".join(title), is_clone_bucket)
-    click.echo(f'Created task {task.id} in project {task.project.id} as clone from {task_id}')
-    ctx.invoke(task_show, tasks=[task.id])
+    if verbose_show or not quiet_show:
+        click.echo(f'Created task {task.id} in project {task.project.id} as clone from {task_id}')
+    if verbose_show:
+        ctx.invoke(task_show, tasks=[task.id])
 
 
 @cli.command('edit', aliases=['modify', 'update'],
              help='Modify task/tasks. (Opens task in browser if no options are given)')
 @click.argument('task_ids', required=True, type=click.INT, nargs=-1)
+@click.option('quiet_show', '-q', '--quiet-show', '--quiet', is_flag=True,
+              help='Hide confirmation message')
+@click.option('verbose_show', '-v', '--verbose-show', '--verbose', is_flag=True,
+              help='Show resulting task when finished')
 @click.option('title', '-i', '--title',
               help='Set title')
 @click.option('note', '-n', '--note', '--description',
@@ -268,38 +284,52 @@ def task_clone(ctx, application, task_id, title, is_clone_bucket=False):
               help='Force creation of non existing label')
 @with_application
 @click.pass_context
-def task_edit(ctx, application, task_ids, **args):
+def task_edit(ctx, application, task_ids, quiet_show=False, verbose_show=False, **args):
     args_present = {k: v for k, v in args.items() if v is not None}
     for task_id in task_ids:
         if args_present:
             task = application.command_service.edit_task(task_id, args_present.copy())
-            click.echo(f'Modified task {task.id} in project {task.project.id}')
-            ctx.invoke(task_show, tasks=[task.id])
+            if verbose_show or not quiet_show:
+                click.echo(f'Modified task {task.id} in project {task.project.id}')
+            if verbose_show:
+                ctx.invoke(task_show, tasks=[task.id])
         else:
             application.open_browser(task_id)
 
 
 @cli.command('toggle', aliases=['check', 'click', 'done'], help='Shortcut for marking / unmarking task as done')
 @click.argument('task_id', required=True, type=click.INT)
+@click.option('quiet_show', '-q', '--quiet-show', '--quiet', is_flag=True,
+              help='Hide confirmation message')
+@click.option('verbose_show', '-v', '--verbose-show', '--verbose', is_flag=True,
+              help='Show resulting task when finished')
 @with_application
 @click.pass_context
-def task_toggle(ctx, application, task_id):
+def task_toggle(ctx, application, task_id, quiet_show=False, verbose_show=False):
     task = application.command_service.toggle_task_done(task_id)
-    click.echo(f'Modified task {task.id} in project {task.project.id}')
-    ctx.invoke(task_show, tasks=[task_id])
+    if verbose_show or not quiet_show:
+        click.echo(f'Modified task {task.id} in project {task.project.id}')
+    if verbose_show:
+        ctx.invoke(task_show, tasks=[task_id])
 
 
 @cli.command('defer', aliases=['delay'], help='Shortcut for moving the due_date and the reminders of the task. '
                                               'Examples for valid delay values are 2d, 1h30m.')
 @click.argument('task_ids', required=True, type=click.INT, nargs=-1)
 @click.argument('delay_by', required=True)
+@click.option('quiet_show', '-q', '--quiet-show', '--quiet', is_flag=True,
+              help='Hide confirmation message')
+@click.option('verbose_show', '-v', '--verbose-show', '--verbose', is_flag=True,
+              help='Show resulting task when finished')
 @with_application
 @click.pass_context
-def task_defer(ctx, application, task_ids, delay_by):
+def task_defer(ctx, application, task_ids, delay_by, quiet_show=False, verbose_show=False):
     for task_id in task_ids:
         task = application.command_service.defer_task(task_id, delay_by)
-        click.echo(f'Modified task {task.id} in project {task.project.id}')
-        ctx.invoke(task_show, tasks=[task_id])
+        if verbose_show or not quiet_show:
+            click.echo(f'Modified task {task.id} in project {task.project.id}')
+        if verbose_show:
+            ctx.invoke(task_show, tasks=[task_id])
 
 
 @cli.command('ls', help='List tasks ... (task-id; priority; is_favorite; title; due_date; '
