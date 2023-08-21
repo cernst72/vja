@@ -60,24 +60,26 @@ def _create_label_filter(value):
         return lambda x: any(label.id == int(value) for label in x.label_objects)
     if str(value).strip() == '':
         return lambda x: not x.label_objects
-    return lambda x: any(label.title == value for label in x.label_objects)
+    return lambda x: any(_find_regex(value, label.title) for label in x.label_objects)
 
 
 def _create_project_filter(value):
     if str(value).isdigit():
         return _create_general_filter([f'project.id eq {value}'])
-    return _create_general_filter([f'project.title eq {value}'])
+    return lambda task: _find_regex(value, task.project.title)
 
 
 def _create_upper_project_filter(value):
     if str(value).isdigit():
         return lambda x: x.project.id == int(value) or any(ancestor.id == int(value) for ancestor in x.project.ancestor_projects)
-    return lambda x: x.project.title == value or any(ancestor.title == value for ancestor in x.project.ancestor_projects)
+    return lambda task: _find_regex(value, task.project.title) or any(_find_regex(value, ancestor.title) for ancestor in task.project.ancestor_projects)
 
 
 def _create_title_filter(value):
-    return lambda x: bool(re.search(re.compile(value, re.IGNORECASE), x.title))
+    return lambda task: _find_regex(value, task.title)
 
+def _find_regex(regex, value):
+    return bool(re.search(re.compile(regex, re.IGNORECASE), value))
 
 def _create_priority_filter(value):
     return _create_general_filter([f'priority {value}'])

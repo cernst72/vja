@@ -143,7 +143,7 @@ class TestTaskLsFilter:
         assert all(i['is_favorite'] for i in data)
 
     def test_task_filter_label(self, runner):
-        res = invoke(runner, ['ls', '--jsonvja', '--label=my_tag'])
+        res = invoke(runner, ['ls', '--jsonvja', '--label=y_ta'])
         data = json.loads(res.output)
         assert len(data) > 0
         assert data[0]['label_objects'][0]['title'] == 'my_tag'
@@ -158,7 +158,7 @@ class TestTaskLsFilter:
         assert all(len(i['label_objects']) == 0 for i in data)
 
     def test_task_filter_project(self, runner):
-        res = invoke(runner, ['ls', '--jsonvja', '--project=test-project'])
+        res = invoke(runner, ['ls', '--jsonvja', '--project=est-project'])
         data = json.loads(res.output)
         assert len(data) > 0
         assert all(i['project']['title'] == 'test-project' for i in data)
@@ -167,7 +167,7 @@ class TestTaskLsFilter:
         assert len(data) == 0
 
     def test_task_filter_base_project(self, runner):
-        res = invoke(runner, ['ls', '--jsonvja', '--base-project=test-project'])
+        res = invoke(runner, ['ls', '--jsonvja', '--base-project=est-project'])
         data = json.loads(res.output)
         assert len(data) > 0
         assert all(i['project']['title'] == 'test-project' or i['project']['title'] == 'grand-child' for i in data)
@@ -191,7 +191,7 @@ class TestTaskLsFilter:
         assert len(data) == 0
 
     def test_task_filter_title(self, runner):
-        res = invoke(runner, ['ls', '--jsonvja', '--title=at least one'])
+        res = invoke(runner, ['ls', '--jsonvja', '--title=at least'])
         data = json.loads(res.output)
         assert len(data) > 0
         assert all('At least one task' in i['title'] for i in data)
