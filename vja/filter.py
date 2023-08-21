@@ -71,15 +71,19 @@ def _create_project_filter(value):
 
 def _create_upper_project_filter(value):
     if str(value).isdigit():
-        return lambda x: x.project.id == int(value) or any(ancestor.id == int(value) for ancestor in x.project.ancestor_projects)
-    return lambda task: _find_regex(value, task.project.title) or any(_find_regex(value, ancestor.title) for ancestor in task.project.ancestor_projects)
+        return lambda x: x.project.id == int(value) \
+            or any(ancestor.id == int(value) for ancestor in x.project.ancestor_projects)
+    return lambda task: _find_regex(value, task.project.title) \
+        or any(_find_regex(value, ancestor.title) for ancestor in task.project.ancestor_projects)
 
 
 def _create_title_filter(value):
     return lambda task: _find_regex(value, task.title)
 
+
 def _find_regex(regex, value):
     return bool(re.search(re.compile(regex, re.IGNORECASE), value))
+
 
 def _create_priority_filter(value):
     return _create_general_filter([f'priority {value}'])
