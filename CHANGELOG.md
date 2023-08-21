@@ -1,3 +1,23 @@
+## [2.1.0](https://gitlab.com/ce72/vja/compare/2.0.0...2.1.0) (2023-08-21)
+
+
+### Features
+
+* **cli:** verbose (-v) and quiet (-q) for editing tasks ([36a3527](https://gitlab.com/ce72/vja/commit/36a35279ad0bd19d9c03566e5735c5bb7c7b22d0))
+
+
+### Misc
+
+* **deps:** update all dependencies ([3bed81b](https://gitlab.com/ce72/vja/commit/3bed81b1826454549798da36bd0657974aaf9f7e))
+
+
+### Automation
+
+* remove requirements_ci.txt ([2c4abb6](https://gitlab.com/ce72/vja/commit/2c4abb6a3028dee1027628a377d164d763861837))
+* simplify pipeline rules ([6eba5cc](https://gitlab.com/ce72/vja/commit/6eba5ccf508c06fcdcefb40eebd4d0a568fcb429))
+* update build requirements ([c5d5397](https://gitlab.com/ce72/vja/commit/c5d53975bc77beee92616a17e128782be6c878da))
+* use latest docker:cli image ([a47cef0](https://gitlab.com/ce72/vja/commit/a47cef01196f943c353384effeeb05318d1322f3))
+
 ## [2.0.0](https://gitlab.com/ce72/vja/compare/1.5.1...2.0.0) (2023-07-07)
 
 
