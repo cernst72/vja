@@ -1,3 +1,12 @@
+## [2.2.0](https://gitlab.com/ce72/vja/compare/2.1.0...2.2.0) (2023-08-22)
+
+
+### Features
+
+* **ls:** support regex in label.title and project.title filter ([022844b](https://gitlab.com/ce72/vja/commit/022844bf01539222098fc94b524497a6f2e2602f))
+* **ls:** support regex in label.title and project.title filter ([7689d8a](https://gitlab.com/ce72/vja/commit/7689d8a52a090f848d53a091fd9fca0c4bdd2872))
+* **ls:** support regex in label.title and project.title filter ([e6d3de2](https://gitlab.com/ce72/vja/commit/e6d3de22b41c38d71a1fc365ca3a062d2c521649))
+
 ## [2.1.0](https://gitlab.com/ce72/vja/compare/2.0.0...2.1.0) (2023-08-21)
 
 
