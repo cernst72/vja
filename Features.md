@@ -1,26 +1,26 @@
 # Features
 
 <!-- TOC -->
-* [Features](#features)
-  * [Create Task](#create-task)
-    * [Clone](#clone)
-  * [List tasks](#list-tasks)
-    * [Urgency](#urgency)
-    * [Filter](#filter)
-    * [Sort](#sort)
-    * [Select](#select)
-  * [Show single task by id](#show-single-task-by-id)
-  * [Modify tasks](#modify-tasks)
-    * [Defer task](#defer-task)
-    * [Reminders](#reminders)
-    * [Batch editing](#batch-editing)
-  * [Open Vikunja in browser](#open-vikunja-in-browser)
-  * [Manage projects, labels, buckets](#manage-projects-labels-buckets)
-    * [Manage projects](#manage-projects)
-    * [Manage kanban buckets](#manage-kanban-buckets)
-    * [Manage labels](#manage-labels)
-  * [Output format](#output-format)
-  * [Terminate session](#terminate-session)
+- [Features](#features)
+  - [Create Task](#create-task)
+    - [Clone](#clone)
+  - [List tasks](#list-tasks)
+    - [Urgency](#urgency)
+    - [Filter](#filter)
+    - [Sort](#sort)
+    - [Select](#select)
+  - [Show single task by id](#show-single-task-by-id)
+  - [Modify tasks](#modify-tasks)
+    - [Defer task](#defer-task)
+    - [Reminders](#reminders)
+    - [Batch editing](#batch-editing)
+  - [Open Vikunja in browser](#open-vikunja-in-browser)
+  - [Manage projects, labels, buckets](#manage-projects-labels-buckets)
+    - [Manage projects](#manage-projects)
+    - [Manage kanban buckets](#manage-kanban-buckets)
+    - [Manage labels](#manage-labels)
+  - [Output format](#output-format)
+  - [Terminate session](#terminate-session)
 <!-- TOC -->
 
 ## Create Task
@@ -84,12 +84,15 @@ The displayed tasks may be filtered by several arguments like project or title, 
 
 ```shell
 vja ls --project=1
+vja ls -o=projec # matches regex string
 vja ls --base-project=myproject
+vja ls -t=projec # matches regex string
 vja ls --bucket_id=1
 vja ls --due-date="before today"
 vja ls --due-date="ge in 0 days" --due-date="before 5 days"
 vja ls --favorite=True
 vja ls --label=@work
+vja ls -l=work # matches regex string
 vja ls --priority="gt 3"
 vja ls --priority="eq 5"
 vja ls --title=ask # matches regex string
@@ -262,8 +265,8 @@ vja project add New Project
 ```
 
 ```shell
-vja project add Create project in parent project by id -o 2 
-vja project add Create project in parent project by title -o my-parent 
+vja project add Create project in parent project by id -o 2
+vja project add Create project in parent project by title -o my-parent
 ```
 
 ```shell
