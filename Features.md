@@ -73,7 +73,7 @@ vja ls --json
 ### Urgency
 
 By default, tasks are sorted (amongst others) by their urgency, which is displayed in the last column. Urgency is
-calculated by regarding due_date, priority and is_favorite of the task, as well as the occurence of keywords in the
+calculated by regarding due_date, priority and is_favorite of the task, as well as the occurrence of keywords in the
 project title or the label titles. The weights of each factor and the keywords can be specified in the configuration
 file ~/.vjacli/vja.rc. See Configuration section in [Readme.md](Readme.md). See [.vjacli/vja.rc](.vjacli/vja.rc) for an
 example.
