@@ -198,7 +198,7 @@ def label_add(application, title):
               help='Show resulting task when finished')
 @click.option('project_id', '-o', '--project', '--project-id', '--project_id',
               help='Project (id or name), defaults to project from user settings, than to first favorite project')
-@click.option('note', '-n', '--note', '--description',
+@click.option('note', '-n', '--note', '--notes', '--description',
               help='Set description (note)')
 @click.option('prio', '-p', '--prio', '--priority',
               help='Set priority')
@@ -254,7 +254,7 @@ def task_clone(ctx, application, task_id, title, quiet_show=False, verbose_show=
               help='Show resulting task when finished')
 @click.option('title', '-i', '--title',
               help='Set title')
-@click.option('note', '-n', '--note', '--description',
+@click.option('note', '-n', '--note', '--notes', '--description',
               help='Set description (note)')
 @click.option('note_append', '-a', '--note-append', '--append-note', '--description-append', '--append-description',
               help='Append note to existing description separated by new line')
