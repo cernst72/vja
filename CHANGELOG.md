@@ -1,3 +1,17 @@
+## [2.2.1](https://gitlab.com/ce72/vja/compare/2.2.0...2.2.1) (2023-09-08)
+
+
+### Bug Fixes
+
+* **cli:** allow --notes (in addition to --note) ([de090a3](https://gitlab.com/ce72/vja/commit/de090a3ddf90bcbca2dab213e5c5dde9ad1c395d))
+* **ls:** --include-completed got an error ([5c150ca](https://gitlab.com/ce72/vja/commit/5c150ca961c83011d0a35a7b4bc05dbbca374c9a))
+* **ls:** --include-completed got an error ([5039352](https://gitlab.com/ce72/vja/commit/503935279f9584ed94ad26e053e336658494cdfb))
+
+
+### Automation
+
+* workaround - pin conventional-changelog-conventionalcommits ([b8e35d1](https://gitlab.com/ce72/vja/commit/b8e35d19a6b7aef6123dfc38e33b05ce4bfa1ddb))
+
 ## [2.2.0](https://gitlab.com/ce72/vja/compare/2.1.0...2.2.0) (2023-08-22)
 
 
