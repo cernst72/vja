@@ -126,6 +126,10 @@ class ApiClient:
     def get_buckets(self, project_id):
         return self._get_json(self._create_url(f'/projects/{str(project_id)}/buckets'))
 
+    def put_bucket(self, project_id, title):
+        payload = {'title': title}
+        return self._put_json(self._create_url(f'/projects/{str(project_id)}/buckets'), payload=payload)
+
     def get_labels(self):
         if self._cache['labels'] is None:
             self._cache['labels'] = self._get_json(self._create_url('/labels')) or []

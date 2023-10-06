@@ -38,6 +38,7 @@ def _create_project_and_task():
     run_vja('vja project add test-project')
     run_vja('vja project add child --parent-project=test-project')
     run_vja('vja project add grand-child --parent-project=child')
+    run_vja('vja bucket add --project=test-project Second bucket')
     run_vja('vja add At least one task --force-create --priority=5 --due-date=today --label=my_tag --favorite=True --project-id=test-project')
     run_vja('vja add Task in subproject --force-create --project-id=grand-child')
     run_vja('vja add A task without a label --force-create')

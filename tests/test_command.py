@@ -45,6 +45,7 @@ class TestAddTask:
 
 class TestCloneTask:
     def test_clone_task(self, runner):
+        invoke(runner, 'pull 1')
         before = json_for_task_id(runner, 1)
         res = invoke(runner, 'clone 1 title of new task cloned from 1')
         after = json_for_created_task(runner, res.output)
@@ -56,10 +57,9 @@ class TestCloneTask:
         assert after['created'] != before['created']
         assert after['position'] != before['position']
         assert after['kanban_position'] != before['kanban_position']
-#        assert after['bucket_id'] != before['bucket_id'] # TODO: Need to create a second bucket to test this
+        assert after['bucket_id'] != before['bucket_id']
 
-
-    def test_clone_task_keeping_bucket(self, runner):
+    def test_clone_task_within_same_bucket(self, runner):
         before = json_for_task_id(runner, 1)
         res = invoke(runner, 'clone 1 --bucket title of new task with labels cloned from 1')
         after = json_for_created_task(runner, res.output)
@@ -83,14 +83,12 @@ class TestEditGeneral:
         assert after['created'] == before['created']
 
     def test_edit_due_date_without_time(self, runner):
-
         invoke(runner, 'edit 1 --due=tomorrow')
 
         after = json_for_task_id(runner, 1)
         assert after['due_date'] == (TOMORROW.replace(hour=0, minute=0, second=0)).isoformat()
 
     def test_edit_due_date_with_time(self, runner):
-
         invoke(runner, ['edit', '1', '--due=tomorrow 15:00'])
 
         after = json_for_task_id(runner, 1)
@@ -243,6 +241,7 @@ class TestDeferTask:
         after = json_for_task_id(runner, 2)
         assert after['due_date'][:10] == TOMORROW_ISO[:10]
 
+
 class TestMultipleTasks:
     def test_edit_three_tasks(self, runner):
         invoke(runner, 'edit 1 2 3 --priority=4')
@@ -258,6 +257,26 @@ class TestMultipleTasks:
         assert re.search(r'id: 1', res.output)
         assert re.search(r'id: 2', res.output)
         assert re.search(r'id: 3', res.output)
+
+
+class TestPushPullTask:
+    def test_pull_and_push_back(self, runner):
+        bucket_0 = json_for_task_id(runner, 1)['bucket_id']
+        invoke(runner, 'pull 1')
+        bucket_1 = json_for_task_id(runner, 1)['bucket_id']
+        invoke(runner, 'push 1')
+        bucket_2 = json_for_task_id(runner, 1)['bucket_id']
+        assert bucket_0 != bucket_1
+        assert bucket_0 == bucket_2
+
+    def test_repeated_push(self, runner):
+        bucket_0 = json_for_task_id(runner, 1)['bucket_id']
+        invoke(runner, 'push 1')
+        bucket_1 = json_for_task_id(runner, 1)['bucket_id']
+        invoke(runner, 'push 1')
+        bucket_2 = json_for_task_id(runner, 1)['bucket_id']
+        assert bucket_0 == bucket_1
+        assert bucket_0 == bucket_2
 
 
 def json_for_created_task(runner, message):
