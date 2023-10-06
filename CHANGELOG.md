@@ -1,3 +1,17 @@
+## [2.3.0](https://gitlab.com/ce72/vja/compare/2.2.1...2.3.0) (2023-10-06)
+
+
+### Features
+
+* **cli:** vja push/pull task ([50ce795](https://gitlab.com/ce72/vja/commit/50ce7958d1791f1fd5b0ec71b641f7e127d979bc))
+* **cli:** vja push/pull task ([2be0e85](https://gitlab.com/ce72/vja/commit/2be0e85b56ceada24207e7d8b3465f5aa4d5f2e0))
+
+
+### Misc
+
+* **deps:** update all dependencies ([f9d578b](https://gitlab.com/ce72/vja/commit/f9d578b534385ea36ddc6980306d91817e8eea66))
+* **deps:** update all dependencies ([1db988e](https://gitlab.com/ce72/vja/commit/1db988e1eb39f72a35b1bc6c9bc6ff30e840a3a9))
+
 ## [2.2.1](https://gitlab.com/ce72/vja/compare/2.2.0...2.2.1) (2023-09-08)
 
 
