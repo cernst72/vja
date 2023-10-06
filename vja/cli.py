@@ -142,7 +142,17 @@ def bucket_group():
     pass
 
 
-@bucket_group.command('ls', help='Print kanban buckets of given project ... (id; title; is_done; limit; count tasks)')
+@bucket_group.command('add', help='Add bucket with title')
+@click.option('project', '-o', '--project', '--project-id',
+              help='Create bucket in given project.')
+@click.argument('title', nargs=-1, required=True)
+@with_application
+def bucket_add(application, title, project):
+    bucket = application.command_service.add_bucket(project, " ".join(title))
+    click.echo(f'Created bucket {bucket.id} in project {project}')
+
+
+@bucket_group.command('ls', help='Show kanban buckets of given project ... (id; title; is_done; limit; count tasks)')
 @click.option('project_id', '-o', '--project', '--project-id', '--project_id', required=True, type=click.INT,
               help='Show buckets of project with id')
 @click.option('is_json', '--json', default=False, is_flag=True,
@@ -330,6 +340,37 @@ def task_defer(ctx, application, task_ids, delay_by, quiet_show=False, verbose_s
             click.echo(f'Modified task {task.id} in project {task.project.id}')
         if verbose_show:
             ctx.invoke(task_show, tasks=[task_id])
+
+
+@cli.command('pull', help='Pull the task to the next bucket (move from left to right on the Kanban board). ')
+@click.argument('task_id', required=True, type=click.INT)
+@click.option('quiet_show', '-q', '--quiet-show', '--quiet', is_flag=True,
+              help='Hide confirmation message')
+@click.option('verbose_show', '-v', '--verbose-show', '--verbose', is_flag=True,
+              help='Show resulting task when finished')
+@with_application
+@click.pass_context
+def task_pull(ctx, application, task_id, quiet_show=False, verbose_show=False):
+    task = application.command_service.pull_task(task_id)
+    if verbose_show or not quiet_show:
+        click.echo(f'Modified task {task.id} in project {task.project.id}')
+    if verbose_show:
+        ctx.invoke(task_show, tasks=[task_id])
+
+@cli.command('push', help='Push the task to the previous bucket (move from right to left on the Kanban board). ')
+@click.argument('task_id', required=True, type=click.INT)
+@click.option('quiet_show', '-q', '--quiet-show', '--quiet', is_flag=True,
+              help='Hide confirmation message')
+@click.option('verbose_show', '-v', '--verbose-show', '--verbose', is_flag=True,
+              help='Show resulting task when finished')
+@with_application
+@click.pass_context
+def task_push(ctx, application, task_id, quiet_show=False, verbose_show=False):
+    task = application.command_service.push_task(task_id)
+    if verbose_show or not quiet_show:
+        click.echo(f'Modified task {task.id} in project {task.project.id}')
+    if verbose_show:
+        ctx.invoke(task_show, tasks=[task_id])
 
 
 @cli.command('ls', help='List tasks ... (task-id; priority; is_favorite; title; due_date; '

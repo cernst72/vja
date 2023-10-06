@@ -3,7 +3,7 @@ import logging
 
 from vja import VjaError
 from vja.apiclient import ApiClient
-from vja.model import Label, Project
+from vja.model import Bucket, Label, Project
 from vja.parse import parse_date_arg_to_iso, parse_json_date, parse_date_arg_to_timedelta, datetime_to_isoformat
 from vja.project_service import ProjectService
 from vja.task_service import TaskService
@@ -35,6 +35,15 @@ class CommandService:
             parent_project_id = None
         project_json = self._api_client.put_project(parent_project_id, title)
         return Project.from_json(project_json, [])
+
+    # bucket
+    def add_bucket(self, project, title):
+        if str(project).isdigit():
+            project_id = project
+        else:
+            project_id = self._project_service.find_project_by_title(project).id
+        bucket_json = self._api_client.put_bucket(project_id, title)
+        return Bucket.from_json(bucket_json)
 
     # label
     def add_label(self, title):
@@ -96,7 +105,7 @@ class CommandService:
         task_remote.update({'title': title})
         task_remote.update({'position': 0})
         task_remote.update({'kanban_position': 0})
-        if is_clone_bucket:
+        if not is_clone_bucket:
             task_remote.update({'bucket_id': 0})
 
         logger.debug('put task: %s', task_remote)
@@ -205,6 +214,32 @@ class CommandService:
         logger.debug('update fields: %s', payload)
         task_remote.update(payload)
         task_json = self._api_client.post_task(task_id, task_remote)
+        return self._task_service.task_from_json(task_json)
+
+    def pull_task(self, task_id):
+        task_json = self._api_client.get_task(task_id)
+        all_buckets, current_bucket_index = self._current_bucket(task_json)
+        # select next element
+        next_bucket = all_buckets[
+            current_bucket_index + 1 if current_bucket_index < len(all_buckets) - 1 else current_bucket_index]
+        # update
+        task_json.update({'bucket_id': next_bucket.id})
+        task_json = self._api_client.post_task(task_id, task_json)
+        return self._task_service.task_from_json(task_json)
+
+    def _current_bucket(self, task_json):
+        all_buckets = Bucket.from_json_array(self._api_client.get_buckets(task_json['project_id']))
+        current_bucket_index = [i for i, x in enumerate(all_buckets) if x.id == task_json['bucket_id']][0]
+        return all_buckets, current_bucket_index
+
+    def push_task(self, task_id):
+        task_json = self._api_client.get_task(task_id)
+        all_buckets, current_bucket_index = self._current_bucket(task_json)
+        # select previous element
+        next_bucket = all_buckets[current_bucket_index - 1 if current_bucket_index > 0 else current_bucket_index]
+        # update
+        task_json.update({'bucket_id': next_bucket.id})
+        task_json = self._api_client.post_task(task_id, task_json)
         return self._task_service.task_from_json(task_json)
 
     def _label_from_name(self, name, is_force):
