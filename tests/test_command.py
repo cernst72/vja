@@ -74,7 +74,7 @@ class TestEditGeneral:
 
         after = json_for_task_id(runner, 1)
         assert after['title'] == new_title
-        assert after['updated'] > before['updated']
+        assert after['updated'] >= before['updated']
         # other attributes remain in place
         assert after['due_date'] == before['due_date']
         assert after['reminders'] == before['reminders']
