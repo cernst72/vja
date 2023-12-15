@@ -6,8 +6,8 @@
     * [Clone](#clone)
   * [List tasks](#list-tasks)
     * [Urgency](#urgency)
-    * [Filter](#filter)
     * [Sort](#sort)
+    * [Filter](#filter)
     * [Select](#select)
   * [Show single task by id](#show-single-task-by-id)
   * [Modify tasks](#modify-tasks)
@@ -81,6 +81,23 @@ project title or the label titles. The weights of each factor and the keywords c
 file ~/.vjacli/vja.rc. See Configuration section in [Readme.md](Readme.md). See [.vjacli/vja.rc](.vjacli/vja.rc) for an
 example.
 
+### Sort
+
+Sorting of tasks can be achieved by setting the `--sort` option.
+
+```shell
+vja ls --sort=id
+vja ls --sort=-id # reverse
+```
+
+Sort criteria can be combined. The default sort order of vja is the same as
+
+```shell
+vja ls --sort='done, -urgency, due_date, -priority, project.title, title'
+```
+
+See `vja ls --help` for more.
+
 ### Filter
 
 The displayed tasks may be filtered by several arguments like project or title, base_project and label
@@ -118,23 +135,6 @@ All filters can be combined (and operation):
 
 ```shell
 vja ls --filter="labels ne @work" --project=1 --urgent
-```
-
-See `vja ls --help` for more.
-
-### Sort
-
-Sorting of tasks can be achieved by setting the `--sort` option.
-
-```shell
-vja ls --sort=id
-vja ls --sort=-id # reverse
-```
-
-Sort criteria can be combined. The default sort order of vja is the same as
-
-```shell
-vja ls --sort='done, -urgency, due_date, -priority, project.title, title'
 ```
 
 See `vja ls --help` for more.
@@ -299,6 +299,9 @@ vja project show 1
 
 ```shell
 vja bucket add Doing --project=1
+```
+
+```shell
 vja bucket ls --project-id=1
 ```
 
