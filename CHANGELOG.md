@@ -1,3 +1,16 @@
+## [2.4.1](https://gitlab.com/ce72/vja/compare/2.4.0...2.4.1) (2023-12-16)
+
+
+### Bug Fixes
+
+* **ci:** use virtual environments and fix requirements handling ([fdd33f2](https://gitlab.com/ce72/vja/commit/fdd33f2cae1dd53ca2744f40f03574968a474866))
+* **ci:** use virtual environments and python3 -m pip ([363d94e](https://gitlab.com/ce72/vja/commit/363d94e98aec3990312ff9580bad70059c837711))
+
+
+### Automation
+
+* use venv ([69a2943](https://gitlab.com/ce72/vja/commit/69a29437f2dfafd73f17768c4f1f1a370af311d4))
+
 ## [2.4.0](https://gitlab.com/ce72/vja/compare/2.3.0...2.4.0) (2023-12-16)
 
 
