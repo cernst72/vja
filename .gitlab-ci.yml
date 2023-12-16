@@ -27,50 +27,50 @@ pylint:
     - if: $CI_COMMIT_BRANCH && $CI_COMMIT_REF_SLUG !~ /renovate.*/
       when: manual
 
-#integration-test:
-#  stage: test
-#  image:
-#    name: docker:cli
-#  services:
-#    - name: docker:dind
-#  variables:
-#    DOCKER_DRIVER: overlay2
-#    DOCKER_TLS_CERTDIR: ""
-#  script:
-#    - docker --version
-#    - apk add --no-cache bash curl python3 py3-pip
-#    - python3 --version
-#
-#    #- python3 -m venv ./venv
-#    #- . ./venv/bin/activate
-#    - pip install --break-system-packages -r requirements_dev.txt
-#    - pip uninstall --break-system-packages -y vja && python3 setup.py sdist bdist_wheel && pip install --break-system-packages dist/*.whl
-#    - pip show vja
-#    - which vja
-#
-#    - docker compose -f tests/docker-compose.yml up -d api
-#    - curl --retry 5 --retry-all-errors --retry-delay 1 "http://docker:3456/api/v1/info"
-#
-#    - export VJA_CONFIGDIR=tests/.vjatest_dind
-#    # - tests/run.sh test
-#    - coverage run --omit='*test*' -m pytest
-#    - coverage report --omit='*test*'
-#    - coverage xml --omit='*test*'
-#    - docker compose -f tests/docker-compose.yml down
-#  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
-#  artifacts:
-#    reports:
-#      coverage_report:
-#        coverage_format: cobertura
-#        path: coverage.xml
-#  rules:
-#    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "beta" || $CI_COMMIT_BRANCH == "rc"
-#      when: on_success
-#    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-#      when: on_success
-#    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_REF_SLUG !~ /renovate.*/
-#      when: manual
-#
+integration-test:
+  stage: test
+  image:
+    name: docker:cli
+  services:
+    - name: docker:dind
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+  script:
+    - docker --version
+    - apk add --no-cache bash curl python3 py3-pip
+    - python3 --version
+
+    - python3 -m venv ./venv
+    - . ./venv/bin/activate
+    - pip install -r requirements_dev.txt
+    - pip uninstall -y vja && python3 setup.py sdist bdist_wheel && pip install dist/*.whl
+    - pip show vja
+    - which vja
+
+    - docker compose -f tests/docker-compose.yml up -d api
+    - curl --retry 5 --retry-all-errors --retry-delay 1 "http://docker:3456/api/v1/info"
+
+    - export VJA_CONFIGDIR=tests/.vjatest_dind
+    # - tests/run.sh test
+    - coverage run --omit='*test*' -m pytest
+    - coverage report --omit='*test*'
+    - coverage xml --omit='*test*'
+    - docker compose -f tests/docker-compose.yml down
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "beta" || $CI_COMMIT_BRANCH == "rc"
+      when: on_success
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: on_success
+    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_REF_SLUG !~ /renovate.*/
+      when: manual
+
 release:
   image: node:lts-slim
   stage: release
@@ -78,7 +78,7 @@ release:
     PYPI_USERNAME: __token__
     PYPI_TOKEN: ${PYPI_VJA_TOKEN}
   before_script:
-    - apt-get update && apt-get install -y --no-install-recommends git-core ca-certificates python3-full python-is-python3 python3-pip python3-build python3-setuptools python3-tomlkit python3-wheel twine
+    - apt-get update && apt-get install -y --no-install-recommends git-core ca-certificates python3-full python-is-python3 twine
     - npm install -g semantic-release @semantic-release/gitlab @semantic-release/changelog conventional-changelog-conventionalcommits@6 @semantic-release/commit-analyzer @semantic-release/git semantic-release-pypi
   script:
     - python3 --version
@@ -87,5 +87,5 @@ release:
     - semantic-release
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "beta" || $CI_COMMIT_BRANCH == "rc"
-#      when: manual
+      when: manual
 
