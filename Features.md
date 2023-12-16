@@ -72,7 +72,10 @@ List all active tasks
 vja ls
 vja ls --json
 ```
-
+You may limit the output by giving task ids
+```shell
+vja ls 10 13 14
+```
 ### Urgency
 
 By default, tasks are sorted (amongst others) by their urgency, which is displayed in the last column. Urgency is
@@ -131,7 +134,7 @@ vja ls --filter="priority gt 2"
 vja ls --filter="title contains clean up"
 ```
 
-All filters can be combined (and operation):
+All filters can be combined:
 
 ```shell
 vja ls --filter="labels ne @work" --project=1 --urgent
@@ -268,6 +271,7 @@ Open task 42 in browser
 
 ```shell
 vja open 42
+vja edit 42
 ```
 
 ## Manage projects, labels, buckets

@@ -91,6 +91,16 @@ class TestTaskLs:
         data = json.loads(res.output)[0]
         assert data['title'] is not None
 
+    def test_filter_id(self, runner):
+        res = invoke(runner, ['ls', '--jsonvja', '2'])
+        data = json.loads(res.output)
+        assert data[0]['id'] == 2
+        res = invoke(runner, ['ls', '--jsonvja', '1', '2'])
+        data = json.loads(res.output)
+        assert len(data) == 2
+        assert data[0]['id'] in [1, 2]
+        assert data[1]['id'] in [1, 2]
+
     def test_sort_id(self, runner):
         res = invoke(runner, ['ls', '--jsonvja', '--sort=id'])
         data = json.loads(res.output)

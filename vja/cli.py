@@ -374,7 +374,9 @@ def task_push(ctx, application, task_id, quiet_show=False, verbose_show=False):
 
 
 @cli.command('ls', help='List tasks ... (task-id; priority; is_favorite; title; due_date; '
-                        'has reminder; parent-project; project; labels; urgency)')
+                        'has reminder; parent-project; project; labels; urgency). '
+                        'Optionally limit output to given TASK_IDS.')
+@click.argument('task_ids', type=click.INT, nargs=-1)
 @click.option('is_json', '--json', default=False, is_flag=True,
               help='Print as Vikunja json')
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True,
@@ -398,11 +400,11 @@ def task_push(ctx, application, task_id, quiet_show=False, verbose_show=False):
                    'where <operator> in (eq, ne, gt, lt, ge, le, before, after, contains). '
                    'Multiple occurrences of --filter are allowed and will be combined with logical AND.')
 @click.option('label_filter', '-l', '--label',
-              help='Filter by label (name or id)')
+              help='Filter by label (regex or id)')
 @click.option('project_filter', '-o', '--project', '--project-id', '--project_id',
-              help='Filter by project (name or id)')
+              help='Filter by project (regex or id)')
 @click.option('upper_project_filter', '-t', '--base-project', '--top', '--base', '--upper-project',
-              help='Filter by base project (name or id). '
+              help='Filter by base project (regex or id). '
                    'All tasks whose project has the given argument as a ancestor are considered.')
 @click.option('priority_filter', '-p', '--prio', '--priority',
               help='Filter by priority. The TEXT value must be like <operator> <value>, '
@@ -412,12 +414,15 @@ def task_push(ctx, application, task_id, quiet_show=False, verbose_show=False):
 @click.option('urgency_filter', '-u', '--urgent', '--urgency', is_flag=False, flag_value=3, type=click.INT,
               help='Filter by minimum urgency.  Shortcut for --filter="urgency ge <value>"')
 @with_application
-def task_ls(application, is_json, is_jsonvja, custom_format, include_completed, sort_string=None, **filter_args):
+def task_ls(application, task_ids, is_json, is_jsonvja, custom_format, include_completed, sort_string=None, **filter_args):
     if custom_format:
         custom_format = application.configuration.get_custom_format_string(custom_format)
     filter_args = {k: v for k, v in filter_args.items() if v is not None}
 
     tasks = application.query_service.find_filtered_tasks(include_completed, sort_string, filter_args)
+    if task_ids:
+        tasks = (t for t in tasks if t.id in task_ids)
+
     application.output.task_array(tasks, is_json, is_jsonvja, custom_format)
 
 
