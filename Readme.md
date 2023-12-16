@@ -102,7 +102,7 @@ pip install -e .
 Alternatively: full local installation:
 
 ```shell
-# pip uninstall -y vja;rm -rf build dist vja.egg-info; python setup.py sdist bdist_wheel; pip install dist/*.whl;
+# pip uninstall -y vja;rm -rf build dist vja.egg-info; pip wheel --no-deps -w dist . ; pip install dist/*.whl;
 ```
 
 Run integration test (requires docker and docker-compose)
