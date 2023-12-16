@@ -95,7 +95,7 @@ docker-compose.
 Local development install:
 
 ```shell
-pip install -r requirements_dev.txt
+python -m pip install -r requirements_dev.txt
 pip install -e .
 ```
 
