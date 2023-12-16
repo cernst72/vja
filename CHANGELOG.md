@@ -1,3 +1,24 @@
+## [2.4.0](https://gitlab.com/ce72/vja/compare/2.3.0...2.4.0) (2023-12-16)
+
+
+### Features
+
+* **cli:** vja ls [task_ids] ([67a5166](https://gitlab.com/ce72/vja/commit/67a516657dbd68d0e6689990bcc1845befd2de53))
+
+
+### Misc
+
+* **deps:** update all dependencies ([b046d57](https://gitlab.com/ce72/vja/commit/b046d57d18fd9bb60315676ec3e59a31a9992424))
+
+
+### Automation
+
+* fix semantic release step ([55162da](https://gitlab.com/ce72/vja/commit/55162da166d8db3818fd90d115b2a8612ece2c8c))
+* pin docker to 24.0.6 ([23612bc](https://gitlab.com/ce72/vja/commit/23612bc574422963b58ffabdc4c920d487274b34))
+* pip with --break-system-packages ([251768b](https://gitlab.com/ce72/vja/commit/251768b5a3e2effc7cb36890e08b91d71a6922e7))
+* run pipeline in virtual env ([b82aa0b](https://gitlab.com/ce72/vja/commit/b82aa0bdb513a9c7631dea1172c7e609a4aa191b))
+* unpin docker version ([0185db0](https://gitlab.com/ce72/vja/commit/0185db09eb50e166e8ea1dcb4d7372146dee911f))
+
 ## [2.3.0](https://gitlab.com/ce72/vja/compare/2.2.1...2.3.0) (2023-10-06)
 
 
