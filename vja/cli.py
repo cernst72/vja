@@ -357,6 +357,7 @@ def task_pull(ctx, application, task_id, quiet_show=False, verbose_show=False):
     if verbose_show:
         ctx.invoke(task_show, tasks=[task_id])
 
+
 @cli.command('push', help='Push the task to the previous bucket (move from right to left on the Kanban board). ')
 @click.argument('task_id', required=True, type=click.INT)
 @click.option('quiet_show', '-q', '--quiet-show', '--quiet', is_flag=True,
@@ -414,7 +415,8 @@ def task_push(ctx, application, task_id, quiet_show=False, verbose_show=False):
 @click.option('urgency_filter', '-u', '--urgent', '--urgency', is_flag=False, flag_value=3, type=click.INT,
               help='Filter by minimum urgency.  Shortcut for --filter="urgency ge <value>"')
 @with_application
-def task_ls(application, task_ids, is_json, is_jsonvja, custom_format, include_completed, sort_string=None, **filter_args):
+def task_ls(application, task_ids, is_json, is_jsonvja, custom_format, include_completed, sort_string=None,
+            **filter_args):
     if custom_format:
         custom_format = application.configuration.get_custom_format_string(custom_format)
     filter_args = {k: v for k, v in filter_args.items() if v is not None}

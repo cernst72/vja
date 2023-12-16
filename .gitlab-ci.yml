@@ -41,10 +41,10 @@ integration-test:
     - apk add --no-cache bash curl python3 py3-pip
     - python3 --version
 
-    - python3 -m venv ./venv
-    - . ./venv/bin/activate
-    - pip install -r requirements_dev.txt
-    - pip uninstall -y vja && python3 setup.py sdist bdist_wheel && pip install dist/*.whl
+    #- python3 -m venv ./venv
+    #- . ./venv/bin/activate
+    - pip install --break-system-packages -r requirements_dev.txt
+    - pip uninstall --break-system-packages -y vja && python3 setup.py sdist bdist_wheel && pip install --break-system-packages dist/*.whl
     - pip show vja
     - which vja
 
