@@ -26,12 +26,12 @@ vja ls
 
 - Install from pypi:
   ```shell
-  pip install vja
+  pip install --user vja
   vja --help
   ```
 - Upgrade existing version:
   ```shell
-  pip install vja --upgrade
+  pip install --user vja --upgrade
   ```
 
 ## Configuration
