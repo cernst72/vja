@@ -83,29 +83,21 @@ like `VJA_CONFIGDIR=/not/my/home`
 Python >= 3.8 is recommended. First create a local environment:
 
 ```shell
-pip install virtualenv
-virtualenv venv
+python -m venv ./venv
 source venv/bin/activate
 ```
 
 ### Local build
 
-Build, install and perform some integration-test. For integration test, a real Vikunja instance is launched locally via
-docker-compose.
-Local development install:
+#### Local development install
 
 ```shell
 python -m pip install -r requirements_dev.txt
-pip install -e .
+python -m pip install -e .
 ```
 
-Alternatively: full local installation:
-
-```shell
-# pip uninstall -y vja;rm -rf build dist vja.egg-info; pip wheel --no-deps -w dist . ; pip install dist/*.whl;
-```
-
-Run integration test (requires docker and docker-compose)
+#### Run integration test
+Start docker container for `vikunja/api:latest` and execute `pytest` against that server instance.
 
 ```shell
 docker-compose -f tests/docker-compose.yml up -d

@@ -16,7 +16,7 @@ pylint:
     - python3 -m venv ./venv
     - . ./venv/bin/activate
     - python3 -m pip install -r requirements_dev.txt
-    - pip uninstall -y vja ; pip wheel --no-deps -w dist . && pip install dist/*.whl
+    - python3 -m pip install vja
     - flake8 --max-line-length=120 vja/*.py || true
     - pylint -d C0103,C0114,C0115,C0116,C0301 --fail-under=9 vja/*.py
   rules:
@@ -44,9 +44,7 @@ integration-test:
     - python3 -m venv ./venv
     - . ./venv/bin/activate
     - python3 -m pip install -r requirements_dev.txt
-    - pip uninstall -y vja ; pip wheel --no-deps -w dist . && pip install dist/*.whl
-    - pip show vja
-    - which vja
+    - python3 -m pip install vja
 
     - docker compose -f tests/docker-compose.yml up -d api
     - curl --retry 5 --retry-all-errors --retry-delay 1 "http://docker:3456/api/v1/info"
