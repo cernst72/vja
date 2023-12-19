@@ -10,6 +10,10 @@ This is a simple CLI for Vikunja > [The todo app to organize your life.](https:/
 It provides a command line interface for adding, viewing and editing todo tasks on a Vikunja Server.
 The goal is to support a command line based task workflow ~ similar to taskwarrior.
 
+#### Breaking changes in vja 3.0
+vja 3.0 supports (and requires) the most recent Vikunja API 0.22.0.
+Use vja version 2.x for compatibility with Vikunja API 0.21.0.
+
 ## Usage
 
 ```shell
@@ -100,8 +104,8 @@ python -m pip install -e .
 Start docker container for `vikunja/api:latest` and execute `pytest` against that server instance.
 
 ```shell
-docker-compose -f tests/docker-compose.yml up -d
+docker compose -f tests/docker-compose.yml up -d
 VJA_CONFIGDIR=tests/.vjatest pytest
-docker-compose -f tests/docker-compose.yml down
+docker compose -f tests/docker-compose.yml down
 ```
 

@@ -151,7 +151,7 @@ class ApiClient:
         return self._get_json(url)
 
     def put_task(self, project_id, payload):
-        return self._put_json(self._create_url(f'/projects/{str(project_id)}'), payload=payload)
+        return self._put_json(self._create_url(f'/projects/{str(project_id)}/tasks'), payload=payload)
 
     def post_task(self, task_id, payload):
         return self._post_json(self._create_url(f'/tasks/{str(task_id)}'), payload=payload)
