@@ -152,7 +152,7 @@ def bucket_add(application, title, project):
     click.echo(f'Created bucket {bucket.id} in project {project}')
 
 
-@bucket_group.command('ls', help='Show kanban buckets of given project ... (id; title; is_done; limit; count tasks)')
+@bucket_group.command('ls', help='Show kanban buckets of given project ... (id; title; limit; count tasks)')
 @click.option('project_id', '-o', '--project', '--project-id', '--project_id', required=True, type=click.INT,
               help='Show buckets of project with id')
 @click.option('is_json', '--json', default=False, is_flag=True,
