@@ -12,7 +12,7 @@ The goal is to support a command line based task workflow ~ similar to taskwarri
 
 #### Breaking changes in vja 3.0
 vja 3.0 supports (and requires) the most recent Vikunja API 0.22.0.
-Use vja version 2.x for compatibility with Vikunja API 0.21.0.
+Use vja up to version 2.4.1 for compatibility with Vikunja API 0.21.0.
 
 ## Usage
 
