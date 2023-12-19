@@ -2,6 +2,7 @@
 
 <!-- TOC -->
 * [Features](#features)
+  * [Login](#login)
   * [Create Task](#create-task)
     * [Clone](#clone)
   * [List tasks](#list-tasks)
@@ -23,6 +24,18 @@
   * [Output format](#output-format)
   * [Terminate session](#terminate-session)
 <!-- TOC -->
+
+## Login
+
+When no valid token file exists in `$HOME/.vjacli/` then vja will ask for username and password on first usage.
+If Two Factor Authenication is activated for your user then vja will prompt you for the one-time password additionally.
+The resulting token will be stored in `$HOME/.vjacli/token.json`.
+
+Alternatively you may create an API token with sufficient rights in Vikunja and save it to `$HOME/.vjacli/token.json`
+```json
+{"token": "YOUR-API-TOKEN"}
+```
+
 
 ## Create Task
 

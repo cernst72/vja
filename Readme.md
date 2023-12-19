@@ -21,21 +21,21 @@ vja --help
 vja ls
 ```
 
-(You will be prompted for your account on first usage and any time the access token expires.)
+(You will be prompted for your account on first usage and any time the access token expires, see [Features.md](https://gitlab.com/ce72/vja/-/blob/main/Features.md#login))
 
-**More documentation is available on [Features.md](https://gitlab.com/ce72/vja/-/blob/main/Features.md)**
+**More user documentation is available on [Features.md](https://gitlab.com/ce72/vja/-/blob/main/Features.md)**
 
 
 ## Installation
 
 - Install from pypi:
   ```shell
-  pip install --user vja
+  python -m pip install --user vja
   vja --help
   ```
 - Upgrade existing version:
   ```shell
-  pip install --user vja --upgrade
+  python -m pip install --user vja --upgrade
   ```
 
 ## Configuration
