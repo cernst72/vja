@@ -1,3 +1,14 @@
+## [3.0.0](https://gitlab.com/ce72/vja/compare/2.5.0...3.0.0) (2023-12-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* support Vikunja 0.22.0 api (increment version)
+
+### Features
+
+* support Vikunja 0.22.0 api (increment version) ([f0853ca](https://gitlab.com/ce72/vja/commit/f0853ca398be20b29ec0aa50c6f17496e679a652))
+
 ## [2.5.0](https://gitlab.com/ce72/vja/compare/2.4.1...2.5.0) (2023-12-19)
 
 
