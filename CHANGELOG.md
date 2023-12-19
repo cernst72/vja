@@ -1,16 +1,9 @@
-## [3.0.0](https://gitlab.com/ce72/vja/compare/2.5.0...3.0.0) (2023-12-19)
+## [3.0.0](https://gitlab.com/ce72/vja/compare/2.4.1...3.0.0) (2023-12-19)
 
 
 ### ⚠ BREAKING CHANGES
 
-* support Vikunja 0.22.0 api (increment version)
-
-### Features
-
-* support Vikunja 0.22.0 api (increment version) ([f0853ca](https://gitlab.com/ce72/vja/commit/f0853ca398be20b29ec0aa50c6f17496e679a652))
-
-## [2.5.0](https://gitlab.com/ce72/vja/compare/2.4.1...2.5.0) (2023-12-19)
-
+* support Vikunja 0.22.0 api ([4d727e17](https://gitlab.com/ce72/vja/commit/4d727e17be2ea978d2cece4f532bc39b019e2c1c))
 
 ### Features
 
@@ -27,6 +20,11 @@
 * disable pip cache ([eecd839](https://gitlab.com/ce72/vja/commit/eecd83902c8235c03793ecffa8f1aee6d1dd542f))
 * don't call deprecated setup.py ([9011135](https://gitlab.com/ce72/vja/commit/901113597b6c49bfb782b70b9ea4f8749508a58b))
 * don't call wheel and setup.py directly ([eeb68d9](https://gitlab.com/ce72/vja/commit/eeb68d92ddde1677c8d192aacd87eb90fac4a0fb))
+
+
+## [2.5.0](https://gitlab.com/ce72/vja/compare/2.4.1...2.5.0) (2023-12-19)
+
+*Released by mistake with parts of 3.0.0*
 
 ## [2.4.1](https://gitlab.com/ce72/vja/compare/2.4.0...2.4.1) (2023-12-16)
 
