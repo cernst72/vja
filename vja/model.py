@@ -68,12 +68,15 @@ class Project:
     description: str
     is_favorite: bool
     is_archived: bool
+    default_bucket_id: int
+    done_bucket_id: int
     parent_project_id: int
     ancestor_projects: typing.List['Project']
 
     @classmethod
     def from_json(cls, json, ancestor_projects):
         return cls(json, json['id'], json['title'], json['description'], json['is_archived'], json['is_favorite'],
+                   json['default_bucket_id'], json['done_bucket_id'],
                    json['parent_project_id'],
                    ancestor_projects)
 
