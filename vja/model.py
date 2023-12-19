@@ -88,7 +88,6 @@ class Bucket:
     json: dict = field(repr=False)
     id: int
     title: str
-    is_done_bucket: bool
     limit: int
     position: int
     count_tasks: int
@@ -96,10 +95,9 @@ class Bucket:
     @classmethod
     def from_json(cls, json):
         return cls(json, json['id'], json['title'],
-                   json['is_done_bucket'],
                    json['limit'],
                    json['position'],
-                   len(json['tasks']) if json['tasks'] else 0)
+                   json['count'])
 
     @classmethod
     def from_json_array(cls, json_array):

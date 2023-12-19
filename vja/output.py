@@ -8,7 +8,7 @@ from vja.model import User, Task, Project
 PROJECT_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:20.20} {x.description:20.20}  ' \
                               '{x.parent_project_id:5} '
 
-BUCKET_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:20.20} {x.is_done_bucket:2} {x.limit:3} {x.count_tasks:5}'
+BUCKET_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:20.20} {x.limit:3} {x.count_tasks:5}'
 
 LABEL_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:20.20}'
 
