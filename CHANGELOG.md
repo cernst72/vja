@@ -1,3 +1,22 @@
+## [2.5.0](https://gitlab.com/ce72/vja/compare/2.4.1...2.5.0) (2023-12-19)
+
+
+### Features
+
+* **bucket:** remove output of bucket.is_done_bucket ([23e8bf7](https://gitlab.com/ce72/vja/commit/23e8bf7c138e62bc46d3bb78bba203cdb29be140))
+
+
+### Documentation
+
+* **Readme:** favor pip install --user ([b71e171](https://gitlab.com/ce72/vja/commit/b71e1713554a4f4f9b5411d82a8fd0e4d564db0a))
+
+
+### Automation
+
+* disable pip cache ([eecd839](https://gitlab.com/ce72/vja/commit/eecd83902c8235c03793ecffa8f1aee6d1dd542f))
+* don't call deprecated setup.py ([9011135](https://gitlab.com/ce72/vja/commit/901113597b6c49bfb782b70b9ea4f8749508a58b))
+* don't call wheel and setup.py directly ([eeb68d9](https://gitlab.com/ce72/vja/commit/eeb68d92ddde1677c8d192aacd87eb90fac4a0fb))
+
 ## [2.4.1](https://gitlab.com/ce72/vja/compare/2.4.0...2.4.1) (2023-12-16)
 
 
