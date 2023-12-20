@@ -46,10 +46,15 @@ class Application:
     def configuration(self) -> VjaConfiguration:
         return self._configuration
 
-    def open_browser(self, task):
+    def open_browser_task(self, task_id):
         url = self.configuration.get_frontend_url().rstrip('/')
-        if task:
-            url += f'/tasks/{str(task)}'
+        if task_id:
+            url += f'/tasks/{str(task_id)}'
+        webbrowser.open_new_tab(url)
+
+
+    def open_browser_project(self, project_id):
+        url = self.configuration.get_frontend_url().rstrip('/') + f'/projects/{str(project_id)}'
         webbrowser.open_new_tab(url)
 
 
@@ -134,6 +139,13 @@ def project_ls(application, is_json, is_jsonvja, custom_format):
 def project_show(application, project_id, is_json, is_jsonvja):
     application.output.project(
         application.query_service.find_project_by_id(project_id), is_json, is_jsonvja)
+
+
+@project_group.command('open', help='Open project in webbrowser')
+@click.argument('project_id', required=True, type=click.INT)
+@with_application
+def project_open(application, project_id, parent_project=None):
+    application.open_browser_project(project_id)
 
 
 # buckets
@@ -304,7 +316,7 @@ def task_edit(ctx, application, task_ids, quiet_show=False, verbose_show=False, 
             if verbose_show:
                 ctx.invoke(task_show, tasks=[task.id])
         else:
-            application.open_browser(task_id)
+            application.open_browser_task(task_id)
 
 
 @cli.command('toggle', aliases=['check', 'click', 'done'], help='Shortcut for marking / unmarking task as done')
@@ -445,7 +457,7 @@ def task_show(application, tasks, is_json, is_jsonvja):
 @click.argument('task', required=False, type=click.INT)
 @with_application
 def task_open(application, task):
-    application.open_browser(task)
+    application.open_browser_task(task)
 
 
 @cli.command('logout', help='Remove local access token')

@@ -311,6 +311,10 @@ vja project ls
 ```shell
 vja project show 1
 ```
+Open in webbrowser:
+```shell
+vja project open 1
+```
 
 ### Manage kanban buckets
 
