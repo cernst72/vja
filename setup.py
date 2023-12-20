@@ -3,7 +3,13 @@ from setuptools import setup, find_packages
 with open("Readme.md", "r", encoding="utf-8") as readme_file:
     readme = readme_file.read()
 
-requirements = ["click", "click-aliases", "requests", "parsedatetime", "python-dateutil"]
+requirements = [
+    "click>=8.1",
+    "click-aliases>=1",
+    "requests>=2.31",
+    "parsedatetime>=2.6",
+    "python-dateutil>=2.8"
+]
 
 setup(
     name="vja",
