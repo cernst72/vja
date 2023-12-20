@@ -30,10 +30,7 @@ def parse_date_arg_to_datetime(text: str) -> Optional[datetime]:
 
 def parse_date_arg_to_iso(text: str) -> Optional[str]:
     date_value = parse_date_arg_to_datetime(text)
-    if date_value:
-        return datetime_to_isoformat(date_value)
-    else:
-        return None
+    return datetime_to_isoformat(date_value) if date_value else None
 
 
 def datetime_to_isoformat(date: datetime) -> Optional[str]:

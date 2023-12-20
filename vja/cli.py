@@ -52,7 +52,6 @@ class Application:
             url += f'/tasks/{str(task_id)}'
         webbrowser.open_new_tab(url)
 
-
     def open_browser_project(self, project_id):
         url = self.configuration.get_frontend_url().rstrip('/') + f'/projects/{str(project_id)}'
         webbrowser.open_new_tab(url)
@@ -144,7 +143,7 @@ def project_show(application, project_id, is_json, is_jsonvja):
 @project_group.command('open', help='Open project in webbrowser')
 @click.argument('project_id', required=True, type=click.INT)
 @with_application
-def project_open(application, project_id, parent_project=None):
+def project_open(application, project_id):
     application.open_browser_project(project_id)
 
 
