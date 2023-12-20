@@ -49,7 +49,9 @@ class ApiClient:
 
     @handle_http_error
     @inject_access_token
-    def _get_json(self, url, params={}, headers=None):
+    def _get_json(self, url, params=None, headers=None):
+        if params is None:
+            params = {}
         response = requests.get(url, headers=headers, params=params, timeout=30)
         response.raise_for_status()
         json_result = self._to_json(response)

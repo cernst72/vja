@@ -1,5 +1,5 @@
 import logging
-from typing import Optional
+from typing import Optional, List
 
 from vja import VjaError
 from vja.apiclient import ApiClient
@@ -11,15 +11,15 @@ logger = logging.getLogger(__name__)
 class ProjectService:
     def __init__(self, api_client: ApiClient):
         self._api_client = api_client
-        self._project_by_id: Optional[dict] = None
+        self._project_by_id: dict[int, Project] = {}
 
-    def find_all_projects(self) -> [Project]:
+    def find_all_projects(self) -> List[Project]:
         if not self._project_by_id:
             self._project_by_id = {x['id']: Project.from_json(x, []) for x in self._api_client.get_projects()}
             self.fill_ancestors()
         return self._project_by_id.values()
 
-    def find_project_by_id(self, project_id: int) -> Project:
+    def find_project_by_id(self, project_id: int) -> Optional[Project]:
         if not self._project_by_id:
             self._project_by_id = {x['id']: Project.from_json(x, []) for x in self._api_client.get_projects()}
             self.fill_ancestors()
@@ -37,7 +37,7 @@ class ProjectService:
     def get_default_project(self) -> Project:
         user = User.from_json(self._api_client.get_user())
         project_found = self.find_project_by_id(user.default_project_id)
-        if not project_found:
+        if project_found is None:
             project_objects = [Project.from_json(x, []) for x in self._api_client.get_projects()]
             if not project_objects:
                 raise VjaError('No projects exist. Go and create at least one.')
