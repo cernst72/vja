@@ -94,7 +94,7 @@ def user_show(application, is_json=False, is_jsonvja=False):
 
 
 # projects
-@cli.group('project', help='Subcommand: project (see help)')
+@cli.group('project', help='Subcommand: project (see help)', aliases=['projects'])
 def project_group():
     pass
 
@@ -137,7 +137,7 @@ def project_show(application, project_id, is_json, is_jsonvja):
 
 
 # buckets
-@cli.group('bucket', help='Subcommand: kanban buckets (see help)')
+@cli.group('bucket', help='Subcommand: kanban buckets (see help)', aliases=['buckets'])
 def bucket_group():
     pass
 
@@ -170,7 +170,7 @@ def bucket_ls(application, project_id, is_json, is_jsonvja, custom_format):
 
 
 # labels
-@cli.group('label', help='Subcommand: label (see help)')
+@cli.group('label', help='Subcommand: label (see help)', aliases=['labels'])
 def label_group():
     pass
 
