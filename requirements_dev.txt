@@ -1,5 +1,5 @@
 pip==23.3.2
 pylint==3.0.3
-flake8==6.1.0
-pytest==7.4.3
-coverage==7.3.3
+flake8==7.0.0
+pytest==7.4.4
+coverage==7.4.1
