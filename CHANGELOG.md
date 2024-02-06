@@ -1,3 +1,32 @@
+## [3.1.0](https://gitlab.com/ce72/vja/compare/3.0.0...3.1.0) (2024-02-06)
+
+
+### Features
+
+* allow aliases projects, buckets, labels ([07b8e45](https://gitlab.com/ce72/vja/commit/07b8e455159839198fb3f197d5cafa9fd99a7427))
+* **cli:** 'vja open project_id' in webbrowser ([6dfef76](https://gitlab.com/ce72/vja/commit/6dfef76976c4603220eaafd6a53db923debc28dc))
+* **project:** display new fields ([2e371d5](https://gitlab.com/ce72/vja/commit/2e371d59069e4ed9beb6f14892179a9e4be2236c))
+* vja open supports multiple tasks ([0efbdc5](https://gitlab.com/ce72/vja/commit/0efbdc5e0730dafd31988ac31e7b6103c79580fc))
+
+
+### Documentation
+
+* describe login, including API token ([ba0d48e](https://gitlab.com/ce72/vja/commit/ba0d48e4aeda893d6e41829bfac1b3d15410d9f6))
+
+
+### Misc
+
+* **deps:** update all dependencies ([fb24895](https://gitlab.com/ce72/vja/commit/fb248956c33b708b84dce644ea1dd952960dc243))
+* **deps:** update all dependencies ([6f1f3b2](https://gitlab.com/ce72/vja/commit/6f1f3b2058aa6e227ce12a73159f443ed147249d))
+* **deps:** update dependency pip to v23.3.2 ([8c06908](https://gitlab.com/ce72/vja/commit/8c06908d77f93720c3be4a2856792d5e68c37006))
+* fix linter issues ([c5a0149](https://gitlab.com/ce72/vja/commit/c5a0149e012b2e1b0dec0d3906092078fea99e80))
+
+
+### Automation
+
+* define minimum required versions ([debc2aa](https://gitlab.com/ce72/vja/commit/debc2aa4f4bbf7c417d4ec15ed3e1aab452543be))
+* fix CHANGELOG ([738c67a](https://gitlab.com/ce72/vja/commit/738c67a4b6e72107f7119b727c0780c277892716))
+
 ## [3.0.0](https://gitlab.com/ce72/vja/compare/2.4.1...3.0.0) (2023-12-19)
 
 
