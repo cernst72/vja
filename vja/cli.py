@@ -452,11 +452,16 @@ def task_show(application, tasks, is_json, is_jsonvja):
         application.output.task(task, is_json, is_jsonvja)
 
 
-@cli.command(name='open', help='Open task in browser')
-@click.argument('task', required=False, type=click.INT)
+@cli.command(name='open', help='Open task in browser. Multiple task ids may be given. '
+                               'If tasks is empty, then open vikunjas starting page.')
+@click.argument('tasks', required=False, type=click.INT, nargs=-1)
 @with_application
-def task_open(application, task):
-    application.open_browser_task(task)
+def task_open(application, tasks):
+    if not tasks:
+        application.open_browser_task('')
+    else:
+        for task_id in tasks:
+            application.open_browser_task(task_id)
 
 
 @cli.command('logout', help='Remove local access token')

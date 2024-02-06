@@ -280,11 +280,11 @@ Open starting page
 vja open
 ```
 
-Open task 42 in browser
+Open task 42 and 43 in browser
 
 ```shell
-vja open 42
-vja edit 42
+vja open 42 43
+vja edit 42 43
 ```
 
 ## Manage projects, labels, buckets
