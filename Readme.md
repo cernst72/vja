@@ -90,6 +90,7 @@ Python >= 3.8 is recommended. First create a local environment:
 python -m venv ./venv
 source venv/bin/activate
 ```
+(That may be `source venv/Scripts/activate` on some windows machines.)
 
 ### Local build
 

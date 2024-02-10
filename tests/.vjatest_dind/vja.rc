@@ -1,5 +1,5 @@
 [application]
-frontend_url=http://docker:8080/
+frontend_url=http://docker:3456/
 api_url=http://docker:3456/api/v1
 
 [output]

@@ -49,7 +49,7 @@ integration-test:
     - python3 -m pip install .
     - vja --version
 
-    - docker compose -f tests/docker-compose.yml up -d api
+    - docker compose -f tests/docker-compose.yml up -d
     - curl --retry 5 --retry-all-errors --retry-delay 1 "http://docker:3456/api/v1/info"
 
     - export VJA_CONFIGDIR=tests/.vjatest_dind
