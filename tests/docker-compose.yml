@@ -2,7 +2,7 @@ version: '3'
 
 services:
   vikunja:
-    image: vikunja/vikunja:latest
+    image: vikunja/vikunja:unstable
     ports:
       - "3456:3456"
     environment:
