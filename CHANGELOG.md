@@ -1,3 +1,17 @@
+## [3.2.0](https://gitlab.com/ce72/vja/compare/3.1.0...3.2.0) (2024-02-19)
+
+
+### Features
+
+* **ls:** display task count ([9cb417a](https://gitlab.com/ce72/vja/commit/9cb417a9a8cf149e585eaa571fbf76999e9fabaf))
+
+
+### Misc
+
+* **deps:** update dependency pytest to v8.0.1 ([eb85646](https://gitlab.com/ce72/vja/commit/eb85646fcccfdd13de36327f5701a062296ebacf))
+* reactivate test ([4b003b2](https://gitlab.com/ce72/vja/commit/4b003b2c4b06fb8828a4c097abcec4f336aeaf41))
+* test vikunja-0.23.0 compatibility ([5fc1ac7](https://gitlab.com/ce72/vja/commit/5fc1ac7193dbf3e069a738aa77519fcf077b46dd))
+
 ## [3.1.0](https://gitlab.com/ce72/vja/compare/3.0.0...3.1.0) (2024-02-06)
 
 
