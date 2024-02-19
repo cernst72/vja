@@ -437,6 +437,8 @@ def task_ls(application, task_ids, is_json, is_jsonvja, custom_format, include_c
         tasks = (t for t in tasks if t.id in task_ids)
 
     application.output.task_array(tasks, is_json, is_jsonvja, custom_format)
+    if not is_json and not is_jsonvja and not custom_format:
+        click.echo(f"Count: {len(tasks)}")
 
 
 @cli.command('show', help='Show task details. Multiple task ids may be given')
