@@ -99,3 +99,5 @@ package-lock.json
 .vscode/
 tasks.json
 token.json
+tests/db/
+tests/files/
