@@ -8,10 +8,14 @@ services:
     environment:
       VIKUNJA_SERVICE_PUBLICURL: http://localhost:3456/
       VIKUNJA_RATELIMIT_LIMIT: 10000
-      #VIKUNJA_LOG_LEVEL: DEBUG
-      #VIKUNJA_LOG_DATABASELEVEL: DEBUG
-    entrypoint: >
-      /bin/sh -c "
-        /app/vikunja/vikunja user create -u test -p test -e test@test.test
-        exec /app/vikunja/vikunja
-      "
+    volumes:
+      - ${PWD}/files:/app/vikunja/files
+      - ${PWD}/db:/db
+  vikunja-init:
+    image: vikunja/vikunja:unstable
+    depends_on:
+      - vikunja
+    volumes:
+      - ${PWD}/files:/app/vikunja/files
+      - ${PWD}/db:/db
+    command: user create -u test -p test -e test@test.test
