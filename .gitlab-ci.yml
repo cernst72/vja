@@ -60,7 +60,6 @@ integration-test:
     - coverage run --omit='*test*' -m pytest
     - coverage report --omit='*test*'
     - coverage xml --omit='*test*'
-    - docker compose -f tests/docker-compose.yml down
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
     reports:
