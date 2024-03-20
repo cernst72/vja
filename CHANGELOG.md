@@ -1,3 +1,19 @@
+## [3.2.1](https://gitlab.com/ce72/vja/compare/3.2.0...3.2.1) (2024-03-20)
+
+
+### Misc
+
+* **deps:** update all dependencies ([8d01b92](https://gitlab.com/ce72/vja/commit/8d01b9277ceb8097e8c811c2deec46489f23f867))
+* **deps:** update all dependencies ([8675f0b](https://gitlab.com/ce72/vja/commit/8675f0b6bd53fcc69617c3b02abb4883a17bfa74))
+
+
+### Automation
+
+* create required folders and init user in sep. container ([efce86f](https://gitlab.com/ce72/vja/commit/efce86fae18065b5a3dfd3edbb024acb99569f80))
+* no need to docker compose down in pipeline ([a433ebd](https://gitlab.com/ce72/vja/commit/a433ebd6be62ef6afa8c2c84011ebe771509a75e))
+* **semantic:** create patch release for keyword ci ([ab586e8](https://gitlab.com/ce72/vja/commit/ab586e8d9ceae62c73c31d50648ae23b8c5ecdac))
+* **test:** pin test image to current stable ([97b4d66](https://gitlab.com/ce72/vja/commit/97b4d6615ac625b705e0282e2a2e18584a4a30a0))
+
 ## [3.2.0](https://gitlab.com/ce72/vja/compare/3.1.0...3.2.0) (2024-02-19)
 
 
