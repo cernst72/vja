@@ -6,6 +6,8 @@
 * **deps:** update all dependencies ([8d01b92](https://gitlab.com/ce72/vja/commit/8d01b9277ceb8097e8c811c2deec46489f23f867))
 * **deps:** update all dependencies ([8675f0b](https://gitlab.com/ce72/vja/commit/8675f0b6bd53fcc69617c3b02abb4883a17bfa74))
 
+### Documentation
+* Rename to README.md ([8938099](https://gitlab.com/ce72/vja/-/commit/89380991042fa9a2a3eb5f2e8993128e7da482c7))
 
 ### Automation
 
