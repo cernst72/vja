@@ -49,14 +49,13 @@ integration-test:
     - python3 -m pip install .
     - vja --version
 
-    - mkdir $PWD/files $PWD/db
-    - chmod a+w $PWD/files $PWD/db
+    - mkdir $PWD/files
+    - chmod a+w $PWD/files
     - docker compose -f tests/docker-compose.yml up -d
-    - sleep 2s
+    - sleep 1s
     - curl --retry 5 --retry-all-errors --retry-delay 1 "http://docker:3456/api/v1/info"
 
     - export VJA_CONFIGDIR=tests/.vjatest_dind
-    # - tests/run.sh test
     - coverage run --omit='*test*' -m pytest
     - coverage report --omit='*test*'
     - coverage xml --omit='*test*'

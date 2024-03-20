@@ -1,21 +1,27 @@
 version: '3'
+x-vikunja-image: &vikunja-image
+  image: vikunja/vikunja:0.23.0
 
 services:
   vikunja:
-    image: vikunja/vikunja:unstable
+    <<: *vikunja-image
     ports:
       - "3456:3456"
     environment:
       VIKUNJA_SERVICE_PUBLICURL: http://localhost:3456/
       VIKUNJA_RATELIMIT_LIMIT: 10000
+      VIKUNJA_DATABASE_TYPE: sqlite
+      VIKUNJA_DATABASE_PATH: /app/vikunja/files/vikunja.db
     volumes:
       - ${PWD}/files:/app/vikunja/files
-      - ${PWD}/db:/db
   vikunja-init:
-    image: vikunja/vikunja:unstable
+    <<: *vikunja-image
     depends_on:
       - vikunja
+    environment:
+      VIKUNJA_DATABASE_TYPE: sqlite
+      VIKUNJA_DATABASE_PATH: /app/vikunja/files/vikunja.db
     volumes:
       - ${PWD}/files:/app/vikunja/files
-      - ${PWD}/db:/db
-    command: user create -u test -p test -e test@test.test
+    command: sh -c "sleep 1 && /app/vikunja/vikunja user create -u test -p test -e test@test.test && /app/vikunja/vikunja user list"
+    #command: user create -u test -p test -e test@test.test
