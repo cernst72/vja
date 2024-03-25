@@ -81,7 +81,7 @@ class CommandService:
                 project_id = self._project_service.find_project_by_title(project_arg).id
         else:
             project_id = self._project_service.get_default_project().id
-        label_name = args.pop('label') if args.get('label') else None
+        label_names = args.pop('label')
         is_force = args.pop('force_create') if args.get('force_create') is not None else False
 
         self._parse_reminder_arg(args.get('reminder'), args)
@@ -89,14 +89,14 @@ class CommandService:
         payload = self._args_to_payload(args)
 
         if not is_force:
-            self._validate_add_task(title, label_name)
+            self._validate_add_task(title, label_names)
         logger.debug('put task: %s', payload)
         task_json = self._api_client.put_task(project_id, payload)
         task = self._task_service.task_from_json(task_json)
-
-        label = self._label_from_name(label_name, is_force) if label_name else None
-        if label:
-            self._api_client.add_label_to_task(task.id, label.id)
+        for label_name in label_names:
+            label = self._label_from_name(label_name, is_force) if label_name else None
+            if label:
+                self._api_client.add_label_to_task(task.id, label.id)
         return task
 
     def clone_task(self, task_id: int, title, is_clone_bucket):
@@ -254,11 +254,11 @@ class CommandService:
             return None
         return label_found[0]
 
-    def _validate_add_task(self, title, label_name):
+    def _validate_add_task(self, title, label_names):
         tasks_remote = self._api_client.get_tasks(exclude_completed=True)
         if any(task for task in tasks_remote if task['title'] == title):
             raise VjaError("Task with title does exist. You may want to run with --force-create.")
-        if label_name:
+        for label_name in label_names:
             labels_remote = Label.from_json_array(self._api_client.get_labels())
             if not any(label for label in labels_remote if label.title == label_name):
                 raise VjaError(

@@ -42,6 +42,13 @@ class TestAddTask:
         after = json_for_created_task(runner, res.output)
         assert after['reminders'][0]['reminder'] == DATE_2_ISO
 
+    def test_add_with_multiple_labels(self, runner):
+        res = invoke(runner, 'add multi labels --force -l tag_1 -l tag_2')
+        after = json_for_created_task(runner, res.output)
+        assert has_label_with_title(after['label_objects'], 'tag_1')
+        assert has_label_with_title(after['label_objects'], 'tag_2')
+
+
 
 class TestCloneTask:
     def test_clone_task(self, runner):
@@ -112,7 +119,7 @@ class TestEditGeneral:
 
         assert labels_0 != labels_1
         assert labels_0 == labels_2
-        assert self._has_label_with_title(labels_0, 'tag1') or self._has_label_with_title(labels_1, 'tag1')
+        assert has_label_with_title(labels_0, 'tag1') or has_label_with_title(labels_1, 'tag1')
 
     def test_append_note(self, runner):
         invoke(runner, 'edit 1 --note=line1')
@@ -132,11 +139,6 @@ class TestEditGeneral:
 
         assert project_1 == 1
         assert project_2 == 2
-
-    @staticmethod
-    def _has_label_with_title(labels, title):
-        label_titles = [x['title'] for x in labels]
-        return title in label_titles
 
 
 class TestEditReminder:
@@ -291,3 +293,8 @@ def json_for_task_id(runner, task_id):
     assert res.exit_code == 0, res
     data = json.loads(res.output)
     return data
+
+def has_label_with_title(labels, title):
+    label_titles = [x['title'] for x in labels]
+    return title in label_titles
+
