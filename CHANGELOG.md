@@ -1,3 +1,15 @@
+## [3.3.0](https://gitlab.com/ce72/vja/compare/3.2.1...3.3.0) (2024-03-25)
+
+
+### Features
+
+* **add:** support creating tasks with multiple labels ([1e45554](https://gitlab.com/ce72/vja/commit/1e455543b21f839c9617732237746bcd58aecb66))
+
+
+### Misc
+
+* edit Changelog ([1e65150](https://gitlab.com/ce72/vja/commit/1e6515067c55f1e5e22a92e546accd6bab3eba07))
+
 ## [3.2.1](https://gitlab.com/ce72/vja/compare/3.2.0...3.2.1) (2024-03-20)
 
 
