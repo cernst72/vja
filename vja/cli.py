@@ -227,7 +227,7 @@ def label_add(application, title):
               help='Set due date (supports parsedatetime expressions)')
 @click.option('favorite', '-f', '--star', '--favorite', type=click.BOOL,
               help='Mark as favorite')
-@click.option('label', '-l', '--label',
+@click.option('label', '-l', '--label', multiple=True,
               help='Set label (label must exist on server)')
 @click.option('reminder', '-r', '--alarm', '--remind', '--reminder', is_flag=False, flag_value='due',
               help='Set reminder (supports parsedatetime and timedelta expressions). '

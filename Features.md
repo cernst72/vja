@@ -3,7 +3,7 @@
 <!-- TOC -->
 * [Features](#features)
   * [Login](#login)
-  * [Create Task](#create-task)
+  * [Add Task](#add-task)
     * [Clone](#clone)
   * [List tasks](#list-tasks)
     * [Urgency](#urgency)
@@ -11,7 +11,7 @@
     * [Filter](#filter)
     * [Select](#select)
   * [Show single task by id](#show-single-task-by-id)
-  * [Modify tasks](#modify-tasks)
+  * [Edit tasks](#edit-tasks)
     * [Defer task](#defer-task)
     * [Reminders](#reminders)
       * [Buckets](#buckets)
@@ -28,16 +28,18 @@
 ## Login
 
 When no valid token file exists in `$HOME/.vjacli/` then vja will ask for username and password on first usage.
-If Two Factor Authenication is activated for your user then vja will prompt you for the one-time password additionally.
+If Two-Factor Authentication is activated for your user then vja will prompt you for the one-time password additionally.
 The resulting token will be stored in `$HOME/.vjacli/token.json`.
 
 Alternatively you may create an API token with sufficient rights in Vikunja and save it to `$HOME/.vjacli/token.json`
+
 ```json
-{"token": "YOUR-API-TOKEN"}
+{
+  "token": "YOUR-API-TOKEN"
+}
 ```
 
-
-## Create Task
+## Add Task
 
 `vja add <Tasktitle>` allows to quickly add a new task to the default project. Several options exist to provide more
 context:
@@ -85,10 +87,13 @@ List all active tasks
 vja ls
 vja ls --json
 ```
+
 You may limit the output by giving task ids
+
 ```shell
 vja ls 10 13 14
 ```
+
 ### Urgency
 
 By default, tasks are sorted (amongst others) by their urgency, which is displayed in the last column. Urgency is
@@ -171,7 +176,7 @@ vja show 1 2 3
 
 ```
 
-## Modify tasks
+## Edit tasks
 
 ```shell
 vja edit 1 --title="new title" --due-date="friday" --priority=1
@@ -311,7 +316,9 @@ vja project ls
 ```shell
 vja project show 1
 ```
+
 Open in webbrowser:
+
 ```shell
 vja project open 1
 ```
