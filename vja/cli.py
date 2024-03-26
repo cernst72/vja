@@ -434,7 +434,7 @@ def task_ls(application, task_ids, is_json, is_jsonvja, custom_format, include_c
 
     tasks = application.query_service.find_filtered_tasks(include_completed, sort_string, filter_args)
     if task_ids:
-        tasks = (t for t in tasks if t.id in task_ids)
+        tasks = [t for t in tasks if t.id in task_ids]
 
     application.output.task_array(tasks, is_json, is_jsonvja, custom_format)
     if not is_json and not is_jsonvja and not custom_format:
