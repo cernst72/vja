@@ -1,3 +1,10 @@
+## [3.3.1](https://gitlab.com/ce72/vja/compare/3.3.0...3.3.1) (2024-03-26)
+
+
+### Bug Fixes
+
+* TypeError for vja ls with task_ids ([450d953](https://gitlab.com/ce72/vja/commit/450d953b86e5b2c275a46ebf0ab6d9f34039a128))
+
 ## [3.3.0](https://gitlab.com/ce72/vja/compare/3.2.1...3.3.0) (2024-03-25)
 
 
