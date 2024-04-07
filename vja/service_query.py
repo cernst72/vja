@@ -30,7 +30,9 @@ class QueryService:
 
     # bucket
     def find_all_buckets_in_project(self, project_id):
-        return Bucket.from_json_array(self._api_client.get_buckets(project_id))
+        project = self._project_service.find_project_by_id(project_id)
+        project_view = project.get_first_kanban_project_view()
+        return Bucket.from_json_array(self._api_client.get_buckets(project_id, project_view.id))
 
     # label
     def find_all_labels(self):

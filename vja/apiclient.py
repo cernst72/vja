@@ -53,6 +53,8 @@ class ApiClient:
         if params is None:
             params = {}
         response = requests.get(url, headers=headers, params=params, timeout=30)
+        # to verbose:
+        # logger.debug("GET response: %s - %s", response, response.text)
         response.raise_for_status()
         json_result = self._to_json(response)
         total_pages = int(response.headers.get('x-pagination-total-pages', 1))
@@ -125,12 +127,13 @@ class ApiClient:
         payload = {'title': title, 'parent_project_id': parent_project_id}
         return self._put_json(self._create_url('/projects'), payload=payload)
 
-    def get_buckets(self, project_id):
-        return self._get_json(self._create_url(f'/projects/{str(project_id)}/buckets'))
+    def get_buckets(self, project_id, project_view_id):
+        return self._get_json(self._create_url(f'/projects/{str(project_id)}/views/{str(project_view_id)}/buckets'))
 
-    def put_bucket(self, project_id, title):
+    def put_bucket(self, project_id, project_view_id, title):
         payload = {'title': title}
-        return self._put_json(self._create_url(f'/projects/{str(project_id)}/buckets'), payload=payload)
+        return self._put_json(self._create_url(f'/projects/{str(project_id)}/views/{str(project_view_id)}/buckets'),
+                              payload=payload)
 
     def get_labels(self):
         if self._cache['labels'] is None:
