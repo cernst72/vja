@@ -21,7 +21,6 @@ run-test () {
   vja ls --project=Work
   vja ls --label="Next Action"
   vja ls --title="home"
-  vja ls --bucket=2
   vja ls --sort="-due_date"
   vja ls --custom-format=ids_only
   vja edit 1 --prio=0 --note="" --due="" --favorite=False --reminder="" --title="empty title" --completed=True
@@ -32,7 +31,6 @@ run-test () {
   vja show 1 --jsonvja
   vja toggle 1
   vja project show 1 --json
-  vja bucket ls -o 1
   vja label ls
   vja -v logout
   vja -v -u test -p test ls

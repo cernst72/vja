@@ -69,9 +69,6 @@ class TestSingleTask:
         data = json.loads(res.output)
         assert data['id'] == 1
         assert data['title'] is not None
-        assert data['position'] is not None
-        assert data['kanban_position'] is not None
-        assert data['bucket_id'] is not None
         assert data['project']['id'] is not None
         assert data['created'] is not None
         assert data['updated'] is not None
@@ -122,15 +119,6 @@ class TestTaskLs:
 
 
 class TestTaskLsFilter:
-    def test_task_filter_bucket(self, runner):
-        res = invoke(runner, ['ls', '--jsonvja', '--bucket=1'])
-        data = json.loads(res.output)
-        assert len(data) > 0
-        assert all(i['bucket_id'] == 1 for i in data)
-        res = invoke(runner, ['ls', '--jsonvja', '--bucket=9999'])
-        data = json.loads(res.output)
-        assert len(data) == 0
-
     def test_task_filter_due(self, runner):
         res = invoke(runner, ['ls', '--jsonvja', '--due-date=after yesterday'])
         data = json.loads(res.output)

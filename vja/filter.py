@@ -10,10 +10,6 @@ from vja.parse import (parse_bool_arg, parse_date_arg_to_datetime,
 logger = logging.getLogger(__name__)
 
 
-def _create_bucket_filter(value):
-    return _create_general_filter([f'bucket_id eq {value}'])
-
-
 def _create_due_date_filter(value: str):
     if value.strip() == '':
         return lambda x: not x.due_date
@@ -106,7 +102,6 @@ _operators = {
 }
 
 _filter_mapping = {
-    'bucket_filter': _create_bucket_filter,
     'due_date_filter': _create_due_date_filter,
     'favorite_filter': _create_favorite_filter,
     'general_filter': _create_general_filter,

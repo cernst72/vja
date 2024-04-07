@@ -85,7 +85,8 @@ def cli(ctx=None, verbose=None, username=None, password=None, totp_passcode=None
 # user
 @cli.group('user', help='Subcommand: user (see help)')
 def user_group():
-    pass  # group user operations
+    # vja user
+    pass
 
 
 @user_group.command('show', help='Print current user')
@@ -100,7 +101,8 @@ def user_show(application, is_json=False, is_jsonvja=False):
 # projects
 @cli.group('project', help='Subcommand: project (see help)', aliases=['projects'])
 def project_group():
-    pass  # group project operations
+    # vja project
+    pass
 
 
 @project_group.command('add', help='Add project with title')
@@ -150,10 +152,12 @@ def project_open(application, project_id):
 # buckets
 @cli.group('bucket', help='Subcommand: kanban buckets (see help)', aliases=['buckets'])
 def bucket_group():
-    pass  # group bucket operations
+    # vja bucket
+    pass
 
 
-@bucket_group.command('add', help='Add bucket with title')
+@bucket_group.command('add',
+                      help='Add bucket with title to the first kanban view of the project')
 @click.option('project', '-o', '--project', '--project-id',
               help='Create bucket in given project.')
 @click.argument('title', nargs=-1, required=True)
@@ -163,7 +167,9 @@ def bucket_add(application, title, project):
     click.echo(f'Created bucket {bucket.id} in project {project}')
 
 
-@bucket_group.command('ls', help='Show kanban buckets of given project ... (id; title; limit; count tasks)')
+@bucket_group.command('ls',
+                      help='Show kanban buckets of given project (only first project view)... '
+                           '(id; title; limit; count tasks)')
 @click.option('project_id', '-o', '--project', '--project-id', '--project_id', required=True, type=click.INT,
               help='Show buckets of project with id')
 @click.option('is_json', '--json', default=False, is_flag=True,
@@ -183,7 +189,8 @@ def bucket_ls(application, project_id, is_json, is_jsonvja, custom_format):
 # labels
 @cli.group('label', help='Subcommand: label (see help)', aliases=['labels'])
 def label_group():
-    pass  # group label operations
+    # vja label
+    pass
 
 
 @label_group.command('ls', help='Print labels ... (id; title)')
@@ -254,12 +261,10 @@ def task_add(ctx, application, title, quiet_show=False, verbose_show=False, **ar
               help='Hide confirmation message')
 @click.option('verbose_show', '-v', '--verbose-show', '--verbose', is_flag=True,
               help='Show resulting task when finished')
-@click.option('is_clone_bucket', '-b', '--bucket', is_flag=True,
-              help='Clone kanban bucket too. Default: False')
 @with_application
 @click.pass_context
-def task_clone(ctx, application, task_id, title, quiet_show=False, verbose_show=False, is_clone_bucket=False):
-    task = application.command_service.clone_task(task_id, " ".join(title), is_clone_bucket)
+def task_clone(ctx, application, task_id, title, quiet_show=False, verbose_show=False):
+    task = application.command_service.clone_task(task_id, " ".join(title))
     if verbose_show or not quiet_show:
         click.echo(f'Created task {task.id} in project {task.project.id} as clone from {task_id}')
     if verbose_show:
@@ -353,38 +358,6 @@ def task_defer(ctx, application, task_ids, delay_by, quiet_show=False, verbose_s
             ctx.invoke(task_show, tasks=[task_id])
 
 
-@cli.command('pull', help='Pull the task to the next bucket (move from left to right on the Kanban board). ')
-@click.argument('task_id', required=True, type=click.INT)
-@click.option('quiet_show', '-q', '--quiet-show', '--quiet', is_flag=True,
-              help='Hide confirmation message')
-@click.option('verbose_show', '-v', '--verbose-show', '--verbose', is_flag=True,
-              help='Show resulting task when finished')
-@with_application
-@click.pass_context
-def task_pull(ctx, application, task_id, quiet_show=False, verbose_show=False):
-    task = application.command_service.pull_task(task_id)
-    if verbose_show or not quiet_show:
-        click.echo(f'Modified task {task.id} in project {task.project.id}')
-    if verbose_show:
-        ctx.invoke(task_show, tasks=[task_id])
-
-
-@cli.command('push', help='Push the task to the previous bucket (move from right to left on the Kanban board). ')
-@click.argument('task_id', required=True, type=click.INT)
-@click.option('quiet_show', '-q', '--quiet-show', '--quiet', is_flag=True,
-              help='Hide confirmation message')
-@click.option('verbose_show', '-v', '--verbose-show', '--verbose', is_flag=True,
-              help='Show resulting task when finished')
-@with_application
-@click.pass_context
-def task_push(ctx, application, task_id, quiet_show=False, verbose_show=False):
-    task = application.command_service.push_task(task_id)
-    if verbose_show or not quiet_show:
-        click.echo(f'Modified task {task.id} in project {task.project.id}')
-    if verbose_show:
-        ctx.invoke(task_show, tasks=[task_id])
-
-
 @cli.command('ls', help='List tasks ... (task-id; priority; is_favorite; title; due_date; '
                         'has reminder; parent-project; project; labels; urgency). '
                         'Optionally limit output to given TASK_IDS.')
@@ -400,8 +373,6 @@ def task_push(ctx, application, task_id, quiet_show=False, verbose_show=False):
                    '(Prefix each criteria with "-" to reverse order')
 @click.option('include_completed', '--include-completed', default=False, is_flag=True,
               help='Include completed tasks')
-@click.option('bucket_filter', '-b', '--bucket', '--bucket-id', '--bucket_id',
-              help='Filter by kanban bucket id. Shortcut for --filter="bucket_id eq <value>".')
 @click.option('due_date_filter', '-d', '--due', '--due-date', '--due_date',
               help='Filter by due date. The TEXT value must be like <operator> <value> '
                    'Shortcut for --filter="due_date <operator> <value>"')

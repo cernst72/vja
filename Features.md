@@ -14,7 +14,6 @@
   * [Edit tasks](#edit-tasks)
     * [Defer task](#defer-task)
     * [Reminders](#reminders)
-      * [Buckets](#buckets)
     * [Batch editing](#batch-editing)
   * [Open Vikunja in browser](#open-vikunja-in-browser)
   * [Manage projects, labels, buckets](#manage-projects-labels-buckets)
@@ -128,7 +127,6 @@ vja ls --project=1
 vja ls -o=projec # matches regex string
 vja ls --base-project=myproject
 vja ls -t=projec # matches regex string
-vja ls --bucket_id=1
 vja ls --due-date="before today"
 vja ls --due-date="ge in 0 days" --due-date="before 5 days"
 vja ls --favorite=True
@@ -253,20 +251,6 @@ vja edit 1 --reminder=""
 ```
 
 The same goes for `vja add`.
-
-#### Buckets
-
-```shell
-vja pull 1
-```
-
-Pull the task 1 to the next bucket (from left to right on the Kanban board).
-
-```shell
-vja push 1
-```
-
-Push the task back to the previous bucket (move from right to left on the Kanban board).
 
 ### Batch editing
 
