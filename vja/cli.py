@@ -85,7 +85,7 @@ def cli(ctx=None, verbose=None, username=None, password=None, totp_passcode=None
 # user
 @cli.group('user', help='Subcommand: user (see help)')
 def user_group():
-    pass
+    pass # group user operations
 
 
 @user_group.command('show', help='Print current user')
@@ -100,7 +100,7 @@ def user_show(application, is_json=False, is_jsonvja=False):
 # projects
 @cli.group('project', help='Subcommand: project (see help)', aliases=['projects'])
 def project_group():
-    pass
+    pass # group project operations
 
 
 @project_group.command('add', help='Add project with title')
@@ -150,7 +150,7 @@ def project_open(application, project_id):
 # buckets
 @cli.group('bucket', help='Subcommand: kanban buckets (see help)', aliases=['buckets'])
 def bucket_group():
-    pass
+    pass # group bucket operations
 
 
 @bucket_group.command('add', help='Add bucket with title')
@@ -183,7 +183,7 @@ def bucket_ls(application, project_id, is_json, is_jsonvja, custom_format):
 # labels
 @cli.group('label', help='Subcommand: label (see help)', aliases=['labels'])
 def label_group():
-    pass
+    pass # group label operations
 
 
 @label_group.command('ls', help='Print labels ... (id; title)')
@@ -438,7 +438,7 @@ def task_ls(application, task_ids, is_json, is_jsonvja, custom_format, include_c
 
     application.output.task_array(tasks, is_json, is_jsonvja, custom_format)
     if not is_json and not is_jsonvja and not custom_format:
-        click.echo(f"Count: {len(tasks)}")
+        click.echo(f"Count: {len(list(tasks))}")
 
 
 @cli.command('show', help='Show task details. Multiple task ids may be given')
