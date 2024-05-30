@@ -1,3 +1,10 @@
+## [3.4.0](https://gitlab.com/ce72/vja/compare/3.3.2...3.4.0) (2024-05-30)
+
+
+### Features
+
+* **add, edit:** set default time 08:00 in parsed dates ([5939075](https://gitlab.com/ce72/vja/commit/5939075d4826c5cedb2e4b1cb331e700d7265f1e))
+
 ## [3.3.2](https://gitlab.com/ce72/vja/compare/3.3.1...3.3.2) (2024-05-30)
 
 
