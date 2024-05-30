@@ -85,7 +85,7 @@ def cli(ctx=None, verbose=None, username=None, password=None, totp_passcode=None
 # user
 @cli.group('user', help='Subcommand: user (see help)')
 def user_group():
-    pass # group user operations
+    pass  # group user operations
 
 
 @user_group.command('show', help='Print current user')
@@ -100,7 +100,7 @@ def user_show(application, is_json=False, is_jsonvja=False):
 # projects
 @cli.group('project', help='Subcommand: project (see help)', aliases=['projects'])
 def project_group():
-    pass # group project operations
+    pass  # group project operations
 
 
 @project_group.command('add', help='Add project with title')
@@ -150,7 +150,7 @@ def project_open(application, project_id):
 # buckets
 @cli.group('bucket', help='Subcommand: kanban buckets (see help)', aliases=['buckets'])
 def bucket_group():
-    pass # group bucket operations
+    pass  # group bucket operations
 
 
 @bucket_group.command('add', help='Add bucket with title')
@@ -183,7 +183,7 @@ def bucket_ls(application, project_id, is_json, is_jsonvja, custom_format):
 # labels
 @cli.group('label', help='Subcommand: label (see help)', aliases=['labels'])
 def label_group():
-    pass # group label operations
+    pass  # group label operations
 
 
 @label_group.command('ls', help='Print labels ... (id; title)')

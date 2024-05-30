@@ -8,6 +8,10 @@ import dateutil.parser
 from dateutil import tz
 from parsedatetime import parsedatetime
 
+# if dates are given like 'tomorrow' or 'next mon' then this will be used as time
+DEFAULT_DATE_HOUR = 8
+DEFAULT_DATE_MINUTE = 0
+
 _timedelta_regex = re.compile(r'^((?P<weeks>[.\d]+?)w)? *'
                               r'^((?P<days>[.\d]+?)d)? *'
                               r'((?P<hours>[.\d]+?)h)? *'
@@ -24,7 +28,7 @@ def parse_date_arg_to_datetime(text: str) -> Optional[datetime]:
         timetuple, pdt_context = parsedatetime.Calendar(version=parsedatetime.VERSION_CONTEXT_STYLE).parse(text)
         datetime_date = datetime.fromtimestamp(time.mktime(timetuple))
         if not pdt_context.hasTime:
-            datetime_date = datetime_date.replace(hour=0, minute=0, second=0)
+            datetime_date = datetime_date.replace(hour=DEFAULT_DATE_HOUR, minute=DEFAULT_DATE_MINUTE, second=0)
         return datetime_date
 
 

@@ -11,6 +11,7 @@ YESTERDAY = TODAY + datetime.timedelta(days=-1)
 YESTERDAY_ISO = YESTERDAY.isoformat()
 TOMORROW = TODAY + datetime.timedelta(days=1)
 TOMORROW_ISO = TOMORROW.isoformat()
+TOMMORROW_AT_8_ISO = (TOMORROW.replace(hour=8, minute=0, second=0)).isoformat()
 DATE_1 = TODAY + datetime.timedelta(days=10)
 DATE_2 = DATE_1 + datetime.timedelta(days=1)
 DATE_1_ISO = DATE_1.isoformat()
@@ -27,6 +28,11 @@ class TestAddTask:
         res = invoke(runner, 'add title of new task --force --project=test-project')
         after = json_for_created_task(runner, res.output)
         assert after['project']['title'] == 'test-project'
+
+    def test_due_date(self, runner):
+        res = invoke(runner, 'add title of new task --force --due=tomorrow')
+        after = json_for_created_task(runner, res.output)
+        assert after['due_date'] == TOMMORROW_AT_8_ISO
 
     def test_duplicate_task_title_rejected(self, runner):
         invoke(runner, 'add title of new task', 1, catch_exceptions=True)
@@ -93,7 +99,7 @@ class TestEditGeneral:
         invoke(runner, 'edit 1 --due=tomorrow')
 
         after = json_for_task_id(runner, 1)
-        assert after['due_date'] == (TOMORROW.replace(hour=0, minute=0, second=0)).isoformat()
+        assert after['due_date'] == TOMMORROW_AT_8_ISO
 
     def test_edit_due_date_with_time(self, runner):
         invoke(runner, ['edit', '1', '--due=tomorrow 15:00'])
