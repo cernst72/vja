@@ -1,3 +1,15 @@
+## [3.3.2](https://gitlab.com/ce72/vja/compare/3.3.1...3.3.2) (2024-05-30)
+
+
+### Bug Fixes
+
+* **ls:** exception due to "object of type generator has no len" ([2c4f09a](https://gitlab.com/ce72/vja/commit/2c4f09a03931b5f301621d81967e4e8bade366fa))
+
+
+### Misc
+
+* **deps:** update all dependencies ([893cbbf](https://gitlab.com/ce72/vja/commit/893cbbf4a2c06e0e85e904d81ec78326a3a37e9e))
+
 ## [3.3.1](https://gitlab.com/ce72/vja/compare/3.3.0...3.3.1) (2024-03-26)
 
 
