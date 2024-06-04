@@ -39,7 +39,6 @@ integration-test:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
   script:
-    - docker --version
     - apk add --no-cache bash curl python3 py3-pip
     - python3 --version
 
@@ -51,6 +50,7 @@ integration-test:
 
     - mkdir $PWD/files
     - chmod a+w $PWD/files
+    - docker compose -f tests/docker-compose.yml pull vikunja
     - docker compose -f tests/docker-compose.yml up -d
     - sleep 1s
     - curl --retry 5 --retry-all-errors --retry-delay 1 "http://docker:3456/api/v1/info"
