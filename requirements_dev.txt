@@ -1,5 +1,5 @@
-pip==24.0
-pylint==3.2.2
-flake8==7.0.0
-pytest==8.2.1
-coverage==7.5.2
+pip==24.1.1
+pylint==3.2.5
+flake8==7.1.0
+pytest==8.2.2
+coverage==7.5.4
