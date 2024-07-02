@@ -10,8 +10,12 @@ This is a simple CLI for Vikunja > [The todo app to organize your life.](https:/
 It provides a command line interface for adding, viewing and editing todo tasks on a Vikunja Server.
 The goal is to support a command line based task workflow ~ similar to taskwarrior.
 
+#### Breaking changes in vja 4.0
+vja 4.0 supports (and requires) the most recent Vikunja API 0.24.0.
+Use vja up to version 3.3.1 for compatibility with Vikunja API 0.23.0.
+
 #### Breaking changes in vja 3.0
-vja 3.0 supports (and requires) the most recent Vikunja API 0.22.0.
+vja 3.0 supports (and requires) Vikunja API > 0.22.0.
 Use vja up to version 2.4.1 for compatibility with Vikunja API 0.21.0.
 
 ## Usage

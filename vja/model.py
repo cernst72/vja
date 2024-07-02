@@ -61,6 +61,33 @@ class User:
 @dataclass
 @data_dict
 # pylint: disable=too-many-instance-attributes
+class ProjectView:
+    json: dict = field(repr=False)
+    id: int
+    title: str
+    project_id: int
+    view_kind: str # The kind of this view. Can be list, gantt, table or kanban.
+    bucket_configuration_mode: str # Can be none, manual or filter. manual
+    default_bucket_id: int
+    done_bucket_id: int
+
+    @classmethod
+    def from_json(cls, json):
+        return cls(json, json['id'], json['title'],
+                   json['project_id'],
+                   json['view_kind'],
+                   json['bucket_configuration_mode'],
+                   json['default_bucket_id'],
+                   json['done_bucket_id'])
+
+    @classmethod
+    def from_json_array(cls, json_array):
+        return [ProjectView.from_json(x) for x in json_array or []]
+
+
+@dataclass
+@data_dict
+# pylint: disable=too-many-instance-attributes
 class Project:
     json: dict = field(repr=False)
     id: int
@@ -68,21 +95,23 @@ class Project:
     description: str
     is_favorite: bool
     is_archived: bool
-    default_bucket_id: int
-    done_bucket_id: int
     parent_project_id: int
     ancestor_projects: typing.List['Project']
+    views: typing.List[ProjectView]
 
     @classmethod
     def from_json(cls, json, ancestor_projects):
         return cls(json, json['id'], json['title'], json['description'], json['is_archived'], json['is_favorite'],
-                   json['default_bucket_id'], json['done_bucket_id'],
                    json['parent_project_id'],
-                   ancestor_projects)
+                   ancestor_projects,
+                   ProjectView.from_json_array(json['views']))
 
     @classmethod
     def from_json_array(cls, json_array, ancestor_projects):
         return [Project.from_json(x, ancestor_projects) for x in json_array or []]
+
+    def get_first_kanban_project_view(self):
+        return next(x for x in self.views if x.view_kind == "kanban")
 
 
 @dataclass(frozen=True)
@@ -166,7 +195,6 @@ class Task:
     project: Project
     position: int
     bucket_id: int
-    kanban_position: int
     created: datetime
     updated: datetime
     urgency: float = field(init=False)
@@ -193,7 +221,6 @@ class Task:
                    project_object,
                    json['position'],
                    json['bucket_id'],
-                   json['kanban_position'],
                    parse_json_date(json['created']),
                    parse_json_date(json['updated'])
                    )

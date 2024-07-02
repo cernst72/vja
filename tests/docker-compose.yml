@@ -1,5 +1,5 @@
 x-vikunja-image: &vikunja-image
-  image: vikunja/vikunja:0.23.0
+  image: vikunja/vikunja:0.24.0
 
 services:
   vikunja:
@@ -13,14 +13,17 @@ services:
       VIKUNJA_DATABASE_PATH: /app/vikunja/files/vikunja.db
     volumes:
       - ${PWD}/files:/app/vikunja/files
+    healthcheck:
+      test: [ "CMD", "/app/vikunja/vikunja", "version" ]
+      interval: 1s
   vikunja-init:
     <<: *vikunja-image
     depends_on:
-      - vikunja
+      vikunja:
+        condition: service_healthy
     environment:
       VIKUNJA_DATABASE_TYPE: sqlite
       VIKUNJA_DATABASE_PATH: /app/vikunja/files/vikunja.db
     volumes:
       - ${PWD}/files:/app/vikunja/files
-    command: sh -c "sleep 1 && /app/vikunja/vikunja user create -u test -p test -e test@test.test && /app/vikunja/vikunja user list"
-    #command: user create -u test -p test -e test@test.test
+    command: user create -u test -p test -e test@test.test
