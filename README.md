@@ -15,7 +15,7 @@ vja 4.0 supports (and requires) the most recent Vikunja API 0.24.0.
 Use vja up to version 3.3.1 for compatibility with Vikunja API 0.23.0.
 
 #### Breaking changes in vja 3.0
-vja 3.0 supports (and requires) the most recent Vikunja API 0.22.0.
+vja 3.0 supports (and requires) Vikunja API > 0.22.0.
 Use vja up to version 2.4.1 for compatibility with Vikunja API 0.21.0.
 
 ## Usage
