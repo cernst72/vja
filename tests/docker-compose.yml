@@ -1,5 +1,5 @@
 x-vikunja-image: &vikunja-image
-  image: vikunja/vikunja:unstable
+  image: vikunja/vikunja:0.24.0
 
 services:
   vikunja:
