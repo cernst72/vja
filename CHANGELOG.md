@@ -1,3 +1,33 @@
+## [4.0.0](https://gitlab.com/ce72/vja/compare/3.4.0...4.0.0) (2024-07-02)
+
+### ⚠ BREAKING CHANGES
+
+* Will require vikunja > 0.23.
+- (task) Remove bucket filter (`-b`) from `vja ls`.
+- (task) Remove commands `vja push` / `vja pull`
+- (buckets) `vja bucket` applies to first kanban view of the project
+
+### Features
+
+* Handle Vikunjas new ProjectViews. Remove support for buckets. ([5d53ab4](https://gitlab.com/ce72/vja/commit/5d53ab497930acdcfcbfd01d7661232b1207b0d7))
+* **ls:** apply new filter syntax ([60bb3b2](https://gitlab.com/ce72/vja/commit/60bb3b272bbe4eafdf775c7f59a201e632a61199))
+
+### Documentation
+
+* update Readme ([449c47e](https://gitlab.com/ce72/vja/commit/449c47e930c6d93003910091ae5bfa22ca50df5e))
+
+### Misc
+
+* **ci:** pull vikunja image separately and only once ([d867d0a](https://gitlab.com/ce72/vja/commit/d867d0a38881b7e9208c5a075d5845d46c02ec41))
+* **deps:** update all dependencies ([63cc9eb](https://gitlab.com/ce72/vja/commit/63cc9eb663e068e390d01f2d780a3a923ebc11ca))
+
+### Automation
+
+* compose file supports distroless vikunja image ([5c93027](https://gitlab.com/ce72/vja/commit/5c93027db1bd8845f00c22be9ae24ca0407d51d4))
+* reactivate 404 test ([4cf3d6c](https://gitlab.com/ce72/vja/commit/4cf3d6cbb7e37490f3229b8addc8ad3fb9137c2c))
+* test with vikunja/vikunja:0.24.0 base image ([b7a7ed6](https://gitlab.com/ce72/vja/commit/b7a7ed63c1c13b7e303c516dc3a7104c18547339))
+* unpin conventional-changelog-conventionalcommits ([7644d1f](https://gitlab.com/ce72/vja/commit/7644d1fe37a662d1b495bc55032ccbc4ebdd581c))
+
 ## [3.4.0](https://gitlab.com/ce72/vja/compare/3.3.2...3.4.0) (2024-05-30)
 
 
