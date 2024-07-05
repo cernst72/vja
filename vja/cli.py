@@ -371,7 +371,7 @@ def task_defer(ctx, application, task_ids, delay_by, quiet_show=False, verbose_s
 @click.option('sort_string', '--sort', '--sort-by', '--sort-string',
               help='Sort by arguments (Arguments ar task attributes separated by ",") '
                    '(Prefix each criteria with "-" to reverse order')
-@click.option('include_completed', '--include-completed', default=False, is_flag=True,
+@click.option('include_completed', '--include-completed', '--all', default=False, is_flag=True,
               help='Include completed tasks')
 @click.option('due_date_filter', '-d', '--due', '--due-date', '--due_date',
               help='Filter by due date. The TEXT value must be like <operator> <value> '
