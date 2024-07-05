@@ -7,20 +7,24 @@ from vja.parse import parse_json_date
 
 
 def custom_output(cls):
-    def str_function(self):
+    def __str__(self):
         """Returns a string containing only the non-null attribute values, excluding json attribute ."""
         return '\n'.join(f'{attribute.name}: {_str_value(getattr(self, attribute.name))}'
                          for attribute in dataclasses.fields(self)
                          if attribute.name != 'json' and getattr(self, attribute.name))
 
-    def _str_value(attribute_value):
-        if isinstance(attribute_value, datetime):
-            return attribute_value.isoformat()
-        if isinstance(attribute_value, list):
-            return [_str_value(x) for x in attribute_value]
-        return str(attribute_value)
+    def _str_value(v):
+        if isinstance(v, datetime):
+            return v.isoformat()
+        if isinstance(v, Project):
+            return v.short_str()
+        if isinstance(v, ProjectView):
+            return v.short_str()
+        if isinstance(v, list):
+            return [_str_value(x) for x in v]
+        return str(v)
 
-    setattr(cls, '__str__', str_function)
+    setattr(cls, '__str__', __str__)
     return cls
 
 
@@ -66,8 +70,8 @@ class ProjectView:
     id: int
     title: str
     project_id: int
-    view_kind: str # The kind of this view. Can be list, gantt, table or kanban.
-    bucket_configuration_mode: str # Can be none, manual or filter. manual
+    view_kind: str  # The kind of this view. Can be list, gantt, table or kanban.
+    bucket_configuration_mode: str  # Can be none, manual or filter. manual
     default_bucket_id: int
     done_bucket_id: int
 
@@ -84,8 +88,12 @@ class ProjectView:
     def from_json_array(cls, json_array):
         return [ProjectView.from_json(x) for x in json_array or []]
 
+    def short_str(self):
+        return 'id=' + str(self.id) + ', title=' + self.title
+
 
 @dataclass
+@custom_output
 @data_dict
 # pylint: disable=too-many-instance-attributes
 class Project:
@@ -101,7 +109,8 @@ class Project:
 
     @classmethod
     def from_json(cls, json, ancestor_projects):
-        return cls(json, json['id'], json['title'], json['description'], json['is_archived'], json['is_favorite'],
+        return cls(json, json['id'], json['title'], json['description'],
+                   json['is_favorite'], json['is_archived'],
                    json['parent_project_id'],
                    ancestor_projects,
                    ProjectView.from_json_array(json['views']))
@@ -112,6 +121,9 @@ class Project:
 
     def get_first_kanban_project_view(self):
         return next(x for x in self.views if x.view_kind == "kanban")
+
+    def short_str(self):
+        return 'id=' + str(self.id) + ', title=' + self.title
 
 
 @dataclass(frozen=True)
