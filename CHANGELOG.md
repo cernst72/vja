@@ -13,7 +13,7 @@
 
 ### ⚠ BREAKING CHANGES
 
-* Will require vikunja > 0.23.
+* Requires vikunja >= 0.24.0.
 - (task) Remove bucket filter (`-b`) from `vja ls`.
 - (task) Remove commands `vja push` / `vja pull`
 - (buckets) `vja bucket` applies to first kanban view of the project
