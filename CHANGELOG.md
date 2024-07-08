@@ -1,3 +1,14 @@
+## [4.1.0](https://gitlab.com/ce72/vja/compare/4.0.0...4.1.0) (2024-07-08)
+
+### Features
+
+* **ls:** alias --all for --include-completed ([4d6f868](https://gitlab.com/ce72/vja/commit/4d6f868c3cb067bedf66c8b4f70cba97b72feb06))
+* **show:** more concise output ([dbd21a3](https://gitlab.com/ce72/vja/commit/dbd21a3e4b8c7097ecdd4684010df4d309bc61cd))
+
+### Misc
+
+* **deps:** update dependency pip to v24.1.2 ([01f271b](https://gitlab.com/ce72/vja/commit/01f271bc7309073b55cb3bfc899b39a545d1c539))
+
 ## [4.0.0](https://gitlab.com/ce72/vja/compare/3.4.0...4.0.0) (2024-07-02)
 
 ### ⚠ BREAKING CHANGES
