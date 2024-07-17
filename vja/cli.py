@@ -360,7 +360,7 @@ def task_defer(ctx, application, task_ids, delay_by, quiet_show=False, verbose_s
 
 @cli.command('ls', help='List tasks ... (task-id; priority; is_favorite; title; due_date; '
                         'has reminder; parent-project; project; labels; urgency). '
-                        'Optionally limit output to given TASK_IDS.')
+                        'Optionally limit output to given TASK_IDs.')
 @click.argument('task_ids', type=click.INT, nargs=-1)
 @click.option('is_json', '--json', default=False, is_flag=True,
               help='Print as Vikunja json')
