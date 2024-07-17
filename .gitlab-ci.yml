@@ -8,6 +8,23 @@ stages:
   - test
   - release
 
+.start_vikunja: &start_vikunja
+  - apk add --no-cache bash curl python3 py3-pip
+  - python3 --version
+
+  - python3 -m venv ./venv
+  - . ./venv/bin/activate
+  - python3 -m pip install -r requirements_dev.txt
+  - python3 -m pip install .
+  - vja --version
+
+  - mkdir $PWD/files
+  - chmod a+w $PWD/files
+  - docker compose -f tests/docker-compose.yml pull vikunja
+  - docker compose -f tests/docker-compose.yml up -d
+  - sleep 1s
+  - curl --retry 5 --retry-all-errors --retry-delay 1 "http://docker:3456/api/v1/info"
+
 pylint:
   stage: test
   image: python:3.12-slim
@@ -39,22 +56,7 @@ integration-test:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
   script:
-    - apk add --no-cache bash curl python3 py3-pip
-    - python3 --version
-
-    - python3 -m venv ./venv
-    - . ./venv/bin/activate
-    - python3 -m pip install -r requirements_dev.txt
-    - python3 -m pip install .
-    - vja --version
-
-    - mkdir $PWD/files
-    - chmod a+w $PWD/files
-    - docker compose -f tests/docker-compose.yml pull vikunja
-    - docker compose -f tests/docker-compose.yml up -d
-    - sleep 1s
-    - curl --retry 5 --retry-all-errors --retry-delay 1 "http://docker:3456/api/v1/info"
-
+    - *start_vikunja
     - export VJA_CONFIGDIR=tests/.vjatest_dind
     - coverage run --omit='*test*' -m pytest
     - coverage report --omit='*test*'
@@ -65,6 +67,29 @@ integration-test:
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "beta" || $CI_COMMIT_BRANCH == "rc"
+      when: on_success
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: on_success
+    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_REF_SLUG !~ /renovate.*/
+      when: manual
+
+integration-test-unstable:
+  stage: test
+  image:
+    name: docker:cli
+  services:
+    - name: docker:dind
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+    VIKUNJA_IMAGE: vikunja/vikunja:unstable
+  allow_failure: true
+  script:
+    - *start_vikunja
+    - export VJA_CONFIGDIR=tests/.vjatest_dind
+    - pytest
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "beta" || $CI_COMMIT_BRANCH == "rc"
       when: on_success
