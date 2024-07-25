@@ -16,9 +16,7 @@ def custom_output(cls):
     def _str_value(v):
         if isinstance(v, datetime):
             return v.isoformat()
-        if isinstance(v, Project):
-            return v.short_str()
-        if isinstance(v, ProjectView):
+        if isinstance(v, (Project, ProjectView, Label, TaskReminder)):
             return v.short_str()
         if isinstance(v, list):
             return [_str_value(x) for x in v]
@@ -89,7 +87,7 @@ class ProjectView:
         return [ProjectView.from_json(x) for x in json_array or []]
 
     def short_str(self):
-        return 'id=' + str(self.id) + ', title=' + self.title
+        return 'id=' + str(self.id) + ',title=' + self.title
 
 
 @dataclass
@@ -123,7 +121,7 @@ class Project:
         return next(x for x in self.views if x.view_kind == "kanban")
 
     def short_str(self):
-        return 'id=' + str(self.id) + ', title=' + self.title
+        return 'id=' + str(self.id) + ',title=' + self.title
 
 
 @dataclass(frozen=True)
@@ -163,6 +161,9 @@ class Label:
     def from_json_array(cls, json_array):
         return [Label.from_json(x) for x in json_array or []]
 
+    def short_str(self):
+        return 'id=' + str(self.id) + ',title=' + self.title
+
 
 @dataclass
 @custom_output
@@ -181,6 +182,9 @@ class TaskReminder:
     @classmethod
     def from_json_array(cls, json_array):
         return [TaskReminder.from_json(x) for x in json_array or []]
+
+    def short_str(self):
+        return 'reminder=' + self.reminder.isoformat() + ',relative_to=' + self.relative_to
 
 
 @dataclass
