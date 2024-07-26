@@ -1,3 +1,29 @@
+## [4.2.0](https://gitlab.com/ce72/vja/compare/4.1.0...4.2.0) (2024-07-26)
+
+### Features
+
+* **show:** more concise output of show (labels, reminder) ([207aabb](https://gitlab.com/ce72/vja/commit/207aabb53b9df8962e87afeb11a2994e8358329a))
+
+### Bug Fixes
+
+* **ls:** repeating task indicator in custom tasklist_long ([380c0fa](https://gitlab.com/ce72/vja/commit/380c0fa14cd4023a7d0862bafa73c81f5d98180c))
+
+### Documentation
+
+* fix CHANGELOG.md ([04d5f01](https://gitlab.com/ce72/vja/commit/04d5f0180ae4716f1537e4d01b8237cc791d1486))
+
+### Misc
+
+* **deps:** update all dependencies ([f453764](https://gitlab.com/ce72/vja/commit/f453764d71c8a1bdcf7d1a944120af5fdcd816d5))
+* **deps:** update dependency coverage to v7.6.0 ([2b2022e](https://gitlab.com/ce72/vja/commit/2b2022ea667d9489be4e4018ca5d1f988a4a200c))
+* typo ([1cf7ab4](https://gitlab.com/ce72/vja/commit/1cf7ab4c3dfc5e4065920cd3e6ca664ff5e94473))
+
+### Automation
+
+* **ls:** add test for ls --custom-format=tasklist_long ([a7e1f4a](https://gitlab.com/ce72/vja/commit/a7e1f4ac9971559503e97ce87f6f3faecad98b90))
+* test with 0.24.1 by default ([6a16146](https://gitlab.com/ce72/vja/commit/6a161461928a57a943fdf1adf68795a83904230b))
+* test with unstable image too ([1f78998](https://gitlab.com/ce72/vja/commit/1f789982ce32a2f941d466dbe04574a2451f502c))
+
 ## [4.1.0](https://gitlab.com/ce72/vja/compare/4.0.0...4.1.0) (2024-07-08)
 
 ### Features
