@@ -8,7 +8,7 @@ api_url=http://docker:3456/api/v1
 # Be careful: Any code which is entered here gets executed at runtime (python eval()).
 # Do not use --custom-format if you feel uncomfortable with that.
 
-tasklist_long={x.id:5} ({x.priority}) {"*" if x.is_favorite else " "} {x.title:50.50} {x.due_date.strftime("%a %d.%m %H:%M") if x.due_date else "":15.15} {"A" if x.reminders else " "}{"R" if x.repeat_after > 0 else " "}{"D" if x.description else " "} {x.project.title:20.20} {x.labels:20.20} {x.urgency:3}
+tasklist_long={x.id:5} ({x.priority}) {"*" if x.is_favorite else " "} {x.title:50.50} {x.due_date.strftime("%a %d.%m %H:%M") if x.due_date else "":15.15} {"A" if x.reminders else " "}{"R" if x.repeat_after else " "}{"D" if x.description else " "} {x.project.title:20.20} {x.labels:20.20} {x.urgency:3}
 tasklist_short={x.id:5} {x.title:50.50}
 ids_only={x.id}
 

@@ -117,6 +117,10 @@ class TestTaskLs:
         for line in res.output:
             assert re.match(r'^\d*$', line)
 
+    def test_task_custom_format_long(self, runner):
+        res = invoke(runner, 'ls --custom-format=tasklist_long')
+        assert re.search(r'At least one task', res.output)
+
 
 class TestTaskLsFilter:
     def test_task_filter_due(self, runner):
