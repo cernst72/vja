@@ -4,8 +4,7 @@ import time
 from datetime import datetime, timedelta
 from typing import Optional
 
-import dateutil.parser
-from dateutil import tz
+from dateutil import tz, parser
 from parsedatetime import parsedatetime
 
 # if dates are given like 'tomorrow' or 'next mon' then this will be used as time
@@ -22,14 +21,15 @@ _timedelta_regex = re.compile(r'^((?P<weeks>[.\d]+?)w)? *'
 def parse_date_arg_to_datetime(text: str) -> Optional[datetime]:
     if not text:
         return None
-    try:
-        return dateutil.parser.isoparse(text)
-    except ValueError:
-        timetuple, pdt_context = parsedatetime.Calendar(version=parsedatetime.VERSION_CONTEXT_STYLE).parse(text)
-        datetime_date = datetime.fromtimestamp(time.mktime(timetuple))
-        if not pdt_context.hasTime:
-            datetime_date = datetime_date.replace(hour=DEFAULT_DATE_HOUR, minute=DEFAULT_DATE_MINUTE, second=0)
-        return datetime_date
+
+    if re.compile(r'.*\dT\d.*').match(text):
+        text = text.replace("T", " ")  # workaround for https://github.com/bear/parsedatetime/issues/15
+
+    timetuple, pdt_context = parsedatetime.Calendar(version=parsedatetime.VERSION_CONTEXT_STYLE).parse(text)
+    result = datetime.fromtimestamp(time.mktime(timetuple))
+    if not pdt_context.hasTime:
+        result = result.replace(hour=DEFAULT_DATE_HOUR, minute=DEFAULT_DATE_MINUTE, second=0)
+    return result
 
 
 def parse_date_arg_to_iso(text: str) -> Optional[str]:
@@ -59,6 +59,12 @@ def parse_date_arg_to_timedelta(time_str: str) -> Optional[timedelta]:
     return timedelta(**time_params)
 
 
+def parse_json_date(json_date: str) -> Optional[datetime]:
+    if json_date and json_date > '0001-01-02T00:00:00Z':
+        return parser.isoparse(json_date).astimezone(tz.tzlocal()).replace(tzinfo=None)
+    return None
+
+
 def parse_bool_arg(text: str) -> bool:
     return text.lower() in ['true', '1', 't', 'y', 'yes'] if text else False
 
@@ -71,9 +77,3 @@ def rgetattr(obj, path: str, *default):
         if default:
             return default[0]
         raise
-
-
-def parse_json_date(json_date: str) -> Optional[datetime]:
-    if json_date and json_date > '0001-01-02T00:00:00Z':
-        return dateutil.parser.isoparse(json_date).astimezone(tz.tzlocal()).replace(tzinfo=None)
-    return None
