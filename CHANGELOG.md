@@ -1,3 +1,13 @@
+## [4.4.0](https://gitlab.com/ce72/vja/compare/4.3.0...4.4.0) (2024-07-28)
+
+### Features
+
+* **task:** support group alias "task" ([7e7b7d0](https://gitlab.com/ce72/vja/commit/7e7b7d0c73e12c55b3fa01a38b6b9ab1cbf7d48b))
+
+### Misc
+
+* refactor test_edit_due_date_with_time ([04f80a2](https://gitlab.com/ce72/vja/commit/04f80a2fdac9dc7d32c01599e43faf47977001c7))
+
 ## [4.3.0](https://gitlab.com/ce72/vja/compare/4.2.0...4.3.0) (2024-07-28)
 
 ### Features
