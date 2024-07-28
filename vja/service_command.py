@@ -55,7 +55,7 @@ class CommandService:
     _arg_to_json = {'title': {'field': 'title', 'mapping': (lambda x: x)},
                     'note': {'field': 'description', 'mapping': (lambda x: x)},
                     'prio': {'field': 'priority', 'mapping': int},
-                    'due': {'field': 'due_date', 'mapping': parse_date_arg_to_iso},
+                    'due': {'field': 'due_date', 'mapping': (lambda x: x)},
                     'favorite': {'field': 'is_favorite', 'mapping': bool},
                     'completed': {'field': 'done', 'mapping': bool},
                     'position': {'field': 'position', 'mapping': int},
@@ -85,6 +85,8 @@ class CommandService:
         label_names = args.pop('label')
         is_force = args.pop('force_create') if args.get('force_create') is not None else False
 
+        if args.get('due'):
+            args.update({'due': parse_date_arg_to_iso(args.get('due'))})
         self._parse_reminder_arg(args.get('reminder'), args)
 
         payload = self._args_to_payload(args)
@@ -120,6 +122,8 @@ class CommandService:
         label_name = args.pop('label') if args.get('label') else None
         is_force = args.pop('force_create') if args.get('force_create') is not None else False
 
+        if args.get('due') is not None:
+            self._update_due_date(args, task_remote)
         self._update_reminder(args, task_remote)
         if args.get('note_append'):
             append_note = args.pop('note_append')
@@ -141,6 +145,17 @@ class CommandService:
             else:
                 self._api_client.add_label_to_task(task_new.id, label.id)
         return task_new
+
+    @staticmethod
+    def _update_due_date(args, task_remote):
+        # keep using time of remote task, if none is given
+        arg_due = args.get('due')
+        remote_date = parse_json_date(task_remote['due_date'])
+        if remote_date:
+            arg_date = parse_date_arg_to_iso(arg_due, remote_date.hour, remote_date.minute)
+        else:
+            arg_date = parse_date_arg_to_iso(arg_due)
+        args.update({'due': arg_date})
 
     @staticmethod
     def _update_reminder(args, task_remote):

@@ -18,7 +18,9 @@ _timedelta_regex = re.compile(r'^((?P<weeks>[.\d]+?)w)? *'
                               r'((?P<seconds>[.\d]+?)s?)?$')
 
 
-def parse_date_arg_to_datetime(text: str) -> Optional[datetime]:
+def parse_date_arg_to_datetime(text: str,
+                               default_hour=DEFAULT_DATE_HOUR,
+                               default_minute=DEFAULT_DATE_MINUTE) -> Optional[datetime]:
     if not text:
         return None
 
@@ -28,12 +30,14 @@ def parse_date_arg_to_datetime(text: str) -> Optional[datetime]:
     timetuple, pdt_context = parsedatetime.Calendar(version=parsedatetime.VERSION_CONTEXT_STYLE).parse(text)
     result = datetime.fromtimestamp(time.mktime(timetuple))
     if not pdt_context.hasTime:
-        result = result.replace(hour=DEFAULT_DATE_HOUR, minute=DEFAULT_DATE_MINUTE, second=0)
+        result = result.replace(hour=default_hour, minute=default_minute, second=0)
     return result
 
 
-def parse_date_arg_to_iso(text: str) -> Optional[str]:
-    date_value = parse_date_arg_to_datetime(text)
+def parse_date_arg_to_iso(text: str,
+                          default_hour=DEFAULT_DATE_HOUR,
+                          default_minute=DEFAULT_DATE_MINUTE) -> Optional[str]:
+    date_value = parse_date_arg_to_datetime(text, default_hour, default_minute)
     return datetime_to_isoformat(date_value) if date_value else None
 
 
