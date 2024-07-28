@@ -150,14 +150,14 @@ def project_open(application, project_id):
 
 
 # buckets
-@cli.group('bucket', help='Subcommand: kanban buckets (see help)', aliases=['buckets'])
+@cli.group('bucket', help='Subcommand: Kanban buckets (see help)', aliases=['buckets'])
 def bucket_group():
     # vja bucket
     pass
 
 
 @bucket_group.command('add',
-                      help='Add bucket with title to the first kanban view of the project')
+                      help='Add bucket with title to the first Kanban View of the project')
 @click.option('project', '-o', '--project', '--project-id',
               help='Create bucket in given project.')
 @click.argument('title', nargs=-1, required=True)
@@ -168,7 +168,7 @@ def bucket_add(application, title, project):
 
 
 @bucket_group.command('ls',
-                      help='Show kanban buckets of given project (only first project view)... '
+                      help='Show Kanban buckets of given project (only the first Kanban View)... '
                            '(id; title; limit; count tasks)')
 @click.option('project_id', '-o', '--project', '--project-id', '--project_id', required=True, type=click.INT,
               help='Show buckets of project with id')
@@ -183,7 +183,7 @@ def bucket_ls(application, project_id, is_json, is_jsonvja, custom_format):
     if custom_format:
         custom_format = application.configuration.get_custom_format_string(custom_format)
     application.output.bucket_array(
-        application.query_service.find_all_buckets_in_project(project_id), is_json, is_jsonvja, custom_format)
+        application.query_service.find_buckets_in_first_kanban_view(project_id), is_json, is_jsonvja, custom_format)
 
 
 # labels

@@ -128,7 +128,7 @@ class ApiClient:
         return self._put_json(self._create_url('/projects'), payload=payload)
 
     def get_buckets(self, project_id, project_view_id):
-        return self._get_json(self._create_url(f'/projects/{str(project_id)}/views/{str(project_view_id)}/buckets'))
+        return self._get_json(self._create_url(f'/projects/{str(project_id)}/views/{str(project_view_id)}/tasks'))
 
     def put_bucket(self, project_id, project_view_id, title):
         payload = {'title': title}
