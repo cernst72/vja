@@ -1,3 +1,14 @@
+## [4.3.0](https://gitlab.com/ce72/vja/compare/4.2.0...4.3.0) (2024-07-28)
+
+### Features
+
+* **edit:** due-date keeps remote time if only date is modified ([15f863b](https://gitlab.com/ce72/vja/commit/15f863bce56bea64424ed6992fc5c61ff865fa1a))
+
+### Misc
+
+* **deps:** update dependency pytest to v8.3.2 ([40e214b](https://gitlab.com/ce72/vja/commit/40e214b6a177b40da70fcaeaacaef7cd7a1e6254))
+* refactor date parsing ([27dc515](https://gitlab.com/ce72/vja/commit/27dc515757c1e4aa5009ba6d5b8b30898b83ac3d))
+
 ## [4.2.0](https://gitlab.com/ce72/vja/compare/4.1.0...4.2.0) (2024-07-26)
 
 ### Features
