@@ -11,6 +11,7 @@ It provides a command line interface for adding, viewing and editing todo tasks 
 The goal is to support a command line based task workflow ~ similar to taskwarrior.
 
 #### Breaking changes in vja 4.0
+
 vja 4.0 supports (and requires) the most recent Vikunja API >= 0.24.0.
 Use vja up to version 3.3.1 for compatibility with Vikunja API 0.23.0.
 
@@ -21,10 +22,10 @@ vja --help
 vja ls
 ```
 
-(You will be prompted for your account on first usage and any time the access token expires, see [Features.md](https://gitlab.com/ce72/vja/-/blob/main/Features.md#login))
+(You will be prompted for your account on first usage and any time the access token expires,
+see [Features.md](https://gitlab.com/ce72/vja/-/blob/main/Features.md#login))
 
 **More user documentation is available on [Features.md](https://gitlab.com/ce72/vja/-/blob/main/Features.md)**
-
 
 ## Installation
 
@@ -41,6 +42,7 @@ vja ls
 ## Configuration
 
 Before using vja you must provide a configuration.
+An example can be found in [vja.rc](https://gitlab.com/ce72/vja/-/blob/main/.vjacli/vja.rc).
 
 - Create a configuration file $HOME/.vjacli/vja.rc with ~ the following contents
   ```shell
@@ -90,6 +92,7 @@ Python >= 3.8 is recommended. First create a local environment:
 python -m venv ./venv
 source venv/bin/activate
 ```
+
 (That may be `source venv/Scripts/activate` on some windows machines.)
 
 ### Local build
@@ -102,6 +105,7 @@ python -m pip install -e .
 ```
 
 #### Run integration test
+
 Start docker container for `vikunja/api:latest` and execute `pytest` against that server instance.
 
 ```shell

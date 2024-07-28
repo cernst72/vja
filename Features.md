@@ -33,7 +33,8 @@ If Two-Factor Authentication is activated for your user then vja will prompt you
 The resulting token will be stored in `$HOME/.vjacli/token.json`.
 
 ### API token
-Alternatively you may create an API token with sufficient rights in Vikunja ("Settings -> API Tokens") 
+
+Alternatively you may create an API token with sufficient rights in Vikunja ("Settings -> API Tokens")
 and save it to `$HOME/.vjacli/token.json`
 
 ```json
@@ -41,14 +42,16 @@ and save it to `$HOME/.vjacli/token.json`
   "token": "YOUR-API-TOKEN"
 }
 ```
-The token permission must include at least labels, projects, tasks as well as all required relations with all operations, depending on what you want to use vja for.
+
+The token permission must include at least Labels, Projects, Tasks as well as all required relations with all
+operations, depending on what you want to use vja for.
 
 ## Tasks
 
-All task related commands are supported in both variants:
+All task related commands are supported in two variants:
 `vja add`, `vja ls`, ...
 as well as
-`vja task add`, `vja task ls`, ... and even `vja tasks...`
+`vja task add`, `vja task ls`, ... (and even `vja tasks...`).
 
 ### Add Task
 
