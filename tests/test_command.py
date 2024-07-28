@@ -85,26 +85,29 @@ class TestEditGeneral:
         assert after['project']['id'] == before['project']['id']
         assert after['created'] == before['created']
 
-    def test_edit_due_date_without_time(self, runner):
-        invoke(runner, 'edit 1 --due=tomorrow')
+    def test_edit_due_date_with_time(self, runner):
+        # unset due_date
+        before = json_for_task_id(runner, 1)
+        assert before['due_date'] is not None
+        invoke(runner, 'edit 1 --due-date=')
+        after = json_for_task_id(runner, 1)
+        assert after['due_date'] is None
 
+        # edit due_date with default time
+        invoke(runner, 'edit 1 --due=tomorrow')
         after = json_for_task_id(runner, 1)
         assert after['due_date'] == TOMMORROW_AT_8_ISO
 
-    def test_edit_due_date_with_time(self, runner):
+        # edit due_date with given time
         invoke(runner, ['edit', '1', '--due=tomorrow 15:00'])
-
         after = json_for_task_id(runner, 1)
         assert after['due_date'] == (TOMORROW.replace(hour=15, minute=0, second=0)).isoformat()
 
-    def test_unset_due_date(self, runner):
-        before = json_for_task_id(runner, 1)
-        assert before['due_date'] is not None
-
-        invoke(runner, 'edit 1 --due-date=')
-
+        # edit due_date without time
+        invoke(runner, 'edit 1 --due=today')
         after = json_for_task_id(runner, 1)
-        assert after['due_date'] is None
+        assert after['due_date'] == (TODAY.replace(hour=15, minute=0, second=0)).isoformat()
+
 
     def test_toggle_label(self, runner):
         labels_0 = json_for_task_id(runner, 1)['label_objects']
