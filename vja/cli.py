@@ -437,6 +437,23 @@ def task_open(application, tasks):
             application.open_browser_task(task_id)
 
 
+# task group
+@cli.group('task', help='(optional) subcommand: task (see help)', aliases=['tasks'])
+def task_group():
+    # vja task
+    pass
+
+
+task_group.add_command(task_add)
+task_group.add_command(task_clone)
+task_group.add_command(task_edit)
+task_group.add_command(task_toggle)
+task_group.add_command(task_defer)
+task_group.add_command(task_ls)
+task_group.add_command(task_show)
+task_group.add_command(task_open)
+
+
 @cli.command('logout', help='Remove local access token')
 @with_application
 def logout(application):

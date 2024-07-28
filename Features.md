@@ -3,18 +3,20 @@
 <!-- TOC -->
 * [Features](#features)
   * [Login](#login)
-  * [Add Task](#add-task)
-    * [Clone](#clone)
-  * [List tasks](#list-tasks)
-    * [Urgency](#urgency)
-    * [Sort](#sort)
-    * [Filter](#filter)
-    * [Select](#select)
-  * [Show single task by id](#show-single-task-by-id)
-  * [Edit tasks](#edit-tasks)
-    * [Defer task](#defer-task)
-    * [Reminders](#reminders)
-    * [Batch editing](#batch-editing)
+    * [API token](#api-token)
+  * [Tasks](#tasks)
+    * [Add Task](#add-task)
+      * [Clone](#clone)
+    * [List tasks](#list-tasks)
+      * [Urgency](#urgency)
+      * [Sort](#sort)
+      * [Filter](#filter)
+      * [Select](#select)
+    * [Show single task](#show-single-task)
+    * [Edit tasks](#edit-tasks)
+      * [Defer task](#defer-task)
+      * [Reminders](#reminders)
+      * [Batch editing](#batch-editing)
   * [Open Vikunja in browser](#open-vikunja-in-browser)
   * [Manage projects, labels, buckets](#manage-projects-labels-buckets)
     * [Manage projects](#manage-projects)
@@ -30,15 +32,25 @@ When no valid token file exists in `$HOME/.vjacli/` then vja will ask for userna
 If Two-Factor Authentication is activated for your user then vja will prompt you for the one-time password additionally.
 The resulting token will be stored in `$HOME/.vjacli/token.json`.
 
-Alternatively you may create an API token with sufficient rights in Vikunja and save it to `$HOME/.vjacli/token.json`
+### API token
+Alternatively you may create an API token with sufficient rights in Vikunja ("Settings -> API Tokens") 
+and save it to `$HOME/.vjacli/token.json`
 
 ```json
 {
   "token": "YOUR-API-TOKEN"
 }
 ```
+The token permission must include at least labels, projects, tasks as well as all required relations with all operations, depending on what you want to use vja for.
 
-## Add Task
+## Tasks
+
+All task related commands are supported in both variants:
+`vja add`, `vja ls`, ...
+as well as
+`vja task add`, `vja task ls`, ... and even `vja tasks...`
+
+### Add Task
 
 `vja add <Tasktitle>` allows to quickly add a new task to the default project. Several options exist to provide more
 context:
@@ -61,7 +73,7 @@ vja add --help
 
 for more.
 
-### Clone
+#### Clone
 
 Another option to create a new task is cloning an existing task
 
@@ -78,7 +90,7 @@ See
 vja clone --help
 ```
 
-## List tasks
+### List tasks
 
 List all active tasks
 
@@ -93,7 +105,7 @@ You may limit the output by giving task ids
 vja ls 10 13 14
 ```
 
-### Urgency
+#### Urgency
 
 By default, tasks are sorted (amongst others) by their urgency, which is displayed in the last column. Urgency is
 calculated by regarding due_date, priority and is_favorite of the task, as well as the occurrence of keywords in the
@@ -101,7 +113,7 @@ project title or the label titles. The weights of each factor and the keywords c
 file ~/.vjacli/vja.rc. See Configuration section in [README.md](README.md). See [.vjacli/vja.rc](.vjacli/vja.rc) for an
 example.
 
-### Sort
+#### Sort
 
 Sorting of tasks can be achieved by setting the `--sort` option.
 
@@ -118,7 +130,7 @@ vja ls --sort='done, -urgency, due_date, -priority, project.title, title'
 
 See `vja ls --help` for more.
 
-### Filter
+#### Filter
 
 The displayed tasks may be filtered by several arguments like project or title, base_project and label
 
@@ -158,14 +170,14 @@ vja ls --filter="labels ne @work" --project=1 --urgent
 
 See `vja ls --help` for more.
 
-### Select
+#### Select
 
 Columns may be selected and formatted in .vjarc and activated via `--custom-format`.
 See [Output format](#output-format)
 
 See `vja ls --help` for more.
 
-## Show single task by id
+### Show single task
 
 ```shell
 vja show 1
@@ -174,7 +186,7 @@ vja show 1 2 3
 
 ```
 
-## Edit tasks
+### Edit tasks
 
 ```shell
 vja edit 1 --title="new title" --due-date="friday" --priority=1
@@ -207,7 +219,7 @@ vja edit --help
 
 for more.
 
-### Defer task
+#### Defer task
 
 There is a shortcut for setting a delay on a task by giving a timedelta expression.
 
@@ -218,7 +230,7 @@ vja defer --help
 
 This command moves the due_date and the first reminder ahead in time.
 
-### Reminders
+#### Reminders
 
 vja manages only the first reminder of the task. That is the earliest reminder on the server.
 
@@ -252,7 +264,7 @@ vja edit 1 --reminder=""
 
 The same goes for `vja add`.
 
-### Batch editing
+#### Batch editing
 
 Multiple edits and defers are possible by giving more task ids. Take care though, there is no confirmation request.
 
