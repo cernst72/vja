@@ -8,11 +8,11 @@ from vja.model import User, Task, Project
 PROJECT_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:20.20} {x.description:20.20}  ' \
                               '{x.parent_project_id:5} '
 
-BUCKET_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:20.20} {x.limit:3} {x.count_tasks:5}'
+BUCKET_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:20.20} {x.limit:5} {x.count_tasks:6}'
 
 LABEL_LIST_FORMAT_DEFAULT = '{x.id:5} {x.title:20.20}'
 
-TASK_LIST_FORMAT_DEFAULT = '{x.id:5} ({x.priority}) {"*" if x.is_favorite else " "} {x.title:50.50} ' \
+TASK_LIST_FORMAT_DEFAULT = '{x.id:6} ({x.priority}) {"*" if x.is_favorite else " "} {x.title:50.50} ' \
                            '{x.due_date.strftime("%a %d.%m %H:%M") if x.due_date else "":15.15} ' \
                            '{"A" if x.reminders else " "}{"R" if x.repeat_after else " "}{"D" if x.description else " "} ' \
                            '{x.project.title:20.20} {x.labels:20.20} {x.urgency:3.1f}'
