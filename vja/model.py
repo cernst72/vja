@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 
 from vja.parse import parse_json_date
 
+ID_TITLE='id={},title={}'
 
 def custom_output(cls):
     def __str__(self):
@@ -87,7 +88,7 @@ class ProjectView:
         return [ProjectView.from_json(x) for x in json_array or []]
 
     def short_str(self):
-        return 'id=' + str(self.id) + ',title=' + self.title
+        return ID_TITLE.format(self.id, self.title)
 
 
 @dataclass
@@ -121,7 +122,7 @@ class Project:
         return next(x for x in self.views if x.view_kind == "kanban")
 
     def short_str(self):
-        return 'id=' + str(self.id) + ',title=' + self.title
+        return ID_TITLE.format(self.id, self.title)
 
 
 @dataclass(frozen=True)
@@ -162,7 +163,7 @@ class Label:
         return [Label.from_json(x) for x in json_array or []]
 
     def short_str(self):
-        return 'id=' + str(self.id) + ',title=' + self.title
+        return ID_TITLE.format(self.id, self.title)
 
 
 @dataclass
