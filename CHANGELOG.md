@@ -1,3 +1,19 @@
+## [4.4.1](https://gitlab.com/ce72/vja/compare/4.4.0...4.4.1) (2024-07-31)
+
+### Bug Fixes
+
+* **bucket ls:** output count of tasks in bucket ([dd8b57a](https://gitlab.com/ce72/vja/commit/dd8b57a7d7a461e8436fe4cdfb275b2a24167979))
+* crash in TaskReminder.short_str ([63bb0c5](https://gitlab.com/ce72/vja/commit/63bb0c55dbdbca9c5ef4923b8b881bf1b75c1b2e))
+* **ls:** spacing of ids ([de0b333](https://gitlab.com/ce72/vja/commit/de0b333b8631b271e082face4be01b8cea930e46))
+
+### Documentation
+
+* proofreading ([912d084](https://gitlab.com/ce72/vja/commit/912d0841a56a6fa0264f364c970158adec406efd))
+
+### Misc
+
+* **deps:** update dependency pip to v24.2 ([4be4a88](https://gitlab.com/ce72/vja/commit/4be4a88589184e8754b572257c842d6f60d1aede))
+
 ## [4.4.0](https://gitlab.com/ce72/vja/compare/4.3.0...4.4.0) (2024-07-28)
 
 ### Features
