@@ -184,7 +184,10 @@ class TaskReminder:
         return [TaskReminder.from_json(x) for x in json_array or []]
 
     def short_str(self):
-        return 'reminder=' + self.reminder.isoformat() + ',relative_to=' + self.relative_to
+        return 'reminder={},period={},relative_to={}'.format(
+            self.reminder.isoformat() if self.reminder else ' ',
+            self.relative_period,
+            self.relative_to)
 
 
 @dataclass
