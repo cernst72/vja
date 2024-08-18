@@ -23,6 +23,7 @@
     * [Manage kanban buckets](#manage-kanban-buckets)
     * [Manage labels](#manage-labels)
   * [Output format](#output-format)
+    * [Example](#example)
   * [Terminate session](#terminate-session)
 <!-- TOC -->
 
@@ -113,7 +114,7 @@ vja ls 10 13 14
 By default, tasks are sorted (amongst others) by their urgency, which is displayed in the last column. Urgency is
 calculated by regarding due_date, priority and is_favorite of the task, as well as the occurrence of keywords in the
 project title or the label titles. The weights of each factor and the keywords can be specified in the configuration
-file ~/.vjacli/vja.rc. See Configuration section in [README.md](README.md). See [.vjacli/vja.rc](.vjacli/vja.rc) for an
+file `~/.vjacli/vja.rc`. See Configuration section in [README.md](README.md). See [`.vjacli/vja.rc`](.vjacli/vja.rc) for an
 example.
 
 #### Sort
@@ -175,7 +176,7 @@ See `vja ls --help` for more.
 
 #### Select
 
-Columns may be selected and formatted in .vjarc and activated via `--custom-format`.
+Columns may be selected and formatted in `.vjarc` and activated via `--custom-format`.
 See [Output format](#output-format)
 
 See `vja ls --help` for more.
@@ -347,11 +348,22 @@ vja label ls
 You may specify custom list output formats (selecting and formatting columns).
 Run with `--custom-format=<template-name>` to refer a format string in your `vja.rc`.
 
-See [example](https://gitlab.com/ce72/vja/-/blob/main/.vjacli/vja.rc). This can be activated e.g.
+See [vja.rc](https://gitlab.com/ce72/vja/-/blob/main/.vjacli/vja.rc). This can be activated e.g.
 with `vja ls --custom-format=ids_only`.
 
 Be careful: The format string may contain arbitrary code, which gets executed at runtime (python eval()).
 Do not use `--custom-format` if you feel uncomfortable with that.
+
+### Example
+
+The following command generates a script which may be executed against another instance
+to import your active Vikunja tasks:
+
+```shell
+vja ls --sort=id --custom-format=reimport > import.sh
+```
+
+(`export PYTHONIOENCODING=utf8` if you have encoding issues)
 
 ## Terminate session
 
