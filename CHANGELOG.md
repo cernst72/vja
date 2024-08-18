@@ -1,3 +1,22 @@
+## [4.5.0](https://gitlab.com/ce72/vja/compare/4.4.1...4.5.0) (2024-08-18)
+
+### Features
+
+* **ls:** new custom format 'reimport' to replicate tasks ([a69083a](https://gitlab.com/ce72/vja/commit/a69083a05c6174ea70f2d483002e371885e3faf5))
+
+### Bug Fixes
+
+* **add:** treat blank due_date like None ([3510f80](https://gitlab.com/ce72/vja/commit/3510f808a31987757e4b6e2e249cb36038c7613f))
+
+### Misc
+
+* **deps:** update all dependencies ([ce57b4d](https://gitlab.com/ce72/vja/commit/ce57b4dd03945df05cc518f15b9a61628be5ac65))
+* refactoring ([9e8c691](https://gitlab.com/ce72/vja/commit/9e8c691d2602e725df3d11a2acdcf4b9379a17a2))
+
+### Automation
+
+* test with version 0.24.2 ([32a1bd1](https://gitlab.com/ce72/vja/commit/32a1bd1c672047ec460967fb21425d7ad33df23e))
+
 ## [4.4.1](https://gitlab.com/ce72/vja/compare/4.4.0...4.4.1) (2024-07-31)
 
 ### Bug Fixes
