@@ -84,8 +84,7 @@ class CommandService:
             project_id = self._project_service.get_default_project().id
         label_names = args.pop('label')
         is_force = args.pop('force_create') if args.get('force_create') is not None else False
-
-        if args.get('due'):
+        if args.get('due') is not None:
             args.update({'due': parse_date_arg_to_iso(args.get('due'))})
         self._parse_reminder_arg(args.get('reminder'), args)
 
