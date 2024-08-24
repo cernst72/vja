@@ -2,6 +2,7 @@ import functools
 import re
 import time
 from datetime import datetime, timedelta
+from html.parser import HTMLParser
 from typing import Optional
 
 from dateutil import tz, parser
@@ -71,6 +72,19 @@ def parse_json_date(json_date: str) -> Optional[datetime]:
 
 def parse_bool_arg(text: str) -> bool:
     return text.lower() in ['true', '1', 't', 'y', 'yes'] if text else False
+
+
+class HTMLFilter(HTMLParser):
+    inner_text = ""
+
+    def handle_data(self, data):
+        self.inner_text += data
+
+
+def html2text(text: str) -> str:
+    parser = HTMLFilter()
+    parser.feed(text)
+    return parser.inner_text
 
 
 def rgetattr(obj, path: str, *default):

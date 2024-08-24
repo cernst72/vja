@@ -3,16 +3,19 @@ import typing
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
-from vja.parse import parse_json_date
+from vja.parse import html2text, parse_json_date
 
-ID_TITLE='id={},title={}'
+ID_TITLE = 'id={},title={}'
+
 
 def custom_output(cls):
+    hidden_attribute_names = ['json', 'description_text']
+
     def __str__(self):
         """Returns a string containing only the non-null attribute values, excluding json attribute ."""
         return '\n'.join(f'{attribute.name}: {_str_value(getattr(self, attribute.name))}'
                          for attribute in dataclasses.fields(self)
-                         if attribute.name != 'json' and getattr(self, attribute.name))
+                         if attribute.name not in hidden_attribute_names and getattr(self, attribute.name))
 
     def _str_value(v):
         if isinstance(v, datetime):
@@ -200,6 +203,7 @@ class Task:
     id: int
     title: str
     description: str
+    description_text: str
     priority: int
     is_favorite: bool
     due_date: datetime
@@ -225,7 +229,9 @@ class Task:
 
     @classmethod
     def from_json(cls, json, project_object, labels):
-        return cls(json, json['id'], json['title'], json['description'],
+        return cls(json, json['id'], json['title'],
+                   json['description'],
+                   html2text(json['description']),
                    json['priority'],
                    json['is_favorite'],
                    parse_json_date(json['due_date']),
