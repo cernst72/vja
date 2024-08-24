@@ -1,3 +1,9 @@
+## [4.5.1](https://gitlab.com/ce72/vja/compare/4.5.0...4.5.1) (2024-08-24)
+
+### Bug Fixes
+
+* **ls:** regard ghost descriptions in vikunja like empty descriptions ([8048bb5](https://gitlab.com/ce72/vja/commit/8048bb55050892f5bf8d033b1f5ce9fd13aaa45e))
+
 ## [4.5.0](https://gitlab.com/ce72/vja/compare/4.4.1...4.5.0) (2024-08-18)
 
 ### Features
