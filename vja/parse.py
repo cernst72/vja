@@ -82,9 +82,9 @@ class HTMLFilter(HTMLParser):
 
 
 def html2text(text: str) -> str:
-    parser = HTMLFilter()
-    parser.feed(text)
-    return parser.inner_text
+    html_parser = HTMLFilter()
+    html_parser.feed(text)
+    return html_parser.inner_text
 
 
 def rgetattr(obj, path: str, *default):

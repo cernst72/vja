@@ -65,7 +65,7 @@ class Output:
         elif is_jsonvja:
             click.echo(json.dumps([x.data_dict() for x in object_array], default=str))
         else:
-            for x in object_array: # it is mandatory that the variable name is 'x'. The template strings refer to it.
+            for x in object_array:  # it is mandatory that the variable name is 'x'. The template strings refer to it.
                 # https://stackoverflow.com/a/53671539/2935741
                 # Note: Using eval() is risky, because arbitrary code may be introduced via the configured formatting
                 # templates.
