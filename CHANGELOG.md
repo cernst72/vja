@@ -1,3 +1,13 @@
+## [4.5.2](https://gitlab.com/ce72/vja/compare/4.5.1...4.5.2) (2024-09-02)
+
+### Bug Fixes
+
+* **ls:** default --ugency to 4 ([ababf00](https://gitlab.com/ce72/vja/commit/ababf00580322340e907a65679198ac72a53fae7))
+
+### Misc
+
+* refactoring ([641ee15](https://gitlab.com/ce72/vja/commit/641ee158ef026793825489c77b4e0cda6c95c806))
+
 ## [4.5.1](https://gitlab.com/ce72/vja/compare/4.5.0...4.5.1) (2024-08-24)
 
 ### Bug Fixes
