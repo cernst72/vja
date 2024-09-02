@@ -394,7 +394,7 @@ def task_defer(ctx, application, task_ids, delay_by, quiet_show=False, verbose_s
                    'Shortcut for --filter="priority <operator> <value>"')
 @click.option('title_filter', '-i', '--title',
               help='Filter title (regex)')
-@click.option('urgency_filter', '-u', '--urgent', '--urgency', is_flag=False, flag_value=3, type=click.INT,
+@click.option('urgency_filter', '-u', '--urgent', '--urgency', is_flag=False, flag_value=4, type=click.INT,
               help='Filter by minimum urgency.  Shortcut for --filter="urgency ge <value>"')
 @with_application
 def task_ls(application, task_ids, is_json, is_jsonvja, custom_format, include_completed, sort_string=None,
