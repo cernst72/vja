@@ -1,5 +1,5 @@
 x-vikunja-image: &vikunja-image
-  image: ${VIKUNJA_IMAGE:-vikunja/vikunja:0.24.2}
+  image: ${VIKUNJA_IMAGE:-vikunja/vikunja:0.24.3}
 
 services:
   vikunja:
