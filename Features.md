@@ -44,7 +44,7 @@ and save it to `$HOME/.vjacli/token.json`
 }
 ```
 
-The token permission must include at least Labels, Projects, Tasks as well as all required relations with all
+The token permission must include at least Labels, Projects, Tasks, User as well as all required relations with all
 operations, depending on what you want to use vja for.
 
 ## Tasks
@@ -357,7 +357,7 @@ Do not use `--custom-format` if you feel uncomfortable with that.
 ### Example
 
 The following command generates a script which may be executed against another instance
-to import your active Vikunja tasks:
+to re-import your active Vikunja tasks (only a few attributes):
 
 ```shell
 vja ls --sort=id --custom-format=reimport > import.sh
