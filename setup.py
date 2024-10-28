@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as readme_file:
 requirements = [
     "click>=8.1",
     "click-aliases>=1",
-    "requests>=2.31",
+    "requests>=2.32",
     "parsedatetime>=2.6",
     "python-dateutil>=2.8"
 ]
@@ -25,10 +25,10 @@ setup(
         'vja=vja.cli:cli'
     ]},
     classifiers=[
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     ],
 )

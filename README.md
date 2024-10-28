@@ -86,7 +86,7 @@ like `VJA_CONFIGDIR=/not/my/home`
 
 ### Prepare python virtual environment
 
-Python >= 3.8 is recommended. First create a local environment:
+Python >= 3.9 is recommended. First create a local environment:
 
 ```shell
 python -m venv ./venv
@@ -106,7 +106,7 @@ python -m pip install -e .
 
 #### Run integration test
 
-Start docker container for `vikunja/api:latest` and execute `pytest` against that server instance.
+Start docker container for `vikunja/api:latest` and execute `pytest` against that server instance:
 
 ```shell
 docker compose -f tests/docker-compose.yml up -d
