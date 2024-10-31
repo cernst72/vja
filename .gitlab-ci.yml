@@ -27,7 +27,7 @@ stages:
 
 pylint:
   stage: test
-  image: python:3.12-slim
+  image: python:3.13-slim
   allow_failure: true
   script:
     - python3 -m venv ./venv
