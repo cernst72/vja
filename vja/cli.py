@@ -369,7 +369,7 @@ def task_defer(ctx, application, task_ids, delay_by, quiet_show=False, verbose_s
 @click.option('custom_format', '--custom-format',
               help='Format with template from .vjacli/vja.rc')
 @click.option('sort_string', '--sort', '--sort-by', '--sort-string',
-              help='Sort by arguments (Arguments ar task attributes separated by ",") '
+              help='Sort by arguments (Arguments are task attributes separated by ",") '
                    '(Prefix each criteria with "-" to reverse order')
 @click.option('include_completed', '--include-completed', '--all', default=False, is_flag=True,
               help='Include completed tasks')
