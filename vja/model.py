@@ -19,7 +19,7 @@ def custom_output(cls):
 
     def _str_value(v):
         if isinstance(v, datetime):
-            return v.isoformat()
+            return v.strftime("%a %Y-%m-%d %H:%M:%S")
         if isinstance(v, (Project, ProjectView, Label, TaskReminder)):
             return v.short_str()
         if isinstance(v, list):
