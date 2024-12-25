@@ -1,3 +1,27 @@
+## [4.6.0](https://gitlab.com/ce72/vja/compare/4.5.2...4.6.0) (2024-12-25)
+
+### Features
+
+* **show:** output dates with day of week ([a4714c8](https://gitlab.com/ce72/vja/commit/a4714c84fe259b0459179fa5f0ccd7e50f6d6ff4))
+
+### Documentation
+
+* mention user scope for API token ([13a0351](https://gitlab.com/ce72/vja/commit/13a03518060e6b38964c177d0b2d49d9922b92a8))
+
+### Misc
+
+* **deps:** update all dependencies ([bcbd07d](https://gitlab.com/ce72/vja/commit/bcbd07dcf0bae6ac4fcb46a1d0f719897abfebfc))
+* **deps:** update all dependencies ([99af11f](https://gitlab.com/ce72/vja/commit/99af11f89d90bce28c25f6fdc083f28b15ed1572))
+* **deps:** update all dependencies ([ec234bd](https://gitlab.com/ce72/vja/commit/ec234bd03adfeaa96599eaaadd0323a5eb595486))
+* **deps:** update dependency coverage to v7.6.8 ([886892f](https://gitlab.com/ce72/vja/commit/886892fed6ac838db95c726798b3d73d41c885ab))
+* **deps:** update dev dependencies ([1c505b7](https://gitlab.com/ce72/vja/commit/1c505b7b899b33c72fff6d9163b7903c2bf03327))
+* require requests>=2.32 ([da09277](https://gitlab.com/ce72/vja/commit/da092772a7eff6e1157e034ddfb200a7b7092eb4))
+
+### Automation
+
+* run tests against current vikunja:0.24.5 ([d4cd8f4](https://gitlab.com/ce72/vja/commit/d4cd8f4729f36b671b9945a53178fce2a962d2c8))
+* test with version 0.24.6 ([7ec237a](https://gitlab.com/ce72/vja/commit/7ec237a3b0d2c5354bf1353b318d824e3d89d1e6))
+
 ## [4.5.2](https://gitlab.com/ce72/vja/compare/4.5.1...4.5.2) (2024-09-02)
 
 ### Bug Fixes
