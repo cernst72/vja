@@ -1,3 +1,9 @@
+## [4.7.1](https://gitlab.com/ce72/vja/compare/4.7.0...4.7.1) (2025-02-04)
+
+### Bug Fixes
+
+* **edit:** set default favorite to None ([8af1cf8](https://gitlab.com/ce72/vja/commit/8af1cf8a086acbdd33e309df4d35ade29da701fa))
+
 ## [4.7.0](https://gitlab.com/ce72/vja/compare/4.6.0...4.7.0) (2025-02-04)
 
 ### Features
