@@ -139,6 +139,16 @@ class TestEditGeneral:
         assert project_1 == 1
         assert project_2 == 2
 
+    def test_toggle_favorite(self, runner):
+        favorite_0 = json_for_task_id(runner, 1)['is_favorite']
+        invoke(runner, 'edit 1 --star --force-create')
+        favorite_1 = json_for_task_id(runner, 1)['is_favorite']
+        invoke(runner, 'edit 1 --no-star')
+        favorite_2 = json_for_task_id(runner, 1)['is_favorite']
+
+        assert favorite_0 != favorite_1
+        assert favorite_0 == favorite_2
+
 
 class TestEditReminder:
     def test_set_reminder_to_absolute_value(self, runner):

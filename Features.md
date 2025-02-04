@@ -60,13 +60,13 @@ as well as
 context:
 
 ```shell
-vja add Getting things done --note="find out how" -priority=3 --favorite=True --due="tomorrow at 11:00" --reminder --label=@work
+vja add Getting things done --note="find out how" -priority=3 --favorite --due="tomorrow at 11:00" --reminder --label=@work
 ```
 
 or more concise
 
 ```shell
-vja add One more task -o 1 -p 4 -l "Label1" -n "my note" -d "23:00" -f True
+vja add One more task -o 1 -p 4 -l "Label1" -n "my note" -d "23:00" -f
 ```
 
 See
@@ -193,7 +193,8 @@ vja show 1 2 3
 ### Edit tasks
 
 ```shell
-vja edit 1 --title="new title" --due-date="friday" --priority=1
+vja edit 1 --title="new title" --due-date="friday" --priority=1 --star
+vja edit 1 --no-star
 ```
 
 Set new due_date and set reminder=due_date

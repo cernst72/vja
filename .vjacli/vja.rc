@@ -11,7 +11,7 @@ api_url=https://try.vikunja.io/api/v1
 tasklist_long={x.id:6} ({x.priority}) {"*" if x.is_favorite else " "} {x.title:50.50} {x.due_date.strftime("%a %d.%m %H:%M") if x.due_date else "":15.15} {"A" if x.reminders else " "}{"R" if x.repeat_after else " "}{"D" if x.description_text else " "} {x.project.title:20.20} {x.labels:20.20} {x.urgency:3}
 tasklist_short={x.id:6} {x.title:50.50}
 ids_only={x.id}
-reimport=vja add --force-create \'{x.title}\' --project=\'{x.project.title}\' --priority={x.priority} --favorite={x.is_favorite} --label=\'{x.labels}\' --due-date="{x.due_date if x.due_date else ""}" --reminder="{x.reminders[0].reminder if x.reminders else ""}" --description=\'{x.description}\'
+reimport=vja add --force-create \'{x.title}\' --project=\'{x.project.title}\' --priority={x.priority}{" --favorite" if x.is_favorite else ""} --label=\'{x.labels}\' --due-date="{x.due_date if x.due_date else ""}" --reminder="{x.reminders[0].reminder if x.reminders else ""}" --description=\'{x.description}\'
 
 [urgency_coefficients]
 due_date_weight=1.0

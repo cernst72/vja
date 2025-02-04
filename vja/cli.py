@@ -232,7 +232,7 @@ def label_add(application, title):
               help='Set priority')
 @click.option('due', '-d', '--due', '--duedate', '--due-date', '--due_date',
               help='Set due date (supports parsedatetime expressions)')
-@click.option('favorite', '-f', '--star', '--favorite', type=click.BOOL,
+@click.option('favorite', '-f', '--star', '--favorite', type=click.BOOL, is_flag=True,
               help='Mark as favorite')
 @click.option('label', '-l', '--label', multiple=True,
               help='Set label (label must exist on server)')
@@ -296,8 +296,8 @@ def task_clone(ctx, application, task_id, title, quiet_show=False, verbose_show=
               help='Set kanban position')
 @click.option('due', '-d', '--due', '--duedate', '--due-date', '--due_date',
               help='Set due date (supports parsedatetime expressions)')
-@click.option('favorite', '-f', '--favorite', '--star', type=click.BOOL,
-              help='Mark as favorite')
+@click.option('favorite', '-f', '--favorite/--no-favorite', '--star/--no-star', is_flag=True,
+              help='Mark or unmark task as favorite')
 @click.option('completed', '-c', '--completed', '--done', type=click.BOOL,
               help='Mark as completed')
 @click.option('label', '-l', '--label',
