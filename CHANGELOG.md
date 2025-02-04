@@ -1,3 +1,17 @@
+## [4.7.0](https://gitlab.com/ce72/vja/compare/4.6.0...4.7.0) (2025-02-04)
+
+### Features
+
+* **cli:** marking tasks as favorite with flag ([6e2b521](https://gitlab.com/ce72/vja/commit/6e2b52134ca0ed0b3ac7f59ed2146183b17cf79d))
+
+### Bug Fixes
+
+* **ls:** correctly output labels in custom-format reimport ([f5d24f6](https://gitlab.com/ce72/vja/commit/f5d24f68d428183208a68bad8efdbbd57a47430e))
+
+### Misc
+
+* **deps:** update all dependencies ([be19d33](https://gitlab.com/ce72/vja/commit/be19d331b3fbcd94425e6a92c8b624c3fb0dcf0a))
+
 ## [4.6.0](https://gitlab.com/ce72/vja/compare/4.5.2...4.6.0) (2024-12-25)
 
 ### Features
