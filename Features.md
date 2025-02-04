@@ -209,6 +209,9 @@ Toggle label. Use with --force to create new label:
 vja edit 1 -l @work
 ```
 
+Note that `-l` in `vja edit` only allows to toggle a single label, while `vja add -l ... -l ...` allows to add a task
+with multiple labels.
+
 Mark as done
 
 ```shell
