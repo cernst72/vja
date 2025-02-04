@@ -140,10 +140,11 @@ class TestEditGeneral:
         assert project_2 == 2
 
     def test_toggle_favorite(self, runner):
+        invoke(runner, 'edit 1 --star')
         favorite_0 = json_for_task_id(runner, 1)['is_favorite']
-        invoke(runner, 'edit 1 --star --force-create')
-        favorite_1 = json_for_task_id(runner, 1)['is_favorite']
         invoke(runner, 'edit 1 --no-star')
+        favorite_1 = json_for_task_id(runner, 1)['is_favorite']
+        invoke(runner, 'edit 1 --star')
         favorite_2 = json_for_task_id(runner, 1)['is_favorite']
 
         assert favorite_0 != favorite_1
