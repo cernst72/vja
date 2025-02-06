@@ -82,6 +82,40 @@ like `VJA_CONFIGDIR=/not/my/home`
 | [urgency_keywords]     | lisproject_keywords | Tasks in projects with a title containing these keywords are considered more urgent. Default: None                                                                                                                                                                                                           |
 | [urgency_keywords]     | label_keywords      | Tasks labeled with one of these keywords are considered more urgent. Default: None                                                                                                                                                                                                                           |
 
+### Shell completion
+
+Shell tab-completion can be enabled by generating a shell completion script:
+
+#### Bash
+```sh
+mkdir -p ~/.config/bash/completions
+_VJA_COMPLETE=bash_source vja > ~/.config/bash/completions/vja.bash
+```
+Then add to your `~/.bashrc`:
+```sh
+source ~/.config/bash/completions/vja.bash
+```
+Note: The script location is just a suggestion; you can put it wherever you like.
+
+#### Zsh
+```sh
+mkdir -p ~/.config/zsh/completions
+_VJA_COMPLETE=zsh_source vja > ~/.config/zsh/completions/vja.zsh
+```
+Then add to your `~/.zshrc`:
+```sh
+source ~/.config/zsh/completions/vja.zsh
+```
+Note: The script location is just a suggestion; you can put it wherever you like.
+If you use [ohmyzsh](https://ohmyz.sh), place completion scripts under
+`~/.oh-my-zsh/custom/completions`.
+
+#### Fish
+```sh
+_VJA_COMPLETE=fish_source vja > ~/.config/fish/completions/vja.fish
+```
+Note: Fish completions in the directory above will be automatically loaded for new sessions.
+
 ## Development
 
 ### Prepare python virtual environment
