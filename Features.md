@@ -82,11 +82,8 @@ for more.
 Another option to create a new task is cloning an existing task
 
 ```shell
-vja clone 1 Clone a new task
+vja clone 1 Copy a task with this new title
 ```
-
-By default, the kanban bucket is not cloned so that cloned tasks should appear in the leftmost Kanban column of the
-project. Call `vja clone 1 New task --bucket` to clone the Kanban bucket too.
 
 See
 
