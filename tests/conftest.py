@@ -22,7 +22,7 @@ def invoke(runner, command, return_code=0, user_input=None, catch_exceptions=Fal
     res = runner.invoke(cli, command, input=user_input, catch_exceptions=catch_exceptions)
     sys.stdout.write(res.output)
     if res.stderr_bytes:
-        sys.stdout.write(res.stderr_bytes)
+        sys.stdout.write(res.stderr)
     if res.exception:
         logging.warning(res.exception)
     assert res.exit_code == return_code, res
