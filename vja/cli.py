@@ -60,8 +60,7 @@ class Application:
 with_application = click.make_pass_decorator(Application, ensure=True)
 
 
-@click.group(cls=ClickAliasedGroup, no_args_is_help=True,
-             context_settings=dict({'help_option_names': ['-h', '--help']}))
+@click.group(cls=ClickAliasedGroup, context_settings=dict({'help_option_names': ['-h', '--help']}))
 @click.pass_context
 @click.version_option(metadata.version("vja"))
 @click.option('-v', '--verbose', 'verbose', default=False, is_flag=True, help='Activate verbose logging')

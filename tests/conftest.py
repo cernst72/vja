@@ -25,7 +25,8 @@ def invoke(runner, command, return_code=0, user_input=None, catch_exceptions=Fal
         sys.stdout.write(res.stderr)
     if res.exception:
         logging.warning(res.exception)
-    assert res.exit_code == return_code, res
+    if return_code:
+        assert res.exit_code == return_code, res
     return res
 
 

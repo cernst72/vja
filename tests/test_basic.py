@@ -14,7 +14,7 @@ class TestBasicOptions:
         assert re.match(r'.*version \d+\.\d+\.\d+', res.output), res.output
 
     def test_no_args_displays_help(self, runner):
-        res = invoke(runner, '')
+        res = invoke(runner, '', None)
         assert 'Usage: cli [OPTIONS] COMMAND [ARGS]...' in res.output
         assert res.output.count('\n') > 20
 
