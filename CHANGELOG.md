@@ -1,3 +1,30 @@
+## [4.7.2](https://gitlab.com/ce72/vja/compare/4.7.1...4.7.2) (2025-05-26)
+
+### Bug Fixes
+
+* ignore click's return code in one test ([403ab3a](https://gitlab.com/ce72/vja/commit/403ab3a9f1337df331799675fafce14a2bae573d))
+* **logging:** log timestamps and version in verbose mode ([a174ea0](https://gitlab.com/ce72/vja/commit/a174ea01f18fbdfd7c22e34d42c5607cced1eba2))
+* new click version requires no_args_is_help=True ([1a712e3](https://gitlab.com/ce72/vja/commit/1a712e348bbe50f65440ebc0e70455f3c205202e))
+* **test:** adjust to vikunja's new default bucket names ([8396cab](https://gitlab.com/ce72/vja/commit/8396cab3a2e52fe6a51d17fb0c9895f4618a6f79))
+* **test:** adjust to vikunja's new default bucket names ([be46566](https://gitlab.com/ce72/vja/commit/be4656610ddf0415981d15380fe12941b922c169))
+
+### Documentation
+
+* fix documentation on 'task clone' ([2b1d358](https://gitlab.com/ce72/vja/commit/2b1d358ce215ffb503bdb5f9605c5f6f4e7b1297))
+
+### Misc
+
+* **deps:** update all dependencies ([3f67fb9](https://gitlab.com/ce72/vja/commit/3f67fb9a22eb81f43f8bad3a713f053bc9ff9298))
+* **deps:** update all dependencies ([1cf68c0](https://gitlab.com/ce72/vja/commit/1cf68c0943a3c1eda9460ba6b15baad99959e27d))
+* **deps:** update all dependencies ([ef8c088](https://gitlab.com/ce72/vja/commit/ef8c0885e254e167b8e89c786c758bdbadf56c03))
+* **deps:** update all dependencies ([514df4d](https://gitlab.com/ce72/vja/commit/514df4df8320743fe4ef7cd4ad8b9cd6ded45eb4))
+* **deps:** update dependency coverage to v7.8.2 ([3f820d3](https://gitlab.com/ce72/vja/commit/3f820d3c5eb7289ed0224da02f0227548c90f943))
+
+### Automation
+
+* add Python :: 3.13 classifier ([b88c828](https://gitlab.com/ce72/vja/commit/b88c828a7371750c9286da1ac03edaefa75ed108))
+* fix stderr output ([9473db3](https://gitlab.com/ce72/vja/commit/9473db3f039532292aed767a63ebaa371b71e153))
+
 ## [4.7.1](https://gitlab.com/ce72/vja/compare/4.7.0...4.7.1) (2025-02-04)
 
 ### Bug Fixes
