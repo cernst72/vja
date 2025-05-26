@@ -71,8 +71,9 @@ with_application = click.make_pass_decorator(Application, ensure=True)
                    'Only if TOTP is enabled on server.')
 def cli(ctx=None, verbose=None, username=None, password=None, totp_passcode=None):
     if verbose:
-        logging.basicConfig(level=logging.DEBUG)
-        logger.debug('Verbose mode on')
+        logging.basicConfig(level=logging.DEBUG,
+                            format='%(asctime)s %(levelname)s %(name)s: %(message)s')
+        logger.debug(metadata.version("vja"))
     else:
         logging.basicConfig(level=logging.INFO)
         logging.getLogger().setLevel(logging.INFO)
