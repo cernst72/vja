@@ -1,5 +1,4 @@
 import logging
-import sys
 
 import requests
 
@@ -30,9 +29,9 @@ def handle_http_error(func):
                             error.response.status_code, error.response.url)
                 self.authenticate(force_login=True)
                 return func(self, *args, **kwargs)
-            logger.warning('HTTP-Error %s, url=%s, body=%s',
-                           error.response.status_code, error.response.url, error.response.text)
-            sys.exit(1)
+            raise VjaError(
+                f'HTTP-Error {error.response.status_code}, url={error.response.url}, body={error.response.text}') \
+                from error
 
     return wrapper
 
@@ -53,7 +52,7 @@ class ApiClient:
         if params is None:
             params = {}
         response = requests.get(url, headers=headers, params=params, timeout=30)
-        # to verbose:
+        # too verbose:
         # logger.debug("GET response: %s - %s", response, response.text)
         response.raise_for_status()
         json_result = self._to_json(response)
@@ -105,9 +104,9 @@ class ApiClient:
             self._login.validate_access_token(force_login, username, password, totp_passcode)
             return self._login.get_auth_header()
         except requests.HTTPError as error:
-            logger.warning('HTTP-Error %s, url=%s, body=%s',
-                           error.response.status_code, error.response.url, error.response.text)
-            sys.exit(1)
+            raise VjaError(
+                f'HTTP-Error {error.response.status_code}, url={error.response.url}, body={error.response.text}') \
+                from error
 
     def logout(self):
         self._login.logout()

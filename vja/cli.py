@@ -2,11 +2,13 @@
 
 import logging
 import webbrowser
+from functools import wraps, partial
 from importlib import metadata
 
 import click
 from click_aliases import ClickAliasedGroup
 
+from vja import VjaError
 from vja.apiclient import ApiClient
 from vja.config import VjaConfiguration
 from vja.output import Output
@@ -60,6 +62,19 @@ class Application:
 with_application = click.make_pass_decorator(Application, ensure=True)
 
 
+def catch_exception(func=None, *, handle):
+    if not func:
+        return partial(catch_exception, handle=handle)
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except handle as e:
+            raise click.ClickException(e)
+
+    return wrapper
+
 @click.group(cls=ClickAliasedGroup, context_settings=dict({'help_option_names': ['-h', '--help']}))
 @click.pass_context
 @click.version_option(metadata.version("vja"))
@@ -94,6 +109,7 @@ def user_group():
 @click.option('is_json', '--json', default=False, is_flag=True, help='Print as Vikunja json')
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True, help='Print as vja application json')
 @with_application
+@catch_exception(handle=VjaError)
 def user_show(application, is_json=False, is_jsonvja=False):
     application.output.user(
         application.query_service.find_current_user(), is_json, is_jsonvja)
@@ -111,6 +127,7 @@ def project_group():
               help='Create project as child of parent project. May be given by id or title of parent-project.')
 @click.argument('title', nargs=-1, required=True)
 @with_application
+@catch_exception(handle=VjaError)
 def project_add(application, title, parent_project=None):
     project = application.command_service.add_project(parent_project, " ".join(title))
     click.echo(f'Created project {project.id}')
@@ -124,6 +141,7 @@ def project_add(application, title, parent_project=None):
 @click.option('custom_format', '--custom-format',
               help='Format with template from .vjacli/vja.rc')
 @with_application
+@catch_exception(handle=VjaError)
 def project_ls(application, is_json, is_jsonvja, custom_format):
     if custom_format:
         custom_format = application.configuration.get_custom_format_string(custom_format)
@@ -138,6 +156,7 @@ def project_ls(application, is_json, is_jsonvja, custom_format):
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True,
               help='Print as vja application json')
 @with_application
+@catch_exception(handle=VjaError)
 def project_show(application, project_id, is_json, is_jsonvja):
     application.output.project(
         application.query_service.find_project_by_id(project_id), is_json, is_jsonvja)
@@ -146,6 +165,7 @@ def project_show(application, project_id, is_json, is_jsonvja):
 @project_group.command('open', help='Open project in webbrowser')
 @click.argument('project_id', required=True, type=click.INT)
 @with_application
+@catch_exception(handle=VjaError)
 def project_open(application, project_id):
     application.open_browser_project(project_id)
 
@@ -163,6 +183,7 @@ def bucket_group():
               help='Create bucket in given project.')
 @click.argument('title', nargs=-1, required=True)
 @with_application
+@catch_exception(handle=VjaError)
 def bucket_add(application, title, project):
     bucket = application.command_service.add_bucket(project, " ".join(title))
     click.echo(f'Created bucket {bucket.id} in project {project}')
@@ -180,6 +201,7 @@ def bucket_add(application, title, project):
 @click.option('custom_format', '--custom-format',
               help='Format with template from .vjacli/vja.rc')
 @with_application
+@catch_exception(handle=VjaError)
 def bucket_ls(application, project_id, is_json, is_jsonvja, custom_format):
     if custom_format:
         custom_format = application.configuration.get_custom_format_string(custom_format)
@@ -202,6 +224,7 @@ def label_group():
 @click.option('custom_format', '--custom-format',
               help='Format with template from .vjacli/vja.rc')
 @with_application
+@catch_exception(handle=VjaError)
 def label_ls(application, is_json, is_jsonvja, custom_format):
     if custom_format:
         custom_format = application.configuration.get_custom_format_string(custom_format)
@@ -212,6 +235,7 @@ def label_ls(application, is_json, is_jsonvja, custom_format):
 @label_group.command('add', help='Add label with title')
 @click.argument('title', required=True, nargs=-1)
 @with_application
+@catch_exception(handle=VjaError)
 def label_add(application, title):
     label = application.command_service.add_label(" ".join(title))
     click.echo(f'Created label {label.id}')
@@ -245,6 +269,7 @@ def label_add(application, title):
               help='Force creation of non existing label')
 @with_application
 @click.pass_context
+@catch_exception(handle=VjaError)
 def task_add(ctx, application, title, quiet_show=False, verbose_show=False, **args):
     args_present = {k: v for k, v in args.items() if v is not None}
     task = application.command_service.add_task(" ".join(title), args_present.copy())
@@ -264,6 +289,7 @@ def task_add(ctx, application, title, quiet_show=False, verbose_show=False, **ar
               help='Show resulting task when finished')
 @with_application
 @click.pass_context
+@catch_exception(handle=VjaError)
 def task_clone(ctx, application, task_id, title, quiet_show=False, verbose_show=False):
     task = application.command_service.clone_task(task_id, " ".join(title))
     if verbose_show or not quiet_show:
@@ -311,6 +337,7 @@ def task_clone(ctx, application, task_id, title, quiet_show=False, verbose_show=
               help='Force creation of non existing label')
 @with_application
 @click.pass_context
+@catch_exception(handle=VjaError)
 def task_edit(ctx, application, task_ids, quiet_show=False, verbose_show=False, **args):
     args_present = {k: v for k, v in args.items() if v is not None}
     for task_id in task_ids:
@@ -332,6 +359,7 @@ def task_edit(ctx, application, task_ids, quiet_show=False, verbose_show=False, 
               help='Show resulting task when finished')
 @with_application
 @click.pass_context
+@catch_exception(handle=VjaError)
 def task_toggle(ctx, application, task_id, quiet_show=False, verbose_show=False):
     task = application.command_service.toggle_task_done(task_id)
     if verbose_show or not quiet_show:
@@ -350,6 +378,7 @@ def task_toggle(ctx, application, task_id, quiet_show=False, verbose_show=False)
               help='Show resulting task when finished')
 @with_application
 @click.pass_context
+@catch_exception(handle=VjaError)
 def task_defer(ctx, application, task_ids, delay_by, quiet_show=False, verbose_show=False):
     for task_id in task_ids:
         task = application.command_service.defer_task(task_id, delay_by)
@@ -398,6 +427,7 @@ def task_defer(ctx, application, task_ids, delay_by, quiet_show=False, verbose_s
 @click.option('urgency_filter', '-u', '--urgent', '--urgency', is_flag=False, flag_value=4, type=click.INT,
               help='Filter by minimum urgency.  Shortcut for --filter="urgency ge <value>"')
 @with_application
+@catch_exception(handle=VjaError)
 def task_ls(application, task_ids, is_json, is_jsonvja, custom_format, include_completed, sort_string=None,
             **filter_args):
     if custom_format:
@@ -420,6 +450,7 @@ def task_ls(application, task_ids, is_json, is_jsonvja, custom_format, include_c
 @click.option('is_jsonvja', '--jsonvja', default=False, is_flag=True,
               help='Print as vja application json')
 @with_application
+@catch_exception(handle=VjaError)
 def task_show(application, tasks, is_json, is_jsonvja):
     for task_id in tasks:
         task = application.query_service.find_task_by_id(task_id)
@@ -430,6 +461,7 @@ def task_show(application, tasks, is_json, is_jsonvja):
                                'If tasks is empty, then open vikunjas starting page.')
 @click.argument('tasks', required=False, type=click.INT, nargs=-1)
 @with_application
+@catch_exception(handle=VjaError)
 def task_open(application, tasks):
     if not tasks:
         application.open_browser_task('')
@@ -457,6 +489,7 @@ task_group.add_command(task_open)
 
 @cli.command('logout', help='Remove local access token')
 @with_application
+@catch_exception(handle=VjaError)
 def logout(application):
     application.command_service.logout()
 
