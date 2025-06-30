@@ -1,3 +1,13 @@
+## [4.7.3](https://gitlab.com/ce72/vja/compare/4.7.2...4.7.3) (2025-06-30)
+
+### Bug Fixes
+
+* **error handling:** do not log stacktrace for VjaError ([d75ae22](https://gitlab.com/ce72/vja/commit/d75ae22fd80fbba9db9014b911bef98356227bc0))
+
+### Misc
+
+* **deps:** update all dependencies ([124f91c](https://gitlab.com/ce72/vja/commit/124f91c4fffa4f8b9b1227ee81a64831837789aa))
+
 ## [4.7.2](https://gitlab.com/ce72/vja/compare/4.7.1...4.7.2) (2025-05-26)
 
 ### Bug Fixes
