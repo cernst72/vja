@@ -20,8 +20,22 @@ from vja.urgency import Urgency
 
 logger = logging.getLogger(__name__)
 
+def catch_exception(func=None, *, handle):
+    if not func:
+        return partial(catch_exception, handle=handle)
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except handle as e:
+            raise click.ClickException(e)
+
+    return wrapper
+
 
 class Application:
+    @catch_exception(handle=VjaError)
     def __init__(self):
         self._configuration = VjaConfiguration()
         api_client = ApiClient(self._configuration.get_api_url(), self._configuration.get_token_file())
@@ -62,20 +76,7 @@ class Application:
 with_application = click.make_pass_decorator(Application, ensure=True)
 
 
-def catch_exception(func=None, *, handle):
-    if not func:
-        return partial(catch_exception, handle=handle)
-
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except handle as e:
-            raise click.ClickException(e)
-
-    return wrapper
-
-@click.group(cls=ClickAliasedGroup, context_settings=dict({'help_option_names': ['-h', '--help']}))
+@click.group(cls=ClickAliasedGroup, context_settings={'help_option_names': ['-h', '--help']})
 @click.pass_context
 @click.version_option(metadata.version("vja"))
 @click.option('-v', '--verbose', 'verbose', default=False, is_flag=True, help='Activate verbose logging')
