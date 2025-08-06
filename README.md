@@ -84,18 +84,18 @@ like `VJA_CONFIGDIR=/not/my/home`
 
 ### Shell completion
 
-Shell tab-completion can be enabled by generating a shell completion script:
+Shell tab-completion can be enabled by generating a shell completion script (not specific to vja):
 
 #### Bash
 ```sh
 mkdir -p ~/.config/bash/completions
-_VJA_COMPLETE=bash_source vja > ~/.config/bash/completions/vja.bash
+_VJA_COMPLETE=bash_source vja > ~/.config/bash/completions/vja
 ```
 Then add to your `~/.bashrc`:
 ```sh
-source ~/.config/bash/completions/vja.bash
+source ~/.config/bash/completions/vja
 ```
-Note: The script location is just a suggestion; you can put it wherever you like.
+Note: Instead of sourcing the completion script in `.bashrc` you can just move it to a folder which is supported by bash_completion (e.g. `~/.local/share/bash-completion/completions/`).
 
 #### Zsh
 ```sh
