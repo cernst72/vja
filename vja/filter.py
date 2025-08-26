@@ -4,16 +4,20 @@ import re
 import typing
 from datetime import datetime, timedelta
 
-from vja.parse import (parse_bool_arg, parse_date_arg_to_datetime,
-                       parse_date_arg_to_timedelta, rgetattr)
+from vja.parse import (
+    parse_bool_arg,
+    parse_date_arg_to_datetime,
+    parse_date_arg_to_timedelta,
+    rgetattr,
+)
 
 logger = logging.getLogger(__name__)
 
 
 def _create_due_date_filter(value: str):
-    if value.strip() == '':
+    if value.strip() == "":
         return lambda x: not x.due_date
-    return _create_general_filter([f'due_date {value}'])
+    return _create_general_filter([f"due_date {value}"])
 
 
 def _create_general_filter(values: typing.List[str]):
@@ -47,30 +51,33 @@ def _general_filter(task, field_name, operation, value):
 
 
 def _create_favorite_filter(value):
-    return _create_general_filter([f'is_favorite eq {value}'])
+    return _create_general_filter([f"is_favorite eq {value}"])
 
 
 def _create_label_filter(value):
     logger.debug("filter labels %s", value)
     if str(value).isdigit():
         return lambda x: any(label.id == int(value) for label in x.label_objects)
-    if str(value).strip() == '':
+    if str(value).strip() == "":
         return lambda x: not x.label_objects
     return lambda x: any(_find_regex(value, label.title) for label in x.label_objects)
 
 
 def _create_project_filter(value):
     if str(value).isdigit():
-        return _create_general_filter([f'project.id eq {value}'])
+        return _create_general_filter([f"project.id eq {value}"])
     return lambda task: _find_regex(value, task.project.title)
 
 
 def _create_upper_project_filter(value):
     if str(value).isdigit():
-        return lambda x: x.project.id == int(value) \
-            or any(ancestor.id == int(value) for ancestor in x.project.ancestor_projects)
-    return lambda task: _find_regex(value, task.project.title) \
-        or any(_find_regex(value, ancestor.title) for ancestor in task.project.ancestor_projects)
+        return lambda x: x.project.id == int(value) or any(
+            ancestor.id == int(value) for ancestor in x.project.ancestor_projects
+        )
+    return lambda task: _find_regex(value, task.project.title) or any(
+        _find_regex(value, ancestor.title)
+        for ancestor in task.project.ancestor_projects
+    )
 
 
 def _create_title_filter(value):
@@ -82,35 +89,35 @@ def _find_regex(regex, value):
 
 
 def _create_priority_filter(value):
-    return _create_general_filter([f'priority {value}'])
+    return _create_general_filter([f"priority {value}"])
 
 
 def _create_urgency_filter(value):
-    return _create_general_filter([f'urgency ge {value}'])
+    return _create_general_filter([f"urgency ge {value}"])
 
 
 _operators = {
-    'eq': operator.eq,
-    'ne': operator.ne,
-    'lt': operator.lt,
-    'le': operator.le,
-    'gt': operator.gt,
-    'ge': operator.ge,
-    'before': operator.lt,
-    'after': operator.gt,
-    'contains': operator.contains
+    "eq": operator.eq,
+    "ne": operator.ne,
+    "lt": operator.lt,
+    "le": operator.le,
+    "gt": operator.gt,
+    "ge": operator.ge,
+    "before": operator.lt,
+    "after": operator.gt,
+    "contains": operator.contains,
 }
 
 _filter_mapping = {
-    'due_date_filter': _create_due_date_filter,
-    'favorite_filter': _create_favorite_filter,
-    'general_filter': _create_general_filter,
-    'label_filter': _create_label_filter,
-    'project_filter': _create_project_filter,
-    'upper_project_filter': _create_upper_project_filter,
-    'title_filter': _create_title_filter,
-    'priority_filter': _create_priority_filter,
-    'urgency_filter': _create_urgency_filter,
+    "due_date_filter": _create_due_date_filter,
+    "favorite_filter": _create_favorite_filter,
+    "general_filter": _create_general_filter,
+    "label_filter": _create_label_filter,
+    "project_filter": _create_project_filter,
+    "upper_project_filter": _create_upper_project_filter,
+    "title_filter": _create_title_filter,
+    "priority_filter": _create_priority_filter,
+    "urgency_filter": _create_urgency_filter,
 }
 
 
@@ -118,5 +125,7 @@ def create_filters(filter_args):
     filters = []
     for filter_name, filter_value in filter_args.items():
         add_filter = _filter_mapping[filter_name](filter_value)
-        filters.extend(add_filter if isinstance(add_filter, (list, tuple)) else [add_filter])
+        filters.extend(
+            add_filter if isinstance(add_filter, (list, tuple)) else [add_filter]
+        )
     return filters

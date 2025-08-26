@@ -14,7 +14,7 @@ services:
     volumes:
       - ${PWD}/files:/app/vikunja/files
     healthcheck:
-      test: [ "CMD", "/app/vikunja/vikunja", "version" ]
+      test: ["CMD", "/app/vikunja/vikunja", "version"]
       interval: 1s
   vikunja-init:
     <<: *vikunja-image

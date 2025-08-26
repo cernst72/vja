@@ -5,17 +5,20 @@ from datetime import datetime, timedelta
 
 from vja.parse import html2text, parse_json_date
 
-ID_TITLE = 'id={},title={}'
+ID_TITLE = "id={},title={}"
 
 
 def custom_output(cls):
-    hidden_attribute_names = ['json', 'description_text']
+    hidden_attribute_names = ["json", "description_text"]
 
     def __str__(self):
         """Returns a string containing only the non-null attribute values, excluding json attribute ."""
-        return '\n'.join(f'{attribute.name}: {_str_value(getattr(self, attribute.name))}'
-                         for attribute in dataclasses.fields(self)
-                         if attribute.name not in hidden_attribute_names and getattr(self, attribute.name))
+        return "\n".join(
+            f"{attribute.name}: {_str_value(getattr(self, attribute.name))}"
+            for attribute in dataclasses.fields(self)
+            if attribute.name not in hidden_attribute_names
+            and getattr(self, attribute.name)
+        )
 
     def _str_value(v):
         if isinstance(v, datetime):
@@ -26,13 +29,13 @@ def custom_output(cls):
             return [_str_value(x) for x in v]
         return str(v)
 
-    setattr(cls, '__str__', __str__)
+    setattr(cls, "__str__", __str__)
     return cls
 
 
 def data_dict(cls):
     def data_dict_function(self):
-        return {k: _transform_value(v) for k, v in self.__dict__.items() if k != 'json'}
+        return {k: _transform_value(v) for k, v in self.__dict__.items() if k != "json"}
 
     def _transform_value(v):
         if isinstance(v, datetime):
@@ -44,9 +47,9 @@ def data_dict(cls):
         return v
 
     def _is_data_dict(v):
-        return hasattr(v, 'data_dict') and callable(v.data_dict)
+        return hasattr(v, "data_dict") and callable(v.data_dict)
 
-    setattr(cls, 'data_dict', data_dict_function)
+    setattr(cls, "data_dict", data_dict_function)
     return cls
 
 
@@ -61,7 +64,13 @@ class User:
 
     @classmethod
     def from_json(cls, json):
-        return cls(json, json['id'], json['username'], json['name'], json['settings']['default_project_id'])
+        return cls(
+            json,
+            json["id"],
+            json["username"],
+            json["name"],
+            json["settings"]["default_project_id"],
+        )
 
 
 @dataclass
@@ -79,12 +88,16 @@ class ProjectView:
 
     @classmethod
     def from_json(cls, json):
-        return cls(json, json['id'], json['title'],
-                   json['project_id'],
-                   json['view_kind'],
-                   json['bucket_configuration_mode'],
-                   json['default_bucket_id'],
-                   json['done_bucket_id'])
+        return cls(
+            json,
+            json["id"],
+            json["title"],
+            json["project_id"],
+            json["view_kind"],
+            json["bucket_configuration_mode"],
+            json["default_bucket_id"],
+            json["done_bucket_id"],
+        )
 
     @classmethod
     def from_json_array(cls, json_array):
@@ -106,16 +119,22 @@ class Project:
     is_favorite: bool
     is_archived: bool
     parent_project_id: int
-    ancestor_projects: typing.List['Project']
+    ancestor_projects: typing.List["Project"]
     views: typing.List[ProjectView]
 
     @classmethod
     def from_json(cls, json, ancestor_projects):
-        return cls(json, json['id'], json['title'], json['description'],
-                   json['is_favorite'], json['is_archived'],
-                   json['parent_project_id'],
-                   ancestor_projects,
-                   ProjectView.from_json_array(json['views']))
+        return cls(
+            json,
+            json["id"],
+            json["title"],
+            json["description"],
+            json["is_favorite"],
+            json["is_archived"],
+            json["parent_project_id"],
+            ancestor_projects,
+            ProjectView.from_json_array(json["views"]),
+        )
 
     @classmethod
     def from_json_array(cls, json_array, ancestor_projects):
@@ -140,10 +159,14 @@ class Bucket:
 
     @classmethod
     def from_json(cls, json):
-        return cls(json, json['id'], json['title'],
-                   json['limit'],
-                   json['position'],
-                   json['count'])
+        return cls(
+            json,
+            json["id"],
+            json["title"],
+            json["limit"],
+            json["position"],
+            json["count"],
+        )
 
     @classmethod
     def from_json_array(cls, json_array):
@@ -159,7 +182,7 @@ class Label:
 
     @classmethod
     def from_json(cls, json):
-        return cls(json, json['id'], json['title'])
+        return cls(json, json["id"], json["title"])
 
     @classmethod
     def from_json_array(cls, json_array):
@@ -181,16 +204,23 @@ class TaskReminder:
 
     @classmethod
     def from_json(cls, json):
-        return cls(json, parse_json_date(json['reminder']), json['relative_period'], json['relative_to'])
+        return cls(
+            json,
+            parse_json_date(json["reminder"]),
+            json["relative_period"],
+            json["relative_to"],
+        )
 
     @classmethod
     def from_json_array(cls, json_array):
         return [TaskReminder.from_json(x) for x in json_array or []]
 
     def short_str(self):
-        return (f'reminder={self.reminder.isoformat() if self.reminder else " "},'
-                f'period={self.relative_period},'
-                f'relative_to={self.relative_to}')
+        return (
+            f'reminder={self.reminder.isoformat() if self.reminder else " "},'
+            f"period={self.relative_period},"
+            f"relative_to={self.relative_to}"
+        )
 
 
 @dataclass
@@ -228,27 +258,30 @@ class Task:
 
     @classmethod
     def from_json(cls, json, project_object, labels):
-        return cls(json, json['id'], json['title'],
-                   json['description'],
-                   html2text(json['description']),
-                   json['priority'],
-                   json['is_favorite'],
-                   parse_json_date(json['due_date']),
-                   TaskReminder.from_json_array(json["reminders"]),
-                   json['repeat_mode'],
-                   timedelta(seconds=json['repeat_after']),
-                   parse_json_date(json['start_date']),
-                   parse_json_date(json['end_date']),
-                   json['percent_done'],
-                   json['done'],
-                   parse_json_date(json['done_at']),
-                   labels,
-                   project_object,
-                   json['position'],
-                   json['bucket_id'],
-                   parse_json_date(json['created']),
-                   parse_json_date(json['updated'])
-                   )
+        return cls(
+            json,
+            json["id"],
+            json["title"],
+            json["description"],
+            html2text(json["description"]),
+            json["priority"],
+            json["is_favorite"],
+            parse_json_date(json["due_date"]),
+            TaskReminder.from_json_array(json["reminders"]),
+            json["repeat_mode"],
+            timedelta(seconds=json["repeat_after"]),
+            parse_json_date(json["start_date"]),
+            parse_json_date(json["end_date"]),
+            json["percent_done"],
+            json["done"],
+            parse_json_date(json["done_at"]),
+            labels,
+            project_object,
+            json["position"],
+            json["bucket_id"],
+            parse_json_date(json["created"]),
+            parse_json_date(json["updated"]),
+        )
 
     def has_label(self, label):
         return any(x.id == label.id for x in self.label_objects)
