@@ -12,32 +12,38 @@ from parsedatetime import parsedatetime
 DEFAULT_DATE_HOUR = 8
 DEFAULT_DATE_MINUTE = 0
 
-_timedelta_regex = re.compile(r'^((?P<weeks>[.\d]+?)w)? *'
-                              r'^((?P<days>[.\d]+?)d)? *'
-                              r'((?P<hours>[.\d]+?)h)? *'
-                              r'((?P<minutes>[.\d]+?)m)? *'
-                              r'((?P<seconds>[.\d]+?)s?)?$')
+_timedelta_regex = re.compile(
+    r"^((?P<weeks>[.\d]+?)w)? *"
+    r"^((?P<days>[.\d]+?)d)? *"
+    r"((?P<hours>[.\d]+?)h)? *"
+    r"((?P<minutes>[.\d]+?)m)? *"
+    r"((?P<seconds>[.\d]+?)s?)?$"
+)
 
 
-def parse_date_arg_to_datetime(text: str,
-                               default_hour=DEFAULT_DATE_HOUR,
-                               default_minute=DEFAULT_DATE_MINUTE) -> Optional[datetime]:
+def parse_date_arg_to_datetime(
+    text: str, default_hour=DEFAULT_DATE_HOUR, default_minute=DEFAULT_DATE_MINUTE
+) -> Optional[datetime]:
     if not text:
         return None
 
-    if re.compile(r'.*\dT\d.*').match(text):
-        text = text.replace("T", " ")  # workaround for https://github.com/bear/parsedatetime/issues/15
+    if re.compile(r".*\dT\d.*").match(text):
+        text = text.replace(
+            "T", " "
+        )  # workaround for https://github.com/bear/parsedatetime/issues/15
 
-    timetuple, pdt_context = parsedatetime.Calendar(version=parsedatetime.VERSION_CONTEXT_STYLE).parse(text)
+    timetuple, pdt_context = parsedatetime.Calendar(
+        version=parsedatetime.VERSION_CONTEXT_STYLE
+    ).parse(text)
     result = datetime.fromtimestamp(time.mktime(timetuple))
     if not pdt_context.hasTime:
         result = result.replace(hour=default_hour, minute=default_minute, second=0)
     return result
 
 
-def parse_date_arg_to_iso(text: str,
-                          default_hour=DEFAULT_DATE_HOUR,
-                          default_minute=DEFAULT_DATE_MINUTE) -> Optional[str]:
+def parse_date_arg_to_iso(
+    text: str, default_hour=DEFAULT_DATE_HOUR, default_minute=DEFAULT_DATE_MINUTE
+) -> Optional[str]:
     date_value = parse_date_arg_to_datetime(text, default_hour, default_minute)
     return datetime_to_isoformat(date_value) if date_value else None
 
@@ -57,21 +63,24 @@ def parse_date_arg_to_timedelta(time_str: str) -> Optional[timedelta]:
     if not time_str:
         return None
     parts = _timedelta_regex.match(time_str)
-    assert parts is not None, f"""Could not parse any time information from '{time_str}'.
+    assert (
+        parts is not None
+    ), f"""Could not parse any time information from '{time_str}'.
     Examples of valid strings: '8h', '2d 8h 5m 2s', '2m4.3s'"""
-    time_params = {name: float(param)
-                   for name, param in parts.groupdict().items() if param}
+    time_params = {
+        name: float(param) for name, param in parts.groupdict().items() if param
+    }
     return timedelta(**time_params)
 
 
 def parse_json_date(json_date: str) -> Optional[datetime]:
-    if json_date and json_date > '0001-01-02T00:00:00Z':
+    if json_date and json_date > "0001-01-02T00:00:00Z":
         return parser.isoparse(json_date).astimezone(tz.tzlocal()).replace(tzinfo=None)
     return None
 
 
 def parse_bool_arg(text: str) -> bool:
-    return text.lower() in ['true', '1', 't', 'y', 'yes'] if text else False
+    return text.lower() in ["true", "1", "t", "y", "yes"] if text else False
 
 
 class HTMLFilter(HTMLParser):
@@ -88,7 +97,7 @@ def html2text(text: str) -> str:
 
 
 def rgetattr(obj, path: str, *default):
-    attrs = path.split('.')
+    attrs = path.split(".")
     try:
         return functools.reduce(getattr, attrs, obj)
     except AttributeError:

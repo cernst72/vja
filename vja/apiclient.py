@@ -14,7 +14,9 @@ def inject_access_token(func):
             headers = self.authenticate(force_login=False)
             return func(self, headers=headers, *args, **kwargs)
         except KeyError as e:
-            raise VjaError(f'need access token to call function {func.__name__}; call authenticate()') from e
+            raise VjaError(
+                f"need access token to call function {func.__name__}; call authenticate()"
+            ) from e
 
     return wrapper
 
@@ -25,22 +27,25 @@ def handle_http_error(func):
             return func(self, *args, **kwargs)
         except requests.HTTPError as error:
             if error.response.status_code == 401:
-                logger.info('HTTP-Error %s, url=%s; trying to retrieve new access token...',
-                            error.response.status_code, error.response.url)
+                logger.info(
+                    "HTTP-Error %s, url=%s; trying to retrieve new access token...",
+                    error.response.status_code,
+                    error.response.url,
+                )
                 self.authenticate(force_login=True)
                 return func(self, *args, **kwargs)
             raise VjaError(
-                f'HTTP-Error {error.response.status_code}, url={error.response.url}, body={error.response.text}') \
-                from error
+                f"HTTP-Error {error.response.status_code}, url={error.response.url}, body={error.response.text}"
+            ) from error
 
     return wrapper
 
 
 class ApiClient:
     def __init__(self, api_url, token_file):
-        logger.debug('Connecting to api_url %s', api_url)
+        logger.debug("Connecting to api_url %s", api_url)
         self._api_url = api_url
-        self._cache = {'projects': None, 'labels': None, 'tasks': None}
+        self._cache = {"projects": None, "labels": None, "tasks": None}
         self._login = Login(api_url, token_file)
 
     def _create_url(self, path):
@@ -56,12 +61,14 @@ class ApiClient:
         # logger.debug("GET response: %s - %s", response, response.text)
         response.raise_for_status()
         json_result = self._to_json(response)
-        total_pages = int(response.headers.get('x-pagination-total-pages', 1))
+        total_pages = int(response.headers.get("x-pagination-total-pages", 1))
         if total_pages > 1:
-            logger.debug('Trying to load all pages. Consider to increase MAXITEMSPERPAGE on your server instead.')
+            logger.debug(
+                "Trying to load all pages. Consider to increase MAXITEMSPERPAGE on your server instead."
+            )
             for page in range(2, total_pages + 1):
-                logger.debug('load page %s', page)
-                params.update({'page': page})
+                logger.debug("load page %s", page)
+                params.update({"page": page})
                 response = requests.get(url, headers=headers, params=params, timeout=30)
                 response.raise_for_status()
                 json_result = json_result + self._to_json(response)
@@ -70,7 +77,9 @@ class ApiClient:
     @handle_http_error
     @inject_access_token
     def _put_json(self, url, params=None, payload=None, headers=None):
-        response = requests.put(url, headers=headers, params=params, json=payload, timeout=30)
+        response = requests.put(
+            url, headers=headers, params=params, json=payload, timeout=30
+        )
         logger.debug("PUT response: %s - %s", response, response.text)
         response.raise_for_status()
         return self._to_json(response)
@@ -78,7 +87,9 @@ class ApiClient:
     @handle_http_error
     @inject_access_token
     def _post_json(self, url, params=None, payload=None, headers=None):
-        response = requests.post(url, headers=headers, params=params, json=payload, timeout=30)
+        response = requests.post(
+            url, headers=headers, params=params, json=payload, timeout=30
+        )
         logger.debug("POST response: %s - %s", response, response.text)
         response.raise_for_status()
         return self._to_json(response)
@@ -86,7 +97,9 @@ class ApiClient:
     @handle_http_error
     @inject_access_token
     def _delete_json(self, url, params=None, payload=None, headers=None):
-        response = requests.delete(url, headers=headers, params=params, json=payload, timeout=30)
+        response = requests.delete(
+            url, headers=headers, params=params, json=payload, timeout=30
+        )
         logger.debug("DELETE response: %s - %s", response, response.text)
         response.raise_for_status()
         return self._to_json(response)
@@ -96,75 +109,95 @@ class ApiClient:
         try:
             return response.json()
         except Exception as e:
-            logger.error('Expected valid json, but found %s', response.text)
-            raise VjaError('Cannot parse json in response.') from e
+            logger.error("Expected valid json, but found %s", response.text)
+            raise VjaError("Cannot parse json in response.") from e
 
-    def authenticate(self, force_login=True, username=None, password=None, totp_passcode=None):
+    def authenticate(
+        self, force_login=True, username=None, password=None, totp_passcode=None
+    ):
         try:
-            self._login.validate_access_token(force_login, username, password, totp_passcode)
+            self._login.validate_access_token(
+                force_login, username, password, totp_passcode
+            )
             return self._login.get_auth_header()
         except requests.HTTPError as error:
             raise VjaError(
-                f'HTTP-Error {error.response.status_code}, url={error.response.url}, body={error.response.text}') \
-                from error
+                f"HTTP-Error {error.response.status_code}, url={error.response.url}, body={error.response.text}"
+            ) from error
 
     def logout(self):
         self._login.logout()
 
     def get_user(self):
-        return self._get_json(self._create_url('/user'))
+        return self._get_json(self._create_url("/user"))
 
     def get_projects(self):
-        if self._cache['projects'] is None:
-            self._cache['projects'] = self._get_json(self._create_url('/projects')) or []
-        return self._cache['projects']
+        if self._cache["projects"] is None:
+            self._cache["projects"] = (
+                self._get_json(self._create_url("/projects")) or []
+            )
+        return self._cache["projects"]
 
     def get_project(self, project_id):
-        return self._get_json(self._create_url(f'/projects/{str(project_id)}'))
+        return self._get_json(self._create_url(f"/projects/{str(project_id)}"))
 
     def put_project(self, parent_project_id, title):
-        payload = {'title': title, 'parent_project_id': parent_project_id}
-        return self._put_json(self._create_url('/projects'), payload=payload)
+        payload = {"title": title, "parent_project_id": parent_project_id}
+        return self._put_json(self._create_url("/projects"), payload=payload)
 
     def get_buckets(self, project_id, project_view_id):
-        return self._get_json(self._create_url(f'/projects/{str(project_id)}/views/{str(project_view_id)}/tasks'))
+        return self._get_json(
+            self._create_url(
+                f"/projects/{str(project_id)}/views/{str(project_view_id)}/tasks"
+            )
+        )
 
     def put_bucket(self, project_id, project_view_id, title):
-        payload = {'title': title}
-        return self._put_json(self._create_url(f'/projects/{str(project_id)}/views/{str(project_view_id)}/buckets'),
-                              payload=payload)
+        payload = {"title": title}
+        return self._put_json(
+            self._create_url(
+                f"/projects/{str(project_id)}/views/{str(project_view_id)}/buckets"
+            ),
+            payload=payload,
+        )
 
     def get_labels(self):
-        if self._cache['labels'] is None:
-            self._cache['labels'] = self._get_json(self._create_url('/labels')) or []
-        return self._cache['labels']
+        if self._cache["labels"] is None:
+            self._cache["labels"] = self._get_json(self._create_url("/labels")) or []
+        return self._cache["labels"]
 
     def put_label(self, title):
-        payload = {'title': title}
-        return self._put_json(self._create_url('/labels'), payload=payload)
+        payload = {"title": title}
+        return self._put_json(self._create_url("/labels"), payload=payload)
 
     def get_tasks(self, exclude_completed=True):
-        if self._cache['tasks'] is None:
-            url = self._create_url('/tasks/all')
-            params = {'filter': 'done=false'} if exclude_completed else {}
-            self._cache['tasks'] = self._get_json(url, params) or []
-        return self._cache['tasks']
+        if self._cache["tasks"] is None:
+            url = self._create_url("/tasks/all")
+            params = {"filter": "done=false"} if exclude_completed else {}
+            self._cache["tasks"] = self._get_json(url, params) or []
+        return self._cache["tasks"]
 
     def get_task(self, task_id):
-        url = self._create_url(f'/tasks/{str(task_id)}')
+        url = self._create_url(f"/tasks/{str(task_id)}")
         return self._get_json(url)
 
     def put_task(self, project_id, payload):
-        return self._put_json(self._create_url(f'/projects/{str(project_id)}/tasks'), payload=payload)
+        return self._put_json(
+            self._create_url(f"/projects/{str(project_id)}/tasks"), payload=payload
+        )
 
     def post_task(self, task_id, payload):
-        return self._post_json(self._create_url(f'/tasks/{str(task_id)}'), payload=payload)
+        return self._post_json(
+            self._create_url(f"/tasks/{str(task_id)}"), payload=payload
+        )
 
     def add_label_to_task(self, task_id, label_id):
-        task_label_url = self._create_url(f'/tasks/{str(task_id)}/labels')
-        payload = {'label_id': label_id}
+        task_label_url = self._create_url(f"/tasks/{str(task_id)}/labels")
+        payload = {"label_id": label_id}
         return self._put_json(task_label_url, payload=payload)
 
     def remove_label_from_task(self, task_id, label_id):
-        task_label_url = self._create_url(f'/tasks/{str(task_id)}/labels/{str(label_id)}')
+        task_label_url = self._create_url(
+            f"/tasks/{str(task_id)}/labels/{str(label_id)}"
+        )
         self._delete_json(task_label_url)

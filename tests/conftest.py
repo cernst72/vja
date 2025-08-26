@@ -11,7 +11,7 @@ from vja.cli import cli
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
-@pytest.fixture(name='runner', scope='session')
+@pytest.fixture(name="runner", scope="session")
 def setup_runner():
     return CliRunner()
 
@@ -19,7 +19,9 @@ def setup_runner():
 def invoke(runner, command, return_code=0, user_input=None, catch_exceptions=False):
     if isinstance(command, str):
         command = command.split()
-    res = runner.invoke(cli, command, input=user_input, catch_exceptions=catch_exceptions)
+    res = runner.invoke(
+        cli, command, input=user_input, catch_exceptions=catch_exceptions
+    )
     sys.stdout.write(res.output)
     if res.stderr_bytes:
         sys.stdout.write(res.stderr)
@@ -31,34 +33,38 @@ def invoke(runner, command, return_code=0, user_input=None, catch_exceptions=Fal
 
 
 def _login_as_test_user():
-    run_vja('vja logout')
-    run_vja('vja --username=test --password=test user show')
+    run_vja("vja logout")
+    run_vja("vja --username=test --password=test user show")
 
 
 def _create_project_and_task():
-    run_vja('vja project add test-project')
-    run_vja('vja project add child --parent-project=test-project')
-    run_vja('vja project add grand-child --parent-project=child')
-    run_vja('vja bucket add --project=test-project Second bucket')
-    run_vja('vja task add At least one task --force-create --priority=5 --due-date=today --label=my_tag --favorite --project-id=test-project')
-    run_vja('vja task add Task in subproject --force-create --project-id=grand-child')
-    run_vja('vja task add A task without a label --force-create')
-    run_vja('vja task ls')
-    run_vja('vja task show 1')
+    run_vja("vja project add test-project")
+    run_vja("vja project add child --parent-project=test-project")
+    run_vja("vja project add grand-child --parent-project=child")
+    run_vja("vja bucket add --project=test-project Second bucket")
+    run_vja(
+        "vja task add At least one task --force-create --priority=5 --due-date=today --label=my_tag --favorite --project-id=test-project"
+    )
+    run_vja("vja task add Task in subproject --force-create --project-id=grand-child")
+    run_vja("vja task add A task without a label --force-create")
+    run_vja("vja task ls")
+    run_vja("vja task show 1")
 
 
 def run_vja(command):
     result = subprocess.run(command.split(), capture_output=True, check=False)
     if result.returncode:
-        print(f'!!! Non-zero result ({result.returncode}) from command {command}')
-        sys.stdout.write(result.stdout.decode('utf-8'))
-        sys.stdout.write(result.stderr.decode('utf-8'))
+        print(f"!!! Non-zero result ({result.returncode}) from command {command}")
+        sys.stdout.write(result.stdout.decode("utf-8"))
+        sys.stdout.write(result.stderr.decode("utf-8"))
         sys.exit(1)
 
 
 def pytest_configure():
-    if 'VJA_CONFIGDIR' not in os.environ:
-        print('!!! Precondition not met. You must set VJA_CONFIGDIR in environment variables !!!')
+    if "VJA_CONFIGDIR" not in os.environ:
+        print(
+            "!!! Precondition not met. You must set VJA_CONFIGDIR in environment variables !!!"
+        )
         sys.exit(1)
 
     _login_as_test_user()
