@@ -28,15 +28,21 @@ see [Features.md](https://gitlab.com/ce72/vja/-/blob/main/Features.md#login))
 **More user documentation is available on [Features.md](https://gitlab.com/ce72/vja/-/blob/main/Features.md)**
 
 ## Installation
+### Install with pipx (recommended)
+(More on pipx [here](https://pipx.pypa.io/stable/).)
+```shell
+pipx install vja
+```
+Upgrade an existing version:
+```shell
+pipx upgrade vja
+ ```
 
-- Install from pypi:
+### Install with pip
+Not recommended as it might break system dependencies.
   ```shell
   python -m pip install --user vja
   vja --help
-  ```
-- Upgrade existing version:
-  ```shell
-  python -m pip install --user vja --upgrade
   ```
 
 ## Configuration
