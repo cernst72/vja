@@ -22,6 +22,7 @@ services:
       vikunja:
         condition: service_healthy
     environment:
+      VIKUNJA_SERVICE_PUBLICURL: http://localhost:3456/
       VIKUNJA_DATABASE_TYPE: sqlite
       VIKUNJA_DATABASE_PATH: /app/vikunja/files/vikunja.db
     volumes:

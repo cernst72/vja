@@ -18,7 +18,7 @@ stages:
   - python3 -m pip install .
   - vja --version
 
-  - mkdir $PWD/files
+  - mkdir -p $PWD/files
   - chmod a+w $PWD/files
   - docker compose -f tests/docker-compose.yml pull vikunja
   - docker compose -f tests/docker-compose.yml up -d
