@@ -1,3 +1,27 @@
+## [4.8.0](https://gitlab.com/ce72/vja/compare/4.7.3...4.8.0) (2025-09-21)
+
+### Features
+
+* **task ls:** add example custom-format for start_date and end_date ([e0006df](https://gitlab.com/ce72/vja/commit/e0006df8d06381dd117f524e9315e2df7c16cab4))
+* **task:** allow to add and edit tasks with --start_date and --end_date ([9c1df6f](https://gitlab.com/ce72/vja/commit/9c1df6f548ab90b86fce33d8809973dec1ebbb5f))
+
+### Bug Fixes
+
+* **error handling:** do not log stacktrace for VjaError ([1ba47a5](https://gitlab.com/ce72/vja/commit/1ba47a56aa50b82360e21fd2557c109bff1826db))
+* **test:** latest vikunja image requires VIKUNJA_SERVICE_PUBLICURL ([5ace4c8](https://gitlab.com/ce72/vja/commit/5ace4c8d1b0a71fe3f8aa8e44df0afb85f15656a))
+
+### Documentation
+
+* add hint for bash_completion ([bdedb3e](https://gitlab.com/ce72/vja/commit/bdedb3e0c6c9e5aab07b4b81de0c9beb7960993f))
+* recommend pipx as installer ([6fc3a30](https://gitlab.com/ce72/vja/commit/6fc3a3022d64eca9b1d76d7a22f933d6e64d4796))
+
+### Misc
+
+* code format ([2d1db03](https://gitlab.com/ce72/vja/commit/2d1db033b839dad67aff3aa37601a2302e695398))
+* **deps:** update all dependencies ([07c786c](https://gitlab.com/ce72/vja/commit/07c786c6ba6f55a7f1ebcbba95c2dc1e1788eee1))
+* **deps:** update all dependencies ([ad7dd16](https://gitlab.com/ce72/vja/commit/ad7dd1685506262654a912fd637e26efe977d665))
+* **deps:** update all dependencies ([f0eb932](https://gitlab.com/ce72/vja/commit/f0eb93279df78cd82a3707feb5fa2d552d0aaad6))
+
 ## [4.7.3](https://gitlab.com/ce72/vja/compare/4.7.2...4.7.3) (2025-06-30)
 
 ### Bug Fixes
