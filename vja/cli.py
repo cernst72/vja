@@ -382,6 +382,18 @@ def label_add(application, title):
     help="Set due date (supports parsedatetime expressions)",
 )
 @click.option(
+    "--start",
+    "--start-date",
+    "--start_date",
+    help="Set start date (supports parsedatetime expressions)",
+)
+@click.option(
+    "--end",
+    "--end-date",
+    "--end_date",
+    help="Set end date (supports parsedatetime expressions)",
+)
+@click.option(
     "favorite",
     "-f",
     "--star",
@@ -532,6 +544,18 @@ def task_clone(ctx, application, task_id, title, quiet_show=False, verbose_show=
     "--due-date",
     "--due_date",
     help="Set due date (supports parsedatetime expressions)",
+)
+@click.option(
+    "--start",
+    "--start-date",
+    "--start_date",
+    help="Set start date (supports parsedatetime expressions)",
+)
+@click.option(
+    "--end",
+    "--end-date",
+    "--end_date",
+    help="Set end date (supports parsedatetime expressions)",
 )
 @click.option(
     "favorite",

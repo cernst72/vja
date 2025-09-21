@@ -69,6 +69,14 @@ class CommandService:
         "note": {"field": "description", "mapping": (lambda x: x)},
         "prio": {"field": "priority", "mapping": int},
         "due": {"field": "due_date", "mapping": (lambda x: x)},
+        "start": {
+            "field": "start_date",
+            "mapping": (lambda x: parse_date_arg_to_iso(x)),
+        },
+        "end": {
+            "field": "end_date",
+            "mapping": (lambda x: parse_date_arg_to_iso(x)),
+        },
         "favorite": {"field": "is_favorite", "mapping": bool},
         "completed": {"field": "done", "mapping": bool},
         "position": {"field": "position", "mapping": int},
