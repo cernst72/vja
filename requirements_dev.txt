@@ -2,4 +2,4 @@ pip==25.2
 pylint==3.3.8
 flake8==7.3.0
 pytest==8.4.2
-coverage==7.10.6
+coverage==7.10.7
