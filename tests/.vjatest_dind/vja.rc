@@ -13,6 +13,8 @@ tasklist_short={x.id:6} {x.title:50.50}
 ids_only={x.id}
 reimport=vja add --force-create \'{x.title}\' --project=\'{x.project.title}\' --priority={x.priority}{" --favorite" if x.is_favorite else ""}{"".join(" --label=\'"+i.title+"\'" for i in x.label_objects)} --due-date="{x.due_date if x.due_date else ""}" --reminder="{x.reminders[0].reminder if x.reminders else ""}" --description=\'{x.description}\'
 tasklist_gantt={x.id:6} {x.title:50.50} {x.due_date.strftime("%Y-%m-%dT%H:%M") if x.due_date else "":16.16} {x.start_date.strftime("%Y-%m-%dT%H:%M") if x.start_date else "":16.16} {x.end_date.strftime("%Y-%m-%dT%H:%M") if x.end_date else "":16.16}
+updated={x.id:5} {x.title:50.50} {x.updated.strftime("%a %d.%m %H:%M"):15.15} {x.done}
+created={x.id:5} {x.title:50.50} {x.created.strftime("%a %d.%m %H:%M"):15.15} {x.done}
 
 [urgency_coefficients]
 due_date_weight=1.0
