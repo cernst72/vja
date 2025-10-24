@@ -786,6 +786,14 @@ def task_defer(
     type=click.INT,
     help='Filter by minimum urgency.  Shortcut for --filter="urgency ge <value>"',
 )
+@click.option(
+    "verbose_ls",
+    "-v",
+    "--verbose-ls",
+    "--verbose",
+    is_flag=True,
+    help="Show count of tasks",
+)
 @with_application
 @catch_exception(handle=VjaError)
 def task_ls(
@@ -796,6 +804,7 @@ def task_ls(
     custom_format,
     include_completed,
     sort_string=None,
+    verbose_ls=False,
     **filter_args,
 ):
     if custom_format:
@@ -811,7 +820,7 @@ def task_ls(
         tasks = [t for t in tasks if t.id in task_ids]
 
     application.output.task_array(tasks, is_json, is_jsonvja, custom_format)
-    if not is_json and not is_jsonvja and not custom_format:
+    if verbose_ls:
         click.echo(f"Count: {len(list(tasks))}")
 
 
