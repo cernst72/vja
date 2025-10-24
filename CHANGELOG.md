@@ -1,3 +1,14 @@
+## [4.9.0](https://gitlab.com/ce72/vja/compare/4.8.0...4.9.0) (2025-10-24)
+
+### Features
+
+* **ls:** add custom formats "updated" and "created" ([caa2b62](https://gitlab.com/ce72/vja/commit/caa2b6255ef02a4a288ab01aa07e5ce7b101e1ba))
+* **ls:** output of  task count must now be activated with -v flag ([8a7216b](https://gitlab.com/ce72/vja/commit/8a7216b44e8bdf268cecd9979ddd6fd8108baa6c))
+
+### Misc
+
+* **deps:** update all dependencies ([42f8c14](https://gitlab.com/ce72/vja/commit/42f8c14548acd6a73865baa2573264bbdbae4101))
+
 ## [4.8.0](https://gitlab.com/ce72/vja/compare/4.7.3...4.8.0) (2025-09-21)
 
 ### Features
