@@ -11,7 +11,7 @@ Manage your tasks and projects directly from the terminal with simple commands.
 It provides a command line interface for adding, viewing and editing todo tasks on a Vikunja Server.
 The goal is to support a command line based task workflow ~ similar to taskwarrior.
 
-#### Important change in vja 4.9
+#### Important change in vja 4.10
 New name for configuration file (`config.rc`) and XDG conform path lookup, see [Configuration](#configuration)
 
 ## Usage
