@@ -1,3 +1,13 @@
+## [4.10.0](https://gitlab.com/ce72/vja/compare/4.9.0...4.10.0) (2025-11-09)
+
+### Features
+
+* **config:** move configuration file ([0c96a31](https://gitlab.com/ce72/vja/commit/0c96a311d6ffd075c8a0fd0c16a21f35a670b622)), closes [#11](https://gitlab.com/ce72/vja/issues/11)
+
+### Misc
+
+* fix version number in README.md ([3030c02](https://gitlab.com/ce72/vja/commit/3030c02c68ae7150e22bc54e028a341a98d99034))
+
 ## [4.9.0](https://gitlab.com/ce72/vja/compare/4.8.0...4.9.0) (2025-10-24)
 
 ### Features
