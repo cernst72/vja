@@ -5,15 +5,14 @@
 [![pipeline status](https://gitlab.com/ce72/vja/badges/main/pipeline.svg)](https://gitlab.com/ce72/vja/-/pipelines)
 [![coverage report](https://gitlab.com/ce72/vja/badges/main/coverage.svg)](https://gitlab.com/ce72/vja/commits/main)
 
-This is a simple CLI for Vikunja > [The todo app to organize your life.](https://vikunja.io/)
+A command line interface for Vikunja > [The todo app to organize your life](https://vikunja.io/).
+Manage your tasks and projects directly from the terminal with simple commands.
 
 It provides a command line interface for adding, viewing and editing todo tasks on a Vikunja Server.
 The goal is to support a command line based task workflow ~ similar to taskwarrior.
 
-#### Breaking changes in vja 4.0
-
-vja 4.0 supports (and requires) the most recent Vikunja API >= 0.24.0.
-Use vja up to version 3.3.1 for compatibility with Vikunja API 0.23.0.
+#### Important change in vja 4.10
+New name for configuration file (`config.rc`) and XDG conform path lookup, see [Configuration](#configuration)
 
 ## Usage
 
@@ -48,22 +47,28 @@ Not recommended as it might break system dependencies.
 ## Configuration
 
 Before using vja you must provide a configuration.
-An example can be found in [vja.rc](https://gitlab.com/ce72/vja/-/blob/main/.vjacli/vja.rc).
+vja looks for its configuration at the following paths (in order):
+1. `$VJA_CONFIGDIR/config.rc`
+2. `$XDG_CONFIG_HOME/vja/config.rc`
+3. `$HOME/.config/vja/config.rc`
+4. `$HOME/.vjacli/vja.rc` (deprecated - for backward compatibility only)
 
-- Create a configuration file $HOME/.vjacli/vja.rc with ~ the following contents
+A full example can be found in [config.rc](https://gitlab.com/ce72/vja/-/blob/main/.config/vja/config.rc).
+
+- Create a configuration file at any valid path (see above) with ~ the following contents
   ```shell
   [application]
   frontend_url=https://try.vikunja.io/
   api_url=https://try.vikunja.io/api/v1
   ```
-  (If you cloned from git, you may copy the folder .vjacli to your `$HOME` directory instead.)
+  (If you cloned from git, you may copy the folder `.config/vja` to your `$HOME/.config` directory instead.)
 - Adjust to your needs.
   `frontend_url` and `api_url` must point to your own Vikunja server.
   Especially, the api_url must be reachable from your client. This can be verified, for example,
   by `curl https://mydomain.com/api/v1/info`.
 
 You may change the location of the configuration directory with an environment variable
-like `VJA_CONFIGDIR=/not/my/home`
+like `VJA_CONFIGDIR=/not/my/home`.
 
 ### Description of configuration
 
