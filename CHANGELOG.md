@@ -2,8 +2,8 @@
 
 ### Features
 
-* **ls:** add custom formats "updated" and "created" ([caa2b62](https://gitlab.com/ce72/vja/commit/caa2b6255ef02a4a288ab01aa07e5ce7b101e1ba))
-* **ls:** output of  task count must now be activated with -v flag ([8a7216b](https://gitlab.com/ce72/vja/commit/8a7216b44e8bdf268cecd9979ddd6fd8108baa6c))
+* **task ls:** add custom formats "updated" and "created" ([caa2b62](https://gitlab.com/ce72/vja/commit/caa2b6255ef02a4a288ab01aa07e5ce7b101e1ba))
+* **task ls:** output of  task count must now be activated with -v flag ([8a7216b](https://gitlab.com/ce72/vja/commit/8a7216b44e8bdf268cecd9979ddd6fd8108baa6c))
 
 ### Misc
 
