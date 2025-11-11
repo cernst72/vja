@@ -71,11 +71,11 @@ class CommandService:
         "due": {"field": "due_date", "mapping": (lambda x: x)},
         "start": {
             "field": "start_date",
-            "mapping": (lambda x: parse_date_arg_to_iso(x)),
+            "mapping": parse_date_arg_to_iso,
         },
         "end": {
             "field": "end_date",
-            "mapping": (lambda x: parse_date_arg_to_iso(x)),
+            "mapping": parse_date_arg_to_iso,
         },
         "favorite": {"field": "is_favorite", "mapping": bool},
         "completed": {"field": "done", "mapping": bool},
@@ -215,7 +215,7 @@ class CommandService:
         if reminder_arg == "due":
             args.update(
                 {"reminder": [{"relative_to": "due_date", "relative_period": 0}]}
-            )  # --reminder=due or --reminder
+            )  # supports '--reminder=due' or '--reminder'
         elif "due" in reminder_arg:
             reminder_due_args = reminder_arg.split(" ", 2)
             duration = int(
@@ -228,9 +228,9 @@ class CommandService:
                         {"relative_to": "due_date", "relative_period": sign * duration}
                     ]
                 }
-            )  # --reminder="1h before due_date"
+            )  # supports '--reminder="1h before due_date"'
         elif reminder_arg == "":
-            args.update({"reminder": None})  # --reminder=""
+            args.update({"reminder": None})  # supports '--reminder=""'
         else:
             args.update(
                 {"reminder": [{"reminder": parse_date_arg_to_iso(reminder_arg)}]}

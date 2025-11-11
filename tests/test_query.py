@@ -265,4 +265,4 @@ class TestTaskLsFilter:
 
 
 def _labels_from_task_json(task):
-    return " ".join(map(lambda label: label["title"], task["label_objects"] or []))
+    return " ".join(label["title"] for label in task["label_objects"] or [])

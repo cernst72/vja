@@ -53,7 +53,7 @@ class VjaConfiguration:
         vja_configdir = os.getenv("VJA_CONFIGDIR")
         if vja_configdir:
             config_path = Path(vja_configdir).expanduser()
-            candidate = config_path / "config.rc"
+            candidate = config_path / _FILENAME
             if candidate.is_file():
                 return config_path
 
@@ -62,14 +62,14 @@ class VjaConfiguration:
         if xdg_config_home:
             config_path = Path(xdg_config_home).expanduser() / "vja"
             if config_path.is_dir():
-                candidate = config_path / "config.rc"
+                candidate = config_path / _FILENAME
                 if candidate.is_file():
                     return config_path
 
         # 3) $HOME/.config/vja/config.rc
         home = os.getenv("HOME") or str(Path.home())
         config_path = Path(home).expanduser() / ".config" / "vja"
-        candidate = config_path / "config.rc"
+        candidate = config_path / _FILENAME
         if candidate.is_file():
             return config_path
 

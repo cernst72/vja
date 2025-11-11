@@ -254,7 +254,7 @@ class Task:
 
     @property
     def labels(self):
-        return ",".join(map(lambda label: label.title, self.label_objects or []))
+        return ",".join(label.title for label in self.label_objects or [])
 
     @classmethod
     def from_json(cls, json, project_object, labels):

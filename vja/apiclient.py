@@ -48,9 +48,6 @@ class ApiClient:
         self._cache = {"projects": None, "labels": None, "tasks": None}
         self._login = Login(api_url, token_file)
 
-    def _create_url(self, path):
-        return self._api_url + path
-
     @handle_http_error
     @inject_access_token
     def _get_json(self, url, params=None, headers=None):
@@ -129,75 +126,65 @@ class ApiClient:
         self._login.logout()
 
     def get_user(self):
-        return self._get_json(self._create_url("/user"))
+        return self._get_json(f"{self._api_url}/user")
 
     def get_projects(self):
         if self._cache["projects"] is None:
-            self._cache["projects"] = (
-                self._get_json(self._create_url("/projects")) or []
-            )
+            self._cache["projects"] = self._get_json(f"{self._api_url}/projects") or []
         return self._cache["projects"]
 
     def get_project(self, project_id):
-        return self._get_json(self._create_url(f"/projects/{str(project_id)}"))
+        return self._get_json(f"{self._api_url}/projects/{project_id}")
 
     def put_project(self, parent_project_id, title):
         payload = {"title": title, "parent_project_id": parent_project_id}
-        return self._put_json(self._create_url("/projects"), payload=payload)
+        return self._put_json(f"{self._api_url}/projects", payload=payload)
 
     def get_buckets(self, project_id, project_view_id):
         return self._get_json(
-            self._create_url(
-                f"/projects/{str(project_id)}/views/{str(project_view_id)}/tasks"
-            )
+            f"{self._api_url}/projects/{project_id}/views/{project_view_id}/tasks"
         )
 
     def put_bucket(self, project_id, project_view_id, title):
         payload = {"title": title}
         return self._put_json(
-            self._create_url(
-                f"/projects/{str(project_id)}/views/{str(project_view_id)}/buckets"
-            ),
+            f"{self._api_url}/projects/{project_id}/views/{project_view_id}/buckets",
             payload=payload,
         )
 
     def get_labels(self):
         if self._cache["labels"] is None:
-            self._cache["labels"] = self._get_json(self._create_url("/labels")) or []
+            self._cache["labels"] = self._get_json(f"{self._api_url}/labels") or []
         return self._cache["labels"]
 
     def put_label(self, title):
         payload = {"title": title}
-        return self._put_json(self._create_url("/labels"), payload=payload)
+        return self._put_json(f"{self._api_url}/labels", payload=payload)
 
     def get_tasks(self, exclude_completed=True):
         if self._cache["tasks"] is None:
-            url = self._create_url("/tasks/all")
+            url = f"{self._api_url}/tasks/all"
             params = {"filter": "done=false"} if exclude_completed else {}
             self._cache["tasks"] = self._get_json(url, params) or []
         return self._cache["tasks"]
 
     def get_task(self, task_id):
-        url = self._create_url(f"/tasks/{str(task_id)}")
+        url = f"{self._api_url}/tasks/{task_id}"
         return self._get_json(url)
 
     def put_task(self, project_id, payload):
         return self._put_json(
-            self._create_url(f"/projects/{str(project_id)}/tasks"), payload=payload
+            f"{self._api_url}/projects/{project_id}/tasks", payload=payload
         )
 
     def post_task(self, task_id, payload):
-        return self._post_json(
-            self._create_url(f"/tasks/{str(task_id)}"), payload=payload
-        )
+        return self._post_json(f"{self._api_url}/tasks/{task_id}", payload=payload)
 
     def add_label_to_task(self, task_id, label_id):
-        task_label_url = self._create_url(f"/tasks/{str(task_id)}/labels")
+        task_label_url = f"{self._api_url}/tasks/{task_id}/labels"
         payload = {"label_id": label_id}
         return self._put_json(task_label_url, payload=payload)
 
     def remove_label_from_task(self, task_id, label_id):
-        task_label_url = self._create_url(
-            f"/tasks/{str(task_id)}/labels/{str(label_id)}"
-        )
+        task_label_url = f"{self._api_url}/tasks/{task_id}/labels/{label_id}"
         self._delete_json(task_label_url)

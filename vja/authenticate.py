@@ -38,9 +38,6 @@ class Login:
         with open(self._token_file, "w", encoding="utf-8") as token_file:
             json.dump(data, token_file)
 
-    def _create_url(self, path):
-        return self._api_url + path
-
     def validate_access_token(
         self, force=False, username=None, password=None, totp_passcode=None
     ):
@@ -68,7 +65,7 @@ class Login:
             os.remove(self._token_file)
 
     def _post_login_request(self, username, password, totp_passcode):
-        login_url = self._create_url("/login")
+        login_url = f"{self._api_url}/login"
         payload = {
             "long_token": True,
             "username": username,

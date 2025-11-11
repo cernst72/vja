@@ -6,7 +6,7 @@ import click
 from vja.model import User, Task, Project
 
 PROJECT_LIST_FORMAT_DEFAULT = (
-    "{x.id:5} {x.title:20.20} {x.description:20.20}  " "{x.parent_project_id:5} "
+    "{x.id:5} {x.title:20.20} {x.description:20.20} {x.parent_project_id:5}"
 )
 
 BUCKET_LIST_FORMAT_DEFAULT = "{x.id:5} {x.title:20.20} {x.limit:5} {x.count_tasks:6}"
