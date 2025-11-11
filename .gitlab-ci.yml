@@ -35,7 +35,7 @@ pylint:
     - python3 -m pip install -r requirements_dev.txt
 
     - flake8 --max-line-length=120 vja/*.py || true
-    - pylint -d C0103,C0114,C0115,C0116,C0301 --fail-under=9 vja/*.py
+    - pylint -d C0103,C0114,C0115,C0116,C0301,R0903 --fail-under=9 vja/*.py
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "beta" || $CI_COMMIT_BRANCH == "rc"
       when: on_success
