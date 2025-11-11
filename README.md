@@ -55,7 +55,7 @@ vja looks for its configuration at the following paths (in order):
 
 A full example can be found in [config.rc](https://gitlab.com/ce72/vja/-/blob/main/.config/vja/config.rc).
 
-- Create a configuration file at any valid path (see above) with ~ the following contents
+- Create a configuration file at any valid path (see above) with the following minimal contents
   ```shell
   [application]
   frontend_url=https://try.vikunja.io/

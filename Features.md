@@ -29,14 +29,14 @@
 
 ## Login
 
-When no valid token file exists in `$HOME/.vjacli/` then vja will ask for username and password on first usage.
+When no valid token file exists next to your config file in the [configuration path](README.md#configuration) then vja will ask for username and password on first usage.
 If Two-Factor Authentication is activated for your user then vja will prompt you for the one-time password additionally.
-The resulting token will be stored in `$HOME/.vjacli/token.json`.
+The resulting token will be stored next to your config file.
 
 ### API token
 
 Alternatively you may create an API token with sufficient rights in Vikunja ("Settings -> API Tokens")
-and save it to `$HOME/.vjacli/token.json`
+and save it next to your configuration (e.g. `$HOME/.config/vja/config.rc`, see [README.md](README.md#configuration)).
 
 ```json
 {
