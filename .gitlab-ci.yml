@@ -33,8 +33,6 @@ pylint:
     - python3 -m venv ./venv
     - . ./venv/bin/activate
     - python3 -m pip install -r requirements_dev.txt
-    - python3 -m pip install .
-    - vja --version
 
     - flake8 --max-line-length=120 vja/*.py || true
     - pylint -d C0103,C0114,C0115,C0116,C0301 --fail-under=9 vja/*.py
