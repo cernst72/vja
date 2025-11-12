@@ -1,3 +1,19 @@
+## [4.10.1](https://gitlab.com/ce72/vja/compare/4.10.0...4.10.1) (2025-11-12)
+
+### Documentation
+
+* describe new configuration mechanism ([523ba2c](https://gitlab.com/ce72/vja/commit/523ba2cc520aadf30d824a1d8d753541d6f73518))
+
+### Misc
+
+* **deps:** update all dependencies ([3fe53f0](https://gitlab.com/ce72/vja/commit/3fe53f0d4fba07517328ab43378168ba93884af0))
+* refactoring and linting ([af2af9f](https://gitlab.com/ce72/vja/commit/af2af9f6b82538dcb86ef2f9009caa9a96d330a2))
+
+### Automation
+
+* **lint:** disable  too-few-public-methods check ([2b3fce2](https://gitlab.com/ce72/vja/commit/2b3fce2f261651c8699c65ac5628f225bc728c4d))
+* migrate build system to pyproject ([837306e](https://gitlab.com/ce72/vja/commit/837306e635e59f8daa4f587bc661a1d2e94e8d70))
+
 ## [4.10.0](https://gitlab.com/ce72/vja/compare/4.9.0...4.10.0) (2025-11-09)
 
 ### Features
