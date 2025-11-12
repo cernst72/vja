@@ -2,7 +2,7 @@ import logging
 
 from vja.apiclient import ApiClient
 from vja.filter import create_filters
-from vja.model import Label, User, Bucket
+from vja.model import Bucket, Label, User
 from vja.parse import rgetattr
 from vja.project_service import ProjectService
 from vja.task_service import TaskService

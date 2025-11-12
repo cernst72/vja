@@ -5,10 +5,10 @@ from vja import VjaError
 from vja.apiclient import ApiClient
 from vja.model import Bucket, Label, Project
 from vja.parse import (
-    parse_date_arg_to_iso,
-    parse_json_date,
-    parse_date_arg_to_timedelta,
     datetime_to_isoformat,
+    parse_date_arg_to_iso,
+    parse_date_arg_to_timedelta,
+    parse_json_date,
 )
 from vja.project_service import ProjectService
 from vja.task_service import TaskService

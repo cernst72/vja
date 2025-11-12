@@ -40,5 +40,5 @@ plugins:
   - "@semantic-release/gitlab"
   - "semantic-release-pypi"
   - - "@semantic-release/git"
-    - assets: [ CHANGELOG.md, setup.cfg ]
+    - assets: [ CHANGELOG.md, pyproject.toml ]
       message: "chore(release): Release ${nextRelease.version} update changelog [skip ci]\n\n${nextRelease.notes}"
