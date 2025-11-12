@@ -3,5 +3,5 @@ flake8==7.3.0
 pip==25.3
 pylint==4.0.2
 pytest==9.0.0
-setuptools>=61.0
+setuptools>=77.0.3
 wheel
