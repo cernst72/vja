@@ -1,30 +1,31 @@
 # Features
 
 <!-- TOC -->
-* [Features](#features)
-  * [Login](#login)
-    * [API token](#api-token)
-  * [Tasks](#tasks)
-    * [Add Task](#add-task)
-      * [Clone](#clone)
-    * [List tasks](#list-tasks)
-      * [Urgency](#urgency)
-      * [Sort](#sort)
-      * [Filter](#filter)
-      * [Select](#select)
-    * [Show single task](#show-single-task)
-    * [Edit tasks](#edit-tasks)
-      * [Defer task](#defer-task)
-      * [Reminders](#reminders)
-      * [Batch editing](#batch-editing)
-  * [Open Vikunja in browser](#open-vikunja-in-browser)
-  * [Manage projects, labels, buckets](#manage-projects-labels-buckets)
-    * [Manage projects](#manage-projects)
-    * [Manage kanban buckets](#manage-kanban-buckets)
-    * [Manage labels](#manage-labels)
-  * [Output format](#output-format)
-    * [Example](#example)
-  * [Terminate session](#terminate-session)
+- [Features](#features)
+  - [Login](#login)
+    - [API token](#api-token)
+  - [Tasks](#tasks)
+    - [Add Task](#add-task)
+      - [Clone](#clone)
+    - [List tasks](#list-tasks)
+      - [Urgency](#urgency)
+      - [Sort](#sort)
+      - [Filter](#filter)
+      - [Select](#select)
+    - [Show single task](#show-single-task)
+    - [Edit tasks](#edit-tasks)
+      - [Defer task](#defer-task)
+      - [Reminders](#reminders)
+      - [Batch editing](#batch-editing)
+  - [Open Vikunja in browser](#open-vikunja-in-browser)
+  - [Manage projects, labels, buckets](#manage-projects-labels-buckets)
+    - [Manage projects](#manage-projects)
+    - [Manage kanban buckets](#manage-kanban-buckets)
+    - [Manage labels](#manage-labels)
+  - [Output format](#output-format)
+    - [Example](#example)
+  - [Terminate session](#terminate-session)
+- [Appendix](#appendix)
 <!-- TOC -->
 
 ## Login
@@ -374,4 +375,29 @@ vja will prompt you again.
 ```shell
 vja logout
 ```
+# Appendix
+I have some aliases which might demonstrate how to use vja:
+```shell
+vadd='vja add -v -o Next --priority=1  --reminder --due-date="tomorrow 08:00"'
+vadda='vja add -v -o Next --priority=1 --reminder --due-date="tomorrow 08:00" --label="@arbeit"'
+vaddc='vja add -v -o Next --priority=1 --reminder --due-date="tomorrow 08:00" --label="@computer"'
+vaddh='vja add -v -o Next --priority=1 --reminder --due-date="tomorrow 08:00" --label="@zuhause"'
+vaddu='vja add -v -o Next --priority=1 --reminder --due-date="tomorrow 08:00" --label="@unterwegs"'
+vaddz=vaddh
+vcheck='vja check -v'
+vdate='vja edit -v -d'
+vdefer='vja defer -v'
+vedit='vja edit -v'
+vla='vja ls -v --filter="labels contains @arbeit"'
+vlcreated='vja ls -v --filter="created after last week" --custom-format=created --sort=created'
+vldone='vja ls -v --filter="done eq True" --filter="updated after last week" --custom-format=updated --sort=updated --all'
+vldue='vja ls -v --sort="due_date, -urgency"'
+vlfrei='vja ls -v --filter="labels ne @arbeit" --filter="labels ne @arbeit,R"'
+vlnow='vja ls -v --sort="due_date, -urgency" -u6'
+vlu='vja ls -v -u'
+vlupdated='vja ls -v --filter="updated after last week" --custom-format=updated --sort=updated --all'
+vluu='vja ls -v -u 6'
+vopen='vja open'
+```
+
 
