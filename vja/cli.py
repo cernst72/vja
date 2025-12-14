@@ -559,8 +559,7 @@ def task_clone(ctx, application, task_id, title, quiet_show=False, verbose_show=
 )
 @click.option(
     "favorite",
-    "-f/ ",
-    "--favorite/--no-favorite",
+    "-f/--no-favorite",
     "--star/--no-star",
     is_flag=True,
     default=None,
