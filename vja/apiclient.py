@@ -175,7 +175,7 @@ class ApiClient:
 
     def get_tasks(self, exclude_completed=True):
         if self._cache["tasks"] is None:
-            url = f"{self._api_url}/tasks/all"
+            url = f"{self._api_url}/tasks"
             params = {"filter": "done=false"} if exclude_completed else {}
             self._cache["tasks"] = self._get_json(url, params) or []
         return self._cache["tasks"]
