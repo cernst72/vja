@@ -25,18 +25,30 @@ def handle_http_error(func):
     def wrapper(self, *args, **kwargs):
         try:
             return func(self, *args, **kwargs)
-        except requests.HTTPError as error:
-            if error.response.status_code == 401:
-                logger.info(
-                    "HTTP-Error %s, url=%s; trying to retrieve new access token...",
-                    error.response.status_code,
-                    error.response.url,
-                )
-                self.authenticate(force_login=True)
-                return func(self, *args, **kwargs)
-            raise VjaError(
-                f"HTTP-Error {error.response.status_code}, url={error.response.url}, body={error.response.text}"
-            ) from error
+        except requests.RequestException as error:
+            # requests.RequestException is the base for all requests exceptions
+            # including HTTPError, ConnectionError, Timeout, etc.
+            # Handle HTTP errors (raised by response.raise_for_status()) specially
+            if isinstance(error, requests.HTTPError):
+                response = getattr(error, "response", None)
+                status = getattr(response, "status_code", None)
+                url = getattr(response, "url", None)
+                body = getattr(response, "text", None)
+                if status == 401:
+                    logger.info(
+                        "HTTP-Error %s, url=%s; trying to retrieve new access token...",
+                        status,
+                        url,
+                    )
+                    # force login and retry once
+                    self.authenticate(force_login=True)
+                    return func(self, *args, **kwargs)
+                raise VjaError(
+                    f"HTTP-Error {status}, url={url}, body={body}"
+                ) from error
+
+            # Non-HTTP request exceptions (connection issues, timeouts, etc.)
+            raise VjaError(f"Request failed: {error}") from error
 
     return wrapper
 
