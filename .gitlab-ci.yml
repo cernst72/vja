@@ -58,7 +58,7 @@ integration-test:
   script:
     - *start_vikunja
     - export VJA_CONFIGDIR=tests/.vjatest_dind
-    - coverage run --omit='*test*' -m pytest
+    - coverage run --omit='*test*' -m pytest --oldapi
     - coverage report --omit='*test*'
     - coverage xml --omit='*test*'
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'

@@ -12,7 +12,8 @@ It provides a command line interface for adding, viewing and editing todo tasks 
 The goal is to support a command line based task workflow ~ similar to taskwarrior.
 
 #### Important change in vja 5
-Vikunja clarified it's API. Since there is no API versioning in Vikunja, vja >= 5.0 will only support vikunja > v1.0.0-rc3, while vja < 5.0 is required for older Vikunja servers. 
+Vikunja clarified it's API. Since there is no API versioning in Vikunja, vja >= 5.0 will only support vikunja > v1.0.0-rc3, while vja < 5.0 is required for older Vikunja servers.
+(You may use `vja --oldapi` to support pre 1.0.0-rc4 server instances. (Deprecated!)) 
 
 #### Important change in vja 4.10
 New name for configuration file (`config.rc`) and XDG conform path lookup, see [Configuration](#configuration)
