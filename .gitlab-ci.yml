@@ -46,7 +46,7 @@ pylint:
     - if: $CI_COMMIT_BRANCH && $CI_COMMIT_REF_SLUG !~ /renovate.*/
       when: manual
 
-integration-test:
+integration-test-prod:
   stage: test
   image:
     name: docker:cli
@@ -90,6 +90,29 @@ integration-test-unstable:
     - *start_vikunja
     - export VJA_CONFIGDIR=tests/.vjatest_dind
     - pytest
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "beta" || $CI_COMMIT_BRANCH == "rc"
+      when: on_success
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: on_success
+    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_REF_SLUG !~ /renovate.*/
+      when: manual
+
+integration-test-legacy:
+  stage: test
+  image:
+    name: docker:cli
+  services:
+    - name: docker:dind
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+    VIKUNJA_IMAGE: vikunja/vikunja:0.24.6
+  allow_failure: true
+  script:
+    - *start_vikunja
+    - export VJA_CONFIGDIR=tests/.vjatest_dind
+    - pytest --oldapi
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "beta" || $CI_COMMIT_BRANCH == "rc"
       when: on_success

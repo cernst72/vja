@@ -54,9 +54,10 @@ def handle_http_error(func):
 
 
 class ApiClient:
-    def __init__(self, api_url, token_file):
+    def __init__(self, api_url, token_file, oldapi):
         logger.debug("Connecting to api_url %s", api_url)
         self._api_url = api_url
+        self._oldapi =oldapi
         self._cache = {"projects": None, "labels": None, "tasks": None}
         self._login = Login(api_url, token_file)
 
@@ -175,7 +176,10 @@ class ApiClient:
 
     def get_tasks(self, exclude_completed=True):
         if self._cache["tasks"] is None:
-            url = f"{self._api_url}/tasks/all"
+            if (self._oldapi):
+                url = f"{self._api_url}/tasks/all"
+            else:
+                url = f"{self._api_url}/tasks"
             params = {"filter": "done=false"} if exclude_completed else {}
             self._cache["tasks"] = self._get_json(url, params) or []
         return self._cache["tasks"]

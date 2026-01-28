@@ -75,108 +75,108 @@ class TestSingleTask:
 
 
 class TestTaskLs:
-    def test_task_ls(self, runner):
-        res = invoke(runner, "ls")
+    def test_task_ls(self, runner, use_old_api):
+        res = invoke(runner, "ls", use_old_api)
         assert re.search(r"At least one task", res.output)
 
-    def test_task_ls_json(self, runner):
-        res = invoke(runner, "ls --json")
+    def test_task_ls_json(self, runner, use_old_api):
+        res = invoke(runner, "ls --json", use_old_api)
         assert json.loads(res.output)[0]["title"] is not None
 
-    def test_task_ls_jsonvja(self, runner):
-        res = invoke(runner, "ls --jsonvja")
+    def test_task_ls_jsonvja(self, runner, use_old_api):
+        res = invoke(runner, "ls --jsonvja", use_old_api)
         data = json.loads(res.output)[0]
         assert data["title"] is not None
 
-    def test_filter_id(self, runner):
-        res = invoke(runner, ["ls", "--jsonvja", "2"])
+    def test_filter_id(self, runner, use_old_api):
+        res = invoke(runner, ["ls", "--jsonvja", "2"], use_old_api)
         data = json.loads(res.output)
         assert data[0]["id"] == 2
-        res = invoke(runner, ["ls", "--jsonvja", "1", "2"])
+        res = invoke(runner, ["ls", "--jsonvja", "1", "2"], use_old_api)
         data = json.loads(res.output)
         assert len(data) == 2
         assert data[0]["id"] in [1, 2]
         assert data[1]["id"] in [1, 2]
 
-    def test_sort_id(self, runner):
-        res = invoke(runner, ["ls", "--jsonvja", "--sort=id"])
+    def test_sort_id(self, runner, use_old_api):
+        res = invoke(runner, ["ls", "--jsonvja", "--sort=id"], use_old_api)
         data = json.loads(res.output)
         assert data[0]["id"] == 1
-        res = invoke(runner, ["ls", "--jsonvja", "--sort=-id"])
+        res = invoke(runner, ["ls", "--jsonvja", "--sort=-id"], use_old_api)
         data = json.loads(res.output)
         assert data[0]["id"] > 1
 
-    def test_sort_combined(self, runner):
+    def test_sort_combined(self, runner, use_old_api):
         res = invoke(
             runner,
             [
                 "ls",
                 "--jsonvja",
                 "--sort=due_date, is_favorite, -priority, project.title",
-            ],
+            ], use_old_api
         )
         data = json.loads(res.output)
         assert data[0]["due_date"] is not None
         assert data[-1]["due_date"] is None
 
-    def test_task_custom_format(self, runner):
-        res = invoke(runner, "ls --custom-format=ids_only")
+    def test_task_custom_format(self, runner, use_old_api):
+        res = invoke(runner, "ls --custom-format=ids_only", use_old_api)
         for line in res.output:
             assert re.match(r"^\d*$", line)
 
-    def test_task_custom_format_long(self, runner):
-        res = invoke(runner, "ls --custom-format=tasklist_long")
+    def test_task_custom_format_long(self, runner, use_old_api):
+        res = invoke(runner, "ls --custom-format=tasklist_long", use_old_api)
         assert re.search(r"At least one task", res.output)
 
 
 class TestTaskLsFilter:
-    def test_task_filter_due(self, runner):
-        res = invoke(runner, ["ls", "--jsonvja", "--due-date=after yesterday"])
+    def test_task_filter_due(self, runner, use_old_api):
+        res = invoke(runner, ["ls", "--jsonvja", "--due-date=after yesterday"], use_old_api)
         data = json.loads(res.output)
         assert len(data) > 0
-        res = invoke(runner, ["ls", "--jsonvja", "--due-date=before tomorrow"])
+        res = invoke(runner, ["ls", "--jsonvja", "--due-date=before tomorrow"], use_old_api)
         data = json.loads(res.output)
         assert len(data) > 0
-        res = invoke(runner, ["ls", "--jsonvja", "--due-date=after next week"])
+        res = invoke(runner, ["ls", "--jsonvja", "--due-date=after next week"], use_old_api)
         data = json.loads(res.output)
         assert len(data) == 0
-        res = invoke(runner, ["ls", "--jsonvja", "--due-date=" """"""])
+        res = invoke(runner, ["ls", "--jsonvja", "--due-date=" """"""], use_old_api)
         data = json.loads(res.output)
         assert len(data) > 0
         assert all(i["due_date"] is None for i in data)
 
-    def test_task_filter_favorite(self, runner):
-        res = invoke(runner, ["ls", "--jsonvja", "--favorite=True"])
+    def test_task_filter_favorite(self, runner, use_old_api):
+        res = invoke(runner, ["ls", "--jsonvja", "--favorite=True"], use_old_api)
         data = json.loads(res.output)
         assert len(data) > 0
         assert all(i["is_favorite"] for i in data)
 
-    def test_task_filter_label(self, runner):
-        res = invoke(runner, ["ls", "--jsonvja", "--label=y_ta"])
+    def test_task_filter_label(self, runner, use_old_api):
+        res = invoke(runner, ["ls", "--jsonvja", "--label=y_ta"], use_old_api)
         data = json.loads(res.output)
         assert len(data) > 0
         assert data[0]["label_objects"][0]["title"] == "my_tag"
-        res = invoke(runner, ["ls", "--jsonvja", "--label=unknown_label"])
+        res = invoke(runner, ["ls", "--jsonvja", "--label=unknown_label"], use_old_api)
         data = json.loads(res.output)
         assert len(data) == 0
 
-    def test_task_filter_label_empty(self, runner):
-        res = invoke(runner, ["ls", "--jsonvja", "--label=" """"""])
+    def test_task_filter_label_empty(self, runner, use_old_api):
+        res = invoke(runner, ["ls", "--jsonvja", "--label=" """"""], use_old_api)
         data = json.loads(res.output)
         assert len(data) > 0
         assert all(len(i["label_objects"]) == 0 for i in data)
 
-    def test_task_filter_project(self, runner):
-        res = invoke(runner, ["ls", "--jsonvja", "--project=est-project"])
+    def test_task_filter_project(self, runner, use_old_api):
+        res = invoke(runner, ["ls", "--jsonvja", "--project=est-project"], use_old_api)
         data = json.loads(res.output)
         assert len(data) > 0
         assert all(i["project"]["title"] == "test-project" for i in data)
-        res = invoke(runner, ["ls", "--jsonvja", "--project=Not created"])
+        res = invoke(runner, ["ls", "--jsonvja", "--project=Not created"], use_old_api)
         data = json.loads(res.output)
         assert len(data) == 0
 
-    def test_task_filter_base_project(self, runner):
-        res = invoke(runner, ["ls", "--jsonvja", "--base-project=est-project"])
+    def test_task_filter_base_project(self, runner, use_old_api):
+        res = invoke(runner, ["ls", "--jsonvja", "--base-project=est-project"], use_old_api)
         data = json.loads(res.output)
         assert len(data) > 0
         assert all(
@@ -186,78 +186,78 @@ class TestTaskLsFilter:
         )
         assert any(i["project"]["title"] == "test-project" for i in data)
         assert any(i["project"]["title"] == "grand-child" for i in data)
-        res = invoke(runner, ["ls", "--jsonvja", "--project=Not created"])
+        res = invoke(runner, ["ls", "--jsonvja", "--project=Not created"], use_old_api)
         data = json.loads(res.output)
         assert len(data) == 0
 
-    def test_task_filter_priority(self, runner):
-        res = invoke(runner, ["ls", "--jsonvja", "--priority=eq 5"])
+    def test_task_filter_priority(self, runner, use_old_api):
+        res = invoke(runner, ["ls", "--jsonvja", "--priority=eq 5"], use_old_api)
         data = json.loads(res.output)
         assert len(data) > 0
         assert all(i["priority"] == 5 for i in data)
-        res = invoke(runner, ["ls", "--jsonvja", "--priority=gt 4"])
+        res = invoke(runner, ["ls", "--jsonvja", "--priority=gt 4"], use_old_api)
         data = json.loads(res.output)
         assert len(data) > 0
         assert all(i["priority"] > 4 for i in data)
-        res = invoke(runner, ["ls", "--jsonvja", "--priority=gt 5"])
+        res = invoke(runner, ["ls", "--jsonvja", "--priority=gt 5"], use_old_api)
         data = json.loads(res.output)
         assert len(data) == 0
 
-    def test_task_filter_title(self, runner):
-        res = invoke(runner, ["ls", "--jsonvja", "--title=at least"])
+    def test_task_filter_title(self, runner, use_old_api):
+        res = invoke(runner, ["ls", "--jsonvja", "--title=at least"], use_old_api)
         data = json.loads(res.output)
         assert len(data) > 0
         assert all("At least one task" in i["title"] for i in data)
-        res = invoke(runner, ["ls", "--jsonvja", "--title=Not created"])
+        res = invoke(runner, ["ls", "--jsonvja", "--title=Not created"], use_old_api)
         data = json.loads(res.output)
         assert len(data) == 0
 
-    def test_task_filter_urgency(self, runner):
-        res = invoke(runner, ["ls", "--jsonvja", "--urgency=10"])
+    def test_task_filter_urgency(self, runner, use_old_api):
+        res = invoke(runner, ["ls", "--jsonvja", "--urgency=10"], use_old_api)
         data = json.loads(res.output)
         assert len(data) > 0
         assert all(i["urgency"] >= 10 for i in data)
-        res = invoke(runner, ["ls", "--jsonvja", "--urgency=10000"])
+        res = invoke(runner, ["ls", "--jsonvja", "--urgency=10000"], use_old_api)
         data = json.loads(res.output)
         assert len(data) == 0
 
-    def test_task_filter_general(self, runner):
-        res = invoke(runner, ["ls", "--jsonvja", "--filter=due_date after 2 days ago"])
+    def test_task_filter_general(self, runner, use_old_api):
+        res = invoke(runner, ["ls", "--jsonvja", "--filter=due_date after 2 days ago"], use_old_api)
         assert len(json.loads(res.output)) > 0
-        res = invoke(runner, ["ls", "--jsonvja", "--filter=due_date after 200 days"])
+        res = invoke(runner, ["ls", "--jsonvja", "--filter=due_date after 200 days"], use_old_api)
         assert len(json.loads(res.output)) == 0
-        res = invoke(runner, ["ls", "--jsonvja", "--filter=due_date after 200 days"])
+        res = invoke(runner, ["ls", "--jsonvja", "--filter=due_date after 200 days"], use_old_api)
         assert len(json.loads(res.output)) == 0
-        res = invoke(runner, ["ls", "--jsonvja", "--filter=is_favorite eq True"])
+        res = invoke(runner, ["ls", "--jsonvja", "--filter=is_favorite eq True"], use_old_api)
         data = json.loads(res.output)
         assert len(data) > 0
         assert all(i["is_favorite"] for i in data)
-        res = invoke(runner, ["ls", "--jsonvja", "--filter=priority gt 2"])
+        res = invoke(runner, ["ls", "--jsonvja", "--filter=priority gt 2"], use_old_api)
         assert len(json.loads(res.output)) > 0
-        res = invoke(runner, ["ls", "--jsonvja", "--filter=priority gt 5"])
+        res = invoke(runner, ["ls", "--jsonvja", "--filter=priority gt 5"], use_old_api)
         assert len(json.loads(res.output)) == 0
         res = invoke(
-            runner, ["ls", "--jsonvja", "--filter=title contains At least one"]
+            runner, ["ls", "--jsonvja", "--filter=title contains At least one"], use_old_api
         )
         assert len(json.loads(res.output)) > 0
         res = invoke(
-            runner, ["ls", "--jsonvja", "--filter=title contains TASK_NOT_CREATED"]
+            runner, ["ls", "--jsonvja", "--filter=title contains TASK_NOT_CREATED"], use_old_api
         )
         assert len(json.loads(res.output)) == 0
 
-    def test_task_filter_general_label(self, runner):
-        res = invoke(runner, ["ls", "--jsonvja", "--filter=labels contains my_tag"])
+    def test_task_filter_general_label(self, runner, use_old_api):
+        res = invoke(runner, ["ls", "--jsonvja", "--filter=labels contains my_tag"], use_old_api)
         data = json.loads(res.output)
         assert len(data) > 0
         assert all("my_tag" in _labels_from_task_json(task) for task in data)
-        res = invoke(runner, ["ls", "--jsonvja", "--filter=labels ne my_tag"])
+        res = invoke(runner, ["ls", "--jsonvja", "--filter=labels ne my_tag"], use_old_api)
         data = json.loads(res.output)
         assert len(data) > 0
         assert all("my_tag" not in _labels_from_task_json(task) for task in data)
 
-    def test_task_filter_general_combined(self, runner):
+    def test_task_filter_general_combined(self, runner, use_old_api):
         res = invoke(
-            runner, ["ls", "--jsonvja", "--filter=id gt 0", "--filter=id lt 2"]
+            runner, ["ls", "--jsonvja", "--filter=id gt 0", "--filter=id lt 2"], use_old_api
         )
         data = json.loads(res.output)
         assert len(data) == 1
