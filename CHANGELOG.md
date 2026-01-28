@@ -1,6 +1,8 @@
 ## [5.0.0](https://gitlab.com/ce72/vja/compare/4.10.1...5.0.0) (2026-01-28)
 
 ### ⚠ BREAKING CHANGES
+Due to an breaking API change in Vikunja, vja with version >= 5.0.0 will only support Vikunja with version >= 1.0.0, while vja < 5.0.0 is recommended for older Vikunja servers.
+(Additionally, vja:5.0 allows `vja --oldapi` to support pre-1.0.0 server instances. (Deprecated!))
 
 * **vikunja-api:** Upstream Vikunja renamed the endpoint /tasks/all to /tasks (https://github.com/go-vikunja/vikunja/pull/1988/). Starting from now vja will only work with this new API.
 
