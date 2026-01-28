@@ -1,23 +1,44 @@
-# CLI client for Vikunja
-
 [![pypi package version](https://img.shields.io/pypi/v/vja)](https://pypi.org/project/vja/)
 [![pypi downloads](https://img.shields.io/pypi/dw/vja)](https://pypi.org/project/vja/)
 [![pipeline status](https://gitlab.com/ce72/vja/badges/main/pipeline.svg)](https://gitlab.com/ce72/vja/-/pipelines)
 [![coverage report](https://gitlab.com/ce72/vja/badges/main/coverage.svg)](https://gitlab.com/ce72/vja/commits/main)
 
+# vja
 A command line interface for Vikunja > [The todo app to organize your life](https://vikunja.io/).
 Manage your tasks and projects directly from the terminal with simple commands.
 
 It provides a command line interface for adding, viewing and editing todo tasks on a Vikunja Server.
 The goal is to support a command line based task workflow ~ similar to taskwarrior.
 
-#### Important change in vja 5
-Vikunja clarified it's API. Since there is no API versioning in Vikunja, vja >= 5.0 will only support vikunja > v1.0.0-rc3, while vja < 5.0 is required for older Vikunja servers.
-(You may use `vja --oldapi` to support pre 1.0.0-rc4 server instances. (Deprecated!)) 
+**❗Important change in vja 5.0.0**
 
-#### Important change in vja 4.10
+Due to an breaking API change in Vikunja, `vja` with version >= 5.0.0 will only support Vikunja with version >= 1.0.0, while `vja` < 5.0.0 is recommended for older Vikunja servers.
+(Additionally vja:5.0.0 allows `vja --oldapi` to support pre-1.0.0 server instances. (Deprecated!)) 
+
+**❗Important change in vja 4.10**
+
 New name for configuration file (`config.rc`) and XDG conform path lookup, see [Configuration](#configuration)
 
+## Table of contents
+<!-- TOC -->
+  * [Usage](#usage)
+  * [Installation](#installation)
+    * [Install with pipx (recommended)](#install-with-pipx-recommended)
+    * [Install with pip](#install-with-pip)
+  * [Configuration](#configuration)
+    * [Description of configuration](#description-of-configuration)
+      * [Required options](#required-options)
+      * [Optional options](#optional-options)
+    * [Shell completion](#shell-completion)
+      * [Bash](#bash)
+      * [Zsh](#zsh)
+      * [Fish](#fish)
+  * [Development](#development)
+    * [Prepare python virtual environment](#prepare-python-virtual-environment)
+    * [Local build](#local-build)
+      * [Local development install](#local-development-install)
+      * [Run integration test](#run-integration-test)
+<!-- TOC -->
 ## Usage
 
 ```shell
@@ -26,9 +47,9 @@ vja ls
 ```
 
 (You will be prompted for your account on first usage and any time the access token expires,
-see [Features.md](https://gitlab.com/ce72/vja/-/blob/main/Features.md#login))
+see [Features.md](https://gitlab.com/ce72/vja/-/blob/main/Features.md#login).)
 
-**More user documentation is available on [Features.md](https://gitlab.com/ce72/vja/-/blob/main/Features.md)**
+**More user documentation is available on [Features.md](https://gitlab.com/ce72/vja/-/blob/main/Features.md).**
 
 ## Installation
 ### Install with pipx (recommended)
@@ -50,8 +71,8 @@ Not recommended as it might break system dependencies.
 
 ## Configuration
 
-Before using vja you must provide a configuration.
-vja looks for its configuration at the following paths (in order):
+Before using `vja` you must provide a configuration.
+`vja` looks for its configuration at the following paths (in order):
 1. `$VJA_CONFIGDIR/config.rc`
 2. `$XDG_CONFIG_HOME/vja/config.rc`
 3. `$HOME/.config/vja/config.rc`
