@@ -1,3 +1,37 @@
+## [5.0.0](https://gitlab.com/ce72/vja/compare/4.10.1...5.0.0) (2026-01-28)
+
+### ⚠ BREAKING CHANGES
+
+* **vikunja-api:** Upstream Vikunja renamed the endpoint /tasks/all to /tasks (https://github.com/go-vikunja/vikunja/pull/1988/). Starting from now vja will only work with this new API.
+
+### Features
+
+* **cli:** introduce --oldapi to support pre 1.0.0-rc4 instances ([c66b3fe](https://gitlab.com/ce72/vja/commit/c66b3fef115fb671577806c559e823ff45bb6c31))
+* **vikunja-api:** support new endpoint name ([9f4ee5f](https://gitlab.com/ce72/vja/commit/9f4ee5f9810127192874c1c735e292e0b9870a7b))
+
+### Bug Fixes
+
+* improve handling of HTTP connection errors ([44f93c1](https://gitlab.com/ce72/vja/commit/44f93c1d6102d3307cb7236a6125fbbe5b8018aa))
+* simplify --favorite argument ([11ffe23](https://gitlab.com/ce72/vja/commit/11ffe237e8829156fe257f6a8be6a28b563e18c2))
+
+### Documentation
+
+* fix typo in Readme ([df94f4e](https://gitlab.com/ce72/vja/commit/df94f4efb0d64bf0b110605ffb15a11eb3c26c35))
+* format README.md ([2975869](https://gitlab.com/ce72/vja/commit/2975869769b9b57be86b4226b8a9f968707a9479))
+* mention file name token.json ([b8d6ee2](https://gitlab.com/ce72/vja/commit/b8d6ee25ff90050047248340318b03854702c298))
+* show some shell aliases to demonstrate usage ([1c3bd99](https://gitlab.com/ce72/vja/commit/1c3bd994ea90cf7d809cdc93153600f73d79e5e6))
+
+### Misc
+
+* **config:** migrate config renovate.json ([99cdd0f](https://gitlab.com/ce72/vja/commit/99cdd0fea4d7cf62856c92a818c3be1b6581963c))
+* **deps:** update all dependencies ([7db21d2](https://gitlab.com/ce72/vja/commit/7db21d2ddfc41a747553a7e67a5e1e859fd842a2))
+* **deps:** update dependency coverage to v7.13.2 ([d577af3](https://gitlab.com/ce72/vja/commit/d577af3e527855b1d70c614e9830e2856ab4eae0))
+
+### Automation
+
+* fix license handling in pyproject.toml ([c409c10](https://gitlab.com/ce72/vja/commit/c409c102fcc026d2fd7b349ad75c8bb7832d0ea2))
+* **test:** add integration-test-legacy for vikunja:0.24.6 ([ee64500](https://gitlab.com/ce72/vja/commit/ee6450039325efd47fc497788afec4488ce39be0))
+
 ## [4.10.1](https://gitlab.com/ce72/vja/compare/4.10.0...4.10.1) (2025-11-12)
 
 ### Documentation
