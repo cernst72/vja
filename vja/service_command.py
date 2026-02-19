@@ -271,6 +271,9 @@ class CommandService:
         task_json = self._api_client.post_task(task_id, task_remote)
         return self._task_service.task_from_json(task_json)
 
+    def delete_task(self, task_id):
+        self._api_client.delete_task(task_id)
+
     def _label_from_name(self, name, is_force):
         if not name:
             return None

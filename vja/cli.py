@@ -690,6 +690,29 @@ def task_defer(
 
 
 @cli.command(
+    "delete",
+    aliases=["rm", "remove"],
+    help="Delete task/tasks permanently.",
+)
+@click.argument("task_ids", required=True, type=click.INT, nargs=-1)
+@click.option(
+    "quiet_show",
+    "-q",
+    "--quiet-show",
+    "--quiet",
+    is_flag=True,
+    help="Hide confirmation message",
+)
+@with_application
+@catch_exception(handle=VjaError)
+def task_delete(application, task_ids, quiet_show=False):
+    for task_id in task_ids:
+        application.command_service.delete_task(task_id)
+        if not quiet_show:
+            click.echo(f"Deleted task {task_id}")
+
+
+@cli.command(
     "ls",
     help="List tasks ... (task-id; priority; is_favorite; title; due_date; "
     "has reminder; parent-project; project; labels; urgency). "
@@ -874,6 +897,7 @@ task_group.add_command(task_clone)
 task_group.add_command(task_edit)
 task_group.add_command(task_toggle)
 task_group.add_command(task_defer)
+task_group.add_command(task_delete)
 task_group.add_command(task_ls)
 task_group.add_command(task_show)
 task_group.add_command(task_open)

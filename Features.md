@@ -17,6 +17,7 @@
       - [Defer task](#defer-task)
       - [Reminders](#reminders)
       - [Batch editing](#batch-editing)
+    - [Delete task](#delete-task)
   - [Open Vikunja in browser](#open-vikunja-in-browser)
   - [Manage projects, labels, buckets](#manage-projects-labels-buckets)
     - [Manage projects](#manage-projects)
@@ -277,6 +278,13 @@ Multiple edits and defers are possible by giving more task ids. Take care though
 ```shell
 vja edit 1 5 8 --due="next monday 14:00"
 vja defer 1 2 3 1d
+```
+
+### Delete task
+
+```shell
+vja delete 1
+vja delete 1 2 3
 ```
 
 ## Open Vikunja in browser
