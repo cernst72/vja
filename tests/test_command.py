@@ -2,6 +2,7 @@ import datetime
 import json
 import re
 
+from dateutil import tz
 from tests.conftest import invoke
 
 ADD_SUCCESS_PATTERN = re.compile(r".*Created task (\d+) in project .*")
@@ -11,7 +12,7 @@ YESTERDAY = TODAY + datetime.timedelta(days=-1)
 YESTERDAY_ISO = YESTERDAY.isoformat()
 TOMORROW = TODAY + datetime.timedelta(days=1)
 TOMORROW_ISO = TOMORROW.isoformat()
-TOMMORROW_AT_8_ISO = (TOMORROW.replace(hour=8, minute=0, second=0)).isoformat()
+TOMORROW_AT_8_ISO = (TOMORROW.replace(hour=8, minute=0, second=0)).isoformat()
 DATE_1 = TODAY + datetime.timedelta(days=10)
 DATE_2 = DATE_1 + datetime.timedelta(days=1)
 DATE_1_ISO = DATE_1.isoformat()
@@ -32,7 +33,7 @@ class TestAddTask:
     def test_due_date(self, runner):
         res = invoke(runner, "add title of new task --force --due=tomorrow")
         after = json_for_created_task(runner, res.output)
-        assert after["due_date"] == TOMMORROW_AT_8_ISO
+        assert after["due_date"] == TOMORROW_AT_8_ISO
 
     def test_duplicate_task_title_rejected(self, runner):
         invoke(runner, "add title of new task", 1, catch_exceptions=True)
@@ -91,6 +92,15 @@ class TestEditGeneral:
         assert after["created"] == before["created"]
 
     def test_edit_due_date_with_time(self, runner):
+        # edit due_date with iso timestamp
+        invoke(runner, "edit 1 --due=2042-01-30T15:45:00-02:00")
+        after = json_for_task_id(runner, 1)
+        assert (
+            after["due_date"]
+            == datetime.datetime(2042, 1, 30, 15, 45, 0, tzinfo=tz.tzoffset(None, -2*3600))
+            .astimezone(tz.tzlocal()).replace(tzinfo=None).isoformat()
+        )
+
         # unset due_date
         before = json_for_task_id(runner, 1)
         assert before["due_date"] is not None
@@ -101,7 +111,7 @@ class TestEditGeneral:
         # edit due_date with default time
         invoke(runner, "edit 1 --due=tomorrow")
         after = json_for_task_id(runner, 1)
-        assert after["due_date"] == TOMMORROW_AT_8_ISO
+        assert after["due_date"] == TOMORROW_AT_8_ISO
 
         # edit due_date with given time
         invoke(runner, ["edit", "1", "--due=tomorrow 15:00"])
@@ -260,7 +270,7 @@ class TestDeferTask:
         assert after["reminders"][0]["relative_period"] == 0
         assert after["reminders"][0]["relative_to"] == "due_date"
 
-    def test_defer_past_due_realtive_to_now(self, runner):
+    def test_defer_past_due_relative_to_now(self, runner):
         invoke(runner, f"edit 2 --due-date={YESTERDAY_ISO}")
 
         invoke(runner, "defer 2 1d")
