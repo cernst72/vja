@@ -27,10 +27,16 @@ def parse_date_arg_to_datetime(
     if not text:
         return None
 
-    if re.compile(r".*\dT\d.*").match(text):
-        text = text.replace(
-            "T", " "
-        )  # workaround for https://github.com/bear/parsedatetime/issues/15
+    try:
+        result = parser.isoparse(text)
+        if result.tzinfo is not None:
+            result = result.astimezone(tz.tzlocal()).replace(tzinfo=None)
+        has_time = bool(re.search(r"[T ]\d{2}:", text))  # isoparse defaults to midnight; check string for explicit time
+        if not has_time:
+            result = result.replace(hour=default_hour, minute=default_minute, second=0)
+        return result
+    except (ValueError, OverflowError):
+        pass
 
     timetuple, pdt_context = parsedatetime.Calendar(
         version=parsedatetime.VERSION_CONTEXT_STYLE
