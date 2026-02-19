@@ -1,3 +1,26 @@
+## [5.1.0](https://gitlab.com/ce72/vja/compare/5.0.0...5.1.0) (2026-02-19)
+
+### Features
+
+* add task delete command ([43a4021](https://gitlab.com/ce72/vja/commit/43a40213ea2798ebf72fa50419d053421c0f68b9))
+
+### Bug Fixes
+
+* **parse:** handle ISO 8601 timezone offsets in date argument parser ([dc8b001](https://gitlab.com/ce72/vja/commit/dc8b0017f7f81a4f934f3b2b5717ceeb89f8c940))
+
+### Documentation
+
+* clarify Changelog.md ([6676e8c](https://gitlab.com/ce72/vja/commit/6676e8c29bb73a82a2434ed465ed7ebc3567a904))
+
+### Misc
+
+* **deps:** update all dependencies ([36dfe29](https://gitlab.com/ce72/vja/commit/36dfe294aa74ce728cd8404041444f4516beb65b))
+
+### Automation
+
+* add test for iso timestamp argument ([c484d0e](https://gitlab.com/ce72/vja/commit/c484d0efd120c03e36a3f991447e11da048cdc9f))
+* test default based on vikunja:1.1.0 ([4b96e4f](https://gitlab.com/ce72/vja/commit/4b96e4f5e8e5854af8fa0f9c4c401cf3fa82575a))
+
 ## [5.0.0](https://gitlab.com/ce72/vja/compare/4.10.1...5.0.0) (2026-01-28)
 
 ### ⚠ BREAKING CHANGES
