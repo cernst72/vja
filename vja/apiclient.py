@@ -196,6 +196,9 @@ class ApiClient:
     def post_task(self, task_id, payload):
         return self._post_json(f"{self._api_url}/tasks/{task_id}", payload=payload)
 
+    def delete_task(self, task_id):
+        self._delete_json(f"{self._api_url}/tasks/{task_id}")
+
     def add_label_to_task(self, task_id, label_id):
         task_label_url = f"{self._api_url}/tasks/{task_id}/labels"
         payload = {"label_id": label_id}
