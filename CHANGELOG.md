@@ -1,3 +1,13 @@
+## [5.2.0](https://gitlab.com/ce72/vja/compare/5.1.0...5.2.0) (2026-02-25)
+
+### Features
+
+* support vikunja:2.0.0 refresh tokens ([9fb9921](https://gitlab.com/ce72/vja/commit/9fb992167db07eba22c296e97ce908187e1b4e0d))
+
+### Misc
+
+* **deps:** update dependency pylint to v4.0.5 ([9f53ca2](https://gitlab.com/ce72/vja/commit/9f53ca2b95c873309de393c6178623c190748b6e))
+
 ## [5.1.0](https://gitlab.com/ce72/vja/compare/5.0.0...5.1.0) (2026-02-19)
 
 ### Features
