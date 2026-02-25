@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vja"
-version = "5.2.0"
+version = "5.2.1"
 description = "A simple CLI for Vikunja task manager"
 readme = "README.md"
 requires-python = ">=3.9"
