@@ -55,6 +55,7 @@ integration-test-prod:
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
+    VIKUNJA_IMAGE: vikunja/vikunja:2.0.0
   script:
     - *start_vikunja
     - export VJA_CONFIGDIR=tests/.vjatest_dind
@@ -85,6 +86,29 @@ integration-test-unstable:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
     VIKUNJA_IMAGE: vikunja/vikunja:unstable
+  allow_failure: true
+  script:
+    - *start_vikunja
+    - export VJA_CONFIGDIR=tests/.vjatest_dind
+    - pytest
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "beta" || $CI_COMMIT_BRANCH == "rc"
+      when: on_success
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: on_success
+    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_REF_SLUG !~ /renovate.*/
+      when: manual
+
+integration-test-1:
+  stage: test
+  image:
+    name: docker:cli
+  services:
+    - name: docker:dind
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+    VIKUNJA_IMAGE: vikunja/vikunja:1.1.0
   allow_failure: true
   script:
     - *start_vikunja

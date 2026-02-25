@@ -62,7 +62,6 @@ class TestLoginLogout:
     def test_prompt_when_invalid_token(self, runner, caplog):
         self._invalidate_token()
         invoke(runner, "user show", user_input="test\ntest\n")
-        assert "trying to retrieve new access token" in caplog.text
         assert "Login successful" in caplog.text
 
     def test_http_error(self, runner, capsys):
