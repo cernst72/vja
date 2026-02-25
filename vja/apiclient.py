@@ -31,20 +31,12 @@ def handle_http_error(func):
             # Handle HTTP errors (raised by response.raise_for_status()) specially
             if isinstance(error, requests.HTTPError):
                 response = getattr(error, "response", None)
-                status = getattr(response, "status_code", None)
                 url = getattr(response, "url", None)
-                body = getattr(response, "text", None)
+                status = getattr(response, "status_code", None)
                 if status == 401:
-                    logger.info(
-                        "HTTP-Error %s, url=%s; trying to retrieve new access token...",
-                        status,
-                        url,
-                    )
-                    # force login and retry once
-                    self.authenticate(force_login=True)
-                    return func(self, *args, **kwargs)
+                    return _handle_http_401(self, response, func, args, kwargs)
                 raise VjaError(
-                    f"HTTP-Error {status}, url={url}, body={body}"
+                    f"HTTP-Error {status}, url={url}, body={getattr(response, 'text', None)}"
                 ) from error
 
             # Non-HTTP request exceptions (connection issues, timeouts, etc.)
@@ -53,11 +45,36 @@ def handle_http_error(func):
     return wrapper
 
 
+def _handle_http_401(self, response, func, args, kwargs):
+    logger.debug(
+        "Handle HTTP 401 error: %s", response.text
+    )
+    body_json = self.to_json(response)
+    if body_json.get("code") == 11:
+        # will only happen in vikunja > 2.0
+        try:
+            # try refresh first
+            self.refresh_access_token()
+            return func(self, *args, **kwargs)
+        except (requests.RequestException, KeyError):
+            # fallback to interactive login
+            logger.info("Refresh failed or no refresh token; falling back to interactive login")
+            self.authenticate(force_login=True)
+            return func(self, *args, **kwargs)
+
+    logger.info(
+        "HTTP-Error 401, interactive login required...",
+    )
+    # force login and retry once
+    self.authenticate(force_login=True)
+    return func(self, *args, **kwargs)
+
+
 class ApiClient:
     def __init__(self, api_url, token_file, oldapi):
         logger.debug("Connecting to api_url %s", api_url)
         self._api_url = api_url
-        self._oldapi =oldapi
+        self._oldapi = oldapi
         self._cache = {"projects": None, "labels": None, "tasks": None}
         self._login = Login(api_url, token_file)
 
@@ -70,7 +87,7 @@ class ApiClient:
         # too verbose:
         # logger.debug("GET response: %s - %s", response, response.text)
         response.raise_for_status()
-        json_result = self._to_json(response)
+        json_result = self.to_json(response)
         total_pages = int(response.headers.get("x-pagination-total-pages", 1))
         if total_pages > 1:
             logger.debug(
@@ -81,7 +98,7 @@ class ApiClient:
                 params.update({"page": page})
                 response = requests.get(url, headers=headers, params=params, timeout=30)
                 response.raise_for_status()
-                json_result = json_result + self._to_json(response)
+                json_result = json_result + self.to_json(response)
         return json_result
 
     @handle_http_error
@@ -92,7 +109,7 @@ class ApiClient:
         )
         logger.debug("PUT response: %s - %s", response, response.text)
         response.raise_for_status()
-        return self._to_json(response)
+        return self.to_json(response)
 
     @handle_http_error
     @inject_access_token
@@ -102,7 +119,7 @@ class ApiClient:
         )
         logger.debug("POST response: %s - %s", response, response.text)
         response.raise_for_status()
-        return self._to_json(response)
+        return self.to_json(response)
 
     @handle_http_error
     @inject_access_token
@@ -112,10 +129,10 @@ class ApiClient:
         )
         logger.debug("DELETE response: %s - %s", response, response.text)
         response.raise_for_status()
-        return self._to_json(response)
+        return self.to_json(response)
 
     @staticmethod
-    def _to_json(response: requests.Response):
+    def to_json(response: requests.Response):
         try:
             return response.json()
         except Exception as e:
@@ -134,6 +151,9 @@ class ApiClient:
             raise VjaError(
                 f"HTTP-Error {error.response.status_code}, url={error.response.url}, body={error.response.text}"
             ) from error
+
+    def refresh_access_token(self):
+        return self._login.refresh_access_token()
 
     def logout(self):
         self._login.logout()
@@ -176,7 +196,7 @@ class ApiClient:
 
     def get_tasks(self, exclude_completed=True):
         if self._cache["tasks"] is None:
-            if (self._oldapi):
+            if self._oldapi:
                 url = f"{self._api_url}/tasks/all"
             else:
                 url = f"{self._api_url}/tasks"
