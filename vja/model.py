@@ -23,7 +23,7 @@ def custom_output(cls):
     def _str_value(v):
         if isinstance(v, datetime):
             return v.strftime("%a %Y-%m-%d %H:%M:%S")
-        if isinstance(v, (Project, ProjectView, Label, TaskReminder)):
+        if isinstance(v, (Project, ProjectView, Label, TaskReminder, Assignee)):
             return v.short_str()
         if isinstance(v, list):
             return [_str_value(x) for x in v]
@@ -192,6 +192,26 @@ class Label:
         return ID_TITLE.format(self.id, self.title)
 
 
+@dataclass(frozen=True)
+@data_dict
+class Assignee:
+    json: dict = field(repr=False)
+    id: int
+    username: str
+    name: str
+
+    @classmethod
+    def from_json(cls, json):
+        return cls(json, json["id"], json["username"], json.get("name", ""))
+
+    @classmethod
+    def from_json_array(cls, json_array):
+        return [Assignee.from_json(x) for x in json_array or []]
+
+    def short_str(self):
+        return f"id={self.id},username={self.username}"
+
+
 @dataclass
 @custom_output
 @data_dict
@@ -245,6 +265,7 @@ class Task:
     done: bool
     done_at: datetime
     label_objects: typing.List[Label]
+    assignee_objects: typing.List[Assignee]
     project: Project
     position: int
     bucket_id: int
@@ -256,8 +277,12 @@ class Task:
     def labels(self):
         return ",".join(label.title for label in self.label_objects or [])
 
+    @property
+    def assignees(self):
+        return ",".join(a.username for a in self.assignee_objects or [])
+
     @classmethod
-    def from_json(cls, json, project_object, labels):
+    def from_json(cls, json, project_object, labels, assignees):
         return cls(
             json,
             json["id"],
@@ -276,6 +301,7 @@ class Task:
             json["done"],
             parse_json_date(json["done_at"]),
             labels,
+            assignees,
             project_object,
             json["position"],
             json["bucket_id"],
@@ -285,3 +311,6 @@ class Task:
 
     def has_label(self, label):
         return any(x.id == label.id for x in self.label_objects)
+
+    def has_assignee(self, assignee):
+        return any(x.id == assignee.id for x in self.assignee_objects)

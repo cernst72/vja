@@ -227,3 +227,13 @@ class ApiClient:
     def remove_label_from_task(self, task_id, label_id):
         task_label_url = f"{self._api_url}/tasks/{task_id}/labels/{label_id}"
         self._delete_json(task_label_url)
+
+    def get_project_users(self, project_id):
+        return self._get_json(f"{self._api_url}/projects/{project_id}/projectusers")
+
+    def add_assignee_to_task(self, task_id, user_id):
+        payload = {"user_id": user_id}
+        return self._put_json(f"{self._api_url}/tasks/{task_id}/assignees", payload=payload)
+
+    def remove_assignee_from_task(self, task_id, user_id):
+        self._delete_json(f"{self._api_url}/tasks/{task_id}/assignees/{user_id}")
