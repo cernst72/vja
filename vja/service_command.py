@@ -3,7 +3,7 @@ import logging
 
 from vja import VjaError
 from vja.apiclient import ApiClient
-from vja.model import Bucket, Label, Project
+from vja.model import Assignee, Bucket, Label, Project
 from vja.parse import (
     datetime_to_isoformat,
     parse_date_arg_to_iso,
@@ -104,6 +104,7 @@ class CommandService:
         else:
             project_id = self._project_service.get_default_project().id
         label_names = args.pop("label")
+        assignee_names = args.pop("assignee")
         is_force = (
             args.pop("force_create") if args.get("force_create") is not None else False
         )
@@ -122,6 +123,9 @@ class CommandService:
             label = self._label_from_name(label_name, is_force) if label_name else None
             if label:
                 self._api_client.add_label_to_task(task.id, label.id)
+        for assignee_name in assignee_names:
+            assignee = self._user_from_name(assignee_name, project_id)
+            self._api_client.add_assignee_to_task(task.id, assignee.id)
         return task
 
     def clone_task(self, task_id: int, title: str):
@@ -137,11 +141,14 @@ class CommandService:
 
         for label in task_remote["labels"]:
             self._api_client.add_label_to_task(task.id, label["id"])
+        for assignee in task_remote["assignees"] or []:
+            self._api_client.add_assignee_to_task(task.id, assignee["id"])
         return task
 
     def edit_task(self, task_id: int, args: dict):
         task_remote = self._api_client.get_task(task_id)
         label_name = args.pop("label") if args.get("label") else None
+        assignee_name = args.pop("assignee") if args.get("assignee") else None
         is_force = (
             args.pop("force_create") if args.get("force_create") is not None else False
         )
@@ -174,6 +181,13 @@ class CommandService:
                 self._api_client.remove_label_from_task(task_new.id, label.id)
             else:
                 self._api_client.add_label_to_task(task_new.id, label.id)
+
+        assignee = self._user_from_name(assignee_name, task_remote["project_id"]) if assignee_name else None
+        if assignee:
+            if task_new.has_assignee(assignee):
+                self._api_client.remove_assignee_from_task(task_new.id, assignee.id)
+            else:
+                self._api_client.add_assignee_to_task(task_new.id, assignee.id)
         return task_new
 
     @staticmethod
@@ -288,6 +302,13 @@ class CommandService:
             )
             return None
         return label_found[0]
+
+    def _user_from_name(self, name, project_id):
+        users_remote = Assignee.from_json_array(self._api_client.get_project_users(project_id))
+        user_found = [u for u in users_remote if u.username == name]
+        if not user_found:
+            raise VjaError(f"User '{name}' not found in project {project_id}.")
+        return user_found[0]
 
     def _validate_add_task(self, title, label_names):
         tasks_remote = self._api_client.get_tasks(exclude_completed=True)

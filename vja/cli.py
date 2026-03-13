@@ -413,6 +413,13 @@ def label_add(application, title):
     help="Set label (label must exist on server)",
 )
 @click.option(
+    "assignee",
+    "-A",
+    "--assignee",
+    multiple=True,
+    help="Assign task to user (username)",
+)
+@click.option(
     "reminder",
     "-r",
     "--alarm",
@@ -581,6 +588,12 @@ def task_clone(ctx, application, task_id, title, quiet_show=False, verbose_show=
     "-l",
     "--label",
     help="Set label (label must exist on server unless called with --force-create)",
+)
+@click.option(
+    "assignee",
+    "-A",
+    "--assignee",
+    help="Toggle assignee (username): adds if not assigned, removes if already assigned",
 )
 @click.option(
     "reminder",

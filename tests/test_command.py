@@ -61,6 +61,11 @@ class TestAddTask:
         assert has_label_with_title(after["label_objects"], "tag_1")
         assert has_label_with_title(after["label_objects"], "tag_2")
 
+    def test_add_with_assignee(self, runner):
+        res = invoke(runner, "add task with assignee --force -A test")
+        after = json_for_created_task(runner, res.output)
+        assert has_assignee_with_username(after["assignee_objects"], "test")
+
 
 class TestCloneTask:
     def test_clone_task(self, runner):
@@ -295,6 +300,20 @@ class TestMultipleTasks:
         assert re.search(r"id: 3", res.output)
 
 
+class TestEditAssignee:
+    def test_toggle_assignee(self, runner):
+        assignees_0 = json_for_task_id(runner, 1)["assignee_objects"]
+        invoke(runner, "edit 1 --assignee=test")
+        assignees_1 = json_for_task_id(runner, 1)["assignee_objects"]
+        invoke(runner, "edit 1 --assignee=test")
+        assignees_2 = json_for_task_id(runner, 1)["assignee_objects"]
+
+        assert assignees_0 != assignees_1
+        assert has_assignee_with_username(assignees_1, "test")
+        assert not has_assignee_with_username(assignees_2, "test")
+        assert assignees_0 == assignees_2
+
+
 class TestDeleteTask:
     def test_delete_task(self, runner):
         res = invoke(runner, "add task to delete --force --project=test-project")
@@ -341,3 +360,7 @@ def json_for_task_id(runner, task_id):
 def has_label_with_title(labels, title):
     label_titles = [x["title"] for x in labels]
     return title in label_titles
+
+
+def has_assignee_with_username(assignees, username):
+    return username in [x["username"] for x in assignees]

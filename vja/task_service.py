@@ -1,6 +1,6 @@
 import logging
 
-from vja.model import Task, Label
+from vja.model import Task, Label, Assignee
 from vja.project_service import ProjectService
 from vja.urgency import Urgency
 
@@ -17,6 +17,7 @@ class TaskService:
             task_json["project_id"]
         )
         labels = Label.from_json_array(task_json["labels"])
-        task = Task.from_json(task_json, project_object, labels)
+        assignees = Assignee.from_json_array(task_json["assignees"])
+        task = Task.from_json(task_json, project_object, labels, assignees)
         task.urgency = self._urgency.compute_for(task)
         return task
