@@ -1,3 +1,9 @@
+## [5.3.0](https://gitlab.com/ce72/vja/compare/5.2.1...5.3.0) (2026-03-13)
+
+### Features
+
+* add assignee option for tasks ([07c0c7a](https://gitlab.com/ce72/vja/commit/07c0c7acbfa0073e6a9c594807b75eee247db07d))
+
 ## [5.2.1](https://gitlab.com/ce72/vja/compare/5.2.0...5.2.1) (2026-02-25)
 
 ### Bug Fixes
