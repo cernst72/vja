@@ -37,10 +37,10 @@ def catch_exception(func=None, *, handle):
 
 class Application:
     @catch_exception(handle=VjaError)
-    def __init__(self, oldapi):
+    def __init__(self):
         self._configuration = VjaConfiguration()
         api_client = ApiClient(
-            self._configuration.get_api_url(), self._configuration.get_token_file(), oldapi
+            self._configuration.get_api_url(), self._configuration.get_token_file()
         )
         project_service = ProjectService(api_client)
         urgency_service = Urgency.from_config(self._configuration)
@@ -111,10 +111,7 @@ with_application = click.make_pass_decorator(Application, ensure=True)
     help="Time-based one-time passcode from your authenticator app (optional). "
     "Only if TOTP is enabled on server.",
 )
-@click.option(
-    "--oldapi", "oldapi", default=False, is_flag=True, help="Use Vikunja pre-1.0.0rc4 API"
-)
-def cli(ctx=None, verbose=None, username=None, password=None, totp_passcode=None, oldapi=False):
+def cli(ctx=None, verbose=None, username=None, password=None, totp_passcode=None):
     if verbose:
         logging.basicConfig(
             level=logging.DEBUG,
@@ -124,7 +121,7 @@ def cli(ctx=None, verbose=None, username=None, password=None, totp_passcode=None
     else:
         logging.basicConfig(level=logging.INFO)
         logging.getLogger().setLevel(logging.INFO)
-    application = Application(oldapi)
+    application = Application()
     ctx.obj = application
     if username:
         application.command_service.login(username, password, totp_passcode)

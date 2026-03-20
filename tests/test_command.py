@@ -323,7 +323,7 @@ class TestDeleteTask:
         assert res.exit_code == 0
         assert f"Deleted task {task_id}" in res.output
 
-        invoke(runner, f"show {task_id}", return_code=1)
+        invoke(runner, f"show {task_id}", expected_return_code=1)
 
     def test_delete_multiple_tasks(self, runner):
         task_ids = []
@@ -337,10 +337,10 @@ class TestDeleteTask:
             assert f"Deleted task {task_id}" in res.output
 
         for task_id in task_ids:
-            invoke(runner, f"show {task_id}", return_code=1)
+            invoke(runner, f"show {task_id}", expected_return_code=1)
 
     def test_delete_nonexistent_task(self, runner):
-        invoke(runner, "delete 99999", return_code=1)
+        invoke(runner, "delete 99999", expected_return_code=1)
 
 
 def json_for_created_task(runner, message):

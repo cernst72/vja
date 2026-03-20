@@ -13,7 +13,6 @@ The goal is to support a command line based task workflow ~ similar to taskwarri
 **❗Important change in vja 5.0.0**
 
 Due to an breaking API change in Vikunja, `vja` with version >= 5.0.0 will only support Vikunja with version >= 1.0.0, while `vja` < 5.0.0 is recommended for older Vikunja servers.
-(Additionally vja:5.0.0 allows `vja --oldapi` to support pre-1.0.0 server instances. (Deprecated!)) 
 
 **❗Important change in vja 4.10**
 
@@ -21,23 +20,25 @@ New name for configuration file (`config.rc`) and XDG conform path lookup, see [
 
 ## Table of contents
 <!-- TOC -->
-  * [Usage](#usage)
-  * [Installation](#installation)
-    * [Install with pipx (recommended)](#install-with-pipx-recommended)
-    * [Install with pip](#install-with-pip)
-  * [Configuration](#configuration)
-    * [Description of configuration](#description-of-configuration)
-      * [Required options](#required-options)
-      * [Optional options](#optional-options)
-    * [Shell completion](#shell-completion)
-      * [Bash](#bash)
-      * [Zsh](#zsh)
-      * [Fish](#fish)
-  * [Development](#development)
-    * [Prepare python virtual environment](#prepare-python-virtual-environment)
-    * [Local build](#local-build)
-      * [Local development install](#local-development-install)
-      * [Run integration test](#run-integration-test)
+- [vja](#vja)
+  - [Table of contents](#table-of-contents)
+  - [Usage](#usage)
+  - [Installation](#installation)
+    - [Install with pipx (recommended)](#install-with-pipx-recommended)
+    - [Install with pip](#install-with-pip)
+  - [Configuration](#configuration)
+    - [Description of configuration](#description-of-configuration)
+      - [Required options](#required-options)
+      - [Optional options](#optional-options)
+    - [Shell completion](#shell-completion)
+      - [Bash](#bash)
+      - [Zsh](#zsh)
+      - [Fish](#fish)
+  - [Development](#development)
+    - [Prepare python virtual environment](#prepare-python-virtual-environment)
+    - [Local build](#local-build)
+      - [Local development install](#local-development-install)
+      - [Run integration test](#run-integration-test)
 <!-- TOC -->
 ## Usage
 

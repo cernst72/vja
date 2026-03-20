@@ -16,20 +16,9 @@ def setup_runner():
     return CliRunner()
 
 
-# Evaluate pytest options
-def pytest_addoption(parser):
-    parser.addoption("--oldapi", action="store_true")
-
-
-@pytest.fixture
-def use_old_api(request):
-    return request.config.getoption("oldapi") or False
-
-def invoke(runner, command, use_old_api=False, return_code=0, user_input=None, catch_exceptions=False):
+def invoke(runner, command, expected_return_code=0, user_input=None, catch_exceptions=False):
     if isinstance(command, str):
         command = command.split()
-    if use_old_api:
-        command = ["--oldapi"] + command
     res = runner.invoke(
         cli, command, input=user_input, catch_exceptions=catch_exceptions
     )
@@ -38,8 +27,8 @@ def invoke(runner, command, use_old_api=False, return_code=0, user_input=None, c
         sys.stdout.write(res.stderr)
     if res.exception:
         logging.warning(res.exception)
-    if return_code:
-        assert res.exit_code == return_code, res
+    if expected_return_code:
+        assert res.exit_code == expected_return_code, res
     return res
 
 
@@ -48,7 +37,7 @@ def _login_as_test_user():
     run_vja("--username=test --password=test user show")
 
 
-def _create_project_and_task(use_old_api):
+def _create_project_and_task():
     run_vja("project add test-project")
     run_vja("project add child --parent-project=test-project")
     run_vja("project add grand-child --parent-project=child")
@@ -58,12 +47,12 @@ def _create_project_and_task(use_old_api):
     )
     run_vja("task add Task in subproject --force-create --project-id=grand-child")
     run_vja("task add A task without a label --force-create")
-    run_vja("task ls", use_old_api)
+    run_vja("task ls")
     run_vja("task show 1")
 
 
-def run_vja(command, use_old_api=False):
-    vja_command = "vja " + ("--oldapi " if use_old_api else "") + command
+def run_vja(command):
+    vja_command = "vja " + command
     result = subprocess.run(vja_command.split(), capture_output=True, check=False)
     if result.returncode:
         print(f"!!! Non-zero result ({result.returncode}) from command {command}")
@@ -73,7 +62,6 @@ def run_vja(command, use_old_api=False):
 
 
 def pytest_configure(config):
-    use_old_api = config.getoption("oldapi") or False
     if "VJA_CONFIGDIR" not in os.environ:
         print(
             "!!! Precondition not met. You must set VJA_CONFIGDIR in environment variables !!!"
@@ -82,4 +70,4 @@ def pytest_configure(config):
 
     _login_as_test_user()
 
-    _create_project_and_task(use_old_api)
+    _create_project_and_task()

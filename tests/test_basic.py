@@ -41,7 +41,7 @@ class TestLoginLogout:
         invoke(runner, "logout")
         assert "Logged out" in caplog.text
         with pytest.raises(Exception) as exception:
-            invoke(runner, "-u testxx -p testxx user show", return_code=1)
+            invoke(runner, "-u testxx -p testxx user show", expected_return_code=1)
             assert "412 Client Error" in exception.value
         invoke(runner, "-u test -p test user show")
 
@@ -65,7 +65,7 @@ class TestLoginLogout:
         assert "Login successful" in caplog.text
 
     def test_http_error(self, runner, capsys):
-        invoke(runner, "show 9999", return_code=1)
+        invoke(runner, "show 9999", expected_return_code=1)
         assert "HTTP-Error 404" in capsys.readouterr().out
 
     @staticmethod
