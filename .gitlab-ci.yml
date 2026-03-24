@@ -55,7 +55,7 @@ integration-test-prod:
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
-    VIKUNJA_IMAGE: vikunja/vikunja:2.0.0
+    VIKUNJA_IMAGE: vikunja/vikunja:2.2.2
   script:
     - *start_vikunja
     - export VJA_CONFIGDIR=tests/.vjatest_dind
