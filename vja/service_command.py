@@ -288,6 +288,14 @@ class CommandService:
     def delete_task(self, task_id):
         self._api_client.delete_task(task_id)
 
+    def add_relation(self, task_id, relation_kind, other_task_id):
+        self._api_client.add_relation_to_task(task_id, relation_kind, other_task_id)
+        return self._task_service.task_from_json(self._api_client.get_task(task_id))
+
+    def remove_relation(self, task_id, relation_kind, other_task_id):
+        self._api_client.remove_relation_from_task(task_id, relation_kind, other_task_id)
+        return self._task_service.task_from_json(self._api_client.get_task(task_id))
+
     def _label_from_name(self, name, is_force):
         if not name:
             return None

@@ -245,6 +245,21 @@ class TaskReminder:
         )
 
 
+RELATION_KINDS = (
+    "subtask",
+    "parenttask",
+    "related",
+    "duplicateof",
+    "duplicates",
+    "blocking",
+    "blocked",
+    "precedes",
+    "follows",
+    "copiedfrom",
+    "copiedto",
+)
+
+
 @dataclass(frozen=True)
 @data_dict
 class TaskRelation:

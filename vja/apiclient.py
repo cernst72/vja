@@ -224,6 +224,15 @@ class ApiClient:
         task_label_url = f"{self._api_url}/tasks/{task_id}/labels/{label_id}"
         self._delete_json(task_label_url)
 
+    def add_relation_to_task(self, task_id, relation_kind, other_task_id):
+        task_relation_url = f"{self._api_url}/tasks/{task_id}/relations"
+        payload = {"other_task_id": other_task_id, "relation_kind": relation_kind}
+        return self._put_json(task_relation_url, payload=payload)
+
+    def remove_relation_from_task(self, task_id, relation_kind, other_task_id):
+        task_relation_url = f"{self._api_url}/tasks/{task_id}/relations/{relation_kind}/{other_task_id}"
+        self._delete_json(task_relation_url)
+
     def get_project_users(self, project_id):
         return self._get_json(f"{self._api_url}/projects/{project_id}/projectusers")
 

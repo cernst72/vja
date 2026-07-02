@@ -8,6 +8,7 @@ import pytest
 import requests
 from dateutil import tz
 from tests.conftest import invoke
+from vja.model import RELATION_KINDS
 
 ADD_SUCCESS_PATTERN = re.compile(r".*Created task (\d+) in project .*")
 TODAY = datetime.datetime.now().replace(microsecond=0)
@@ -443,3 +444,105 @@ def _api_request(method, path, json_body=None):
     )
     response.raise_for_status()
     return response
+
+
+class TestRelation:
+    def test_add_creates_relation_and_inverse(self, runner, relation_cleanup):
+        relation_cleanup.append((1, "subtask", 2))
+        res = invoke(runner, "relation add 1 subtask 2")
+        assert res.exit_code == 0
+        source = json_for_task_id(runner, 1)
+        assert any(
+            r["kind"] == "subtask" and r["other_task_id"] == 2
+            for r in source["relations"]
+        )
+        target = json_for_task_id(runner, 2)
+        assert any(
+            r["kind"] == "parenttask" and r["other_task_id"] == 1
+            for r in target["relations"]
+        )
+
+    def test_remove_removes_relation_and_inverse(self, runner, relation_cleanup):
+        relation_cleanup.append((1, "subtask", 2))
+        assert invoke(runner, "relation add 1 subtask 2").exit_code == 0
+        assert invoke(runner, "relation remove 1 subtask 2").exit_code == 0
+        source = json_for_task_id(runner, 1)
+        assert not any(
+            r["kind"] == "subtask" and r["other_task_id"] == 2
+            for r in source["relations"]
+        )
+        target = json_for_task_id(runner, 2)
+        assert not any(
+            r["kind"] == "parenttask" and r["other_task_id"] == 1
+            for r in target["relations"]
+        )
+
+    def test_blocking_creates_blocked_inverse(self, runner, relation_cleanup):
+        relation_cleanup.append((1, "blocking", 3))
+        res = invoke(runner, "relation add 1 blocking 3")
+        assert res.exit_code == 0
+        source = json_for_task_id(runner, 1)
+        assert any(
+            r["kind"] == "blocking" and r["other_task_id"] == 3
+            for r in source["relations"]
+        )
+        target = json_for_task_id(runner, 3)
+        assert any(
+            r["kind"] == "blocked" and r["other_task_id"] == 1
+            for r in target["relations"]
+        )
+
+    def test_related_is_symmetric(self, runner, relation_cleanup):
+        relation_cleanup.append((1, "related", 2))
+        res = invoke(runner, "relation add 1 related 2")
+        assert res.exit_code == 0
+        source = json_for_task_id(runner, 1)
+        assert any(
+            r["kind"] == "related" and r["other_task_id"] == 2
+            for r in source["relations"]
+        )
+        target = json_for_task_id(runner, 2)
+        assert any(
+            r["kind"] == "related" and r["other_task_id"] == 1
+            for r in target["relations"]
+        )
+
+    @pytest.mark.parametrize("relation_kind", RELATION_KINDS)
+    def test_every_kind_round_trips(self, runner, relation_kind, relation_cleanup):
+        relation_cleanup.append((1, relation_kind, 2))
+        assert invoke(runner, f"relation add 1 {relation_kind} 2").exit_code == 0
+        relations = json_for_task_id(runner, 1)["relations"]
+        assert any(
+            r["kind"] == relation_kind and r["other_task_id"] == 2 for r in relations
+        )
+        assert invoke(runner, f"relation rm 1 {relation_kind} 2").exit_code == 0
+
+    def test_verbose_show_displays_relation(self, runner, relation_cleanup):
+        relation_cleanup.append((1, "subtask", 2))
+        res = invoke(runner, "relation add 1 subtask 2 -v")
+        assert "Modified task 1 in project" in res.output
+        assert "subtask" in res.output
+
+    def test_invalid_kind_is_rejected(self, runner):
+        invoke(runner, "relation add 1 bogus 2", expected_return_code=2)
+
+    def test_self_relation_is_rejected(self, runner):
+        invoke(runner, "relation add 1 subtask 1", expected_return_code=1)
+
+    @pytest.mark.parametrize("remove_verb", ["remove", "rm", "delete"])
+    def test_remove_nonexistent_relation_is_rejected(self, runner, remove_verb):
+        # each verb must resolve to the removal command (exit 1 = server rejection),
+        # not fall through to "No such command" (exit 2)
+        invoke(runner, f"relation {remove_verb} 1 subtask 3", expected_return_code=1)
+
+
+@pytest.fixture(name="relation_cleanup")
+def _relation_cleanup():
+    created = []
+    yield created
+    for task_id, relation_kind, other_task_id in created:
+        try:
+            _delete_relation(task_id, relation_kind, other_task_id)
+        except requests.HTTPError as error:
+            if error.response.status_code != 404:
+                raise

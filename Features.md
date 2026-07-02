@@ -298,6 +298,23 @@ vja show 1      # relations are listed in the output
 vja ls          # tasks having relations are marked with an "L" flag
 ```
 
+Relations are created and removed with `vja relation add` and `vja relation remove` (also `rm` or
+`delete`). The kind of relation is given as the middle argument. The inverse relation (for example
+`parenttask` for a `subtask`) is maintained automatically by the server.
+
+```shell
+vja relation add 1 subtask 2       # task 2 becomes a subtask of task 1
+vja relation remove 1 subtask 2
+vja relation add 1 blocking 3 -v   # -v shows the resulting task
+```
+
+The available kinds are `subtask`, `parenttask`, `related`, `duplicateof`, `duplicates`, `blocking`,
+`blocked`, `precedes`, `follows`, `copiedfrom` and `copiedto`.
+
+```shell
+vja relation --help
+```
+
 ## Open Vikunja in browser
 
 Open starting page
