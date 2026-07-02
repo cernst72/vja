@@ -1,7 +1,11 @@
+import configparser
 import datetime
 import json
+import os
 import re
 
+import pytest
+import requests
 from dateutil import tz
 from tests.conftest import invoke
 
@@ -364,3 +368,78 @@ def has_label_with_title(labels, title):
 
 def has_assignee_with_username(assignees, username):
     return username in [x["username"] for x in assignees]
+
+
+class TestRelationDisplay:
+    def test_show_displays_relation_and_inverse(self, runner, subtask_relation):
+        source = json_for_task_id(runner, 1)
+        assert any(
+            r["kind"] == "subtask" and r["other_task_id"] == 2
+            for r in source["relations"]
+        )
+        target = json_for_task_id(runner, 2)
+        assert any(
+            r["kind"] == "parenttask" and r["other_task_id"] == 1
+            for r in target["relations"]
+        )
+
+    def test_list_returns_relations(self, runner, subtask_relation):
+        res = invoke(runner, "ls --jsonvja")
+        tasks = json.loads(res.output)
+        task_1 = next(task for task in tasks if task["id"] == 1)
+        assert any(r["other_task_id"] == 2 for r in task_1["relations"])
+
+    def test_list_shows_relation_flag(self, runner, subtask_relation):
+        lines = invoke(runner, "ls").output.splitlines()
+        task_1_line = next(line for line in lines if line.strip().startswith("1 ("))
+        task_3_line = next(line for line in lines if line.strip().startswith("3 ("))
+        # task 1 has a relation, task 3 does not -> only task 1 shows the "L" flag
+        assert "L" in task_1_line
+        assert "L" not in task_3_line
+
+
+@pytest.fixture(name="subtask_relation")
+def _subtask_relation():
+    _delete_relation_if_exists(1, "subtask", 2)
+    _put_relation(1, "subtask", 2)
+    yield
+    _delete_relation_if_exists(1, "subtask", 2)
+
+
+def _put_relation(task_id, relation_kind, other_task_id):
+    _api_request(
+        "PUT",
+        f"/tasks/{task_id}/relations",
+        {"other_task_id": other_task_id, "relation_kind": relation_kind},
+    )
+
+
+def _delete_relation(task_id, relation_kind, other_task_id):
+    _api_request("DELETE", f"/tasks/{task_id}/relations/{relation_kind}/{other_task_id}")
+
+
+def _delete_relation_if_exists(task_id, relation_kind, other_task_id):
+    try:
+        _delete_relation(task_id, relation_kind, other_task_id)
+    except requests.HTTPError as error:
+        if error.response.status_code != 404:
+            raise
+
+
+def _api_request(method, path, json_body=None):
+    config = configparser.ConfigParser()
+    config.read(os.path.join(os.environ["VJA_CONFIGDIR"], "config.rc"))
+    api_url = config["application"]["api_url"]
+    with open(
+        os.path.join(os.environ["VJA_CONFIGDIR"], "token.json"), encoding="utf-8"
+    ) as token_file:
+        token = json.load(token_file)["token"]
+    response = requests.request(
+        method,
+        f"{api_url}{path}",
+        headers={"Authorization": f"Bearer {token}"},
+        json=json_body,
+        timeout=30,
+    )
+    response.raise_for_status()
+    return response

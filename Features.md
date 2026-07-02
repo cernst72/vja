@@ -18,6 +18,7 @@
       - [Reminders](#reminders)
       - [Batch editing](#batch-editing)
     - [Delete task](#delete-task)
+    - [Task relations](#task-relations)
   - [Open Vikunja in browser](#open-vikunja-in-browser)
   - [Manage projects, labels, buckets](#manage-projects-labels-buckets)
     - [Manage projects](#manage-projects)
@@ -285,6 +286,16 @@ vja defer 1 2 3 1d
 ```shell
 vja delete 1
 vja delete 1 2 3
+```
+
+### Task relations
+
+Tasks may be linked to each other, for example as subtask, blocking or related. Existing relations are
+shown in the details of a task and flagged with an `L` in the task list.
+
+```shell
+vja show 1      # relations are listed in the output
+vja ls          # tasks having relations are marked with an "L" flag
 ```
 
 ## Open Vikunja in browser

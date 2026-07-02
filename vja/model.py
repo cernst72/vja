@@ -23,7 +23,9 @@ def custom_output(cls):
     def _str_value(v):
         if isinstance(v, datetime):
             return v.strftime("%a %Y-%m-%d %H:%M:%S")
-        if isinstance(v, (Project, ProjectView, Label, TaskReminder, Assignee)):
+        if isinstance(
+            v, (Project, ProjectView, Label, TaskReminder, Assignee, TaskRelation)
+        ):
             return v.short_str()
         if isinstance(v, list):
             return [_str_value(x) for x in v]
@@ -243,6 +245,26 @@ class TaskReminder:
         )
 
 
+@dataclass(frozen=True)
+@data_dict
+class TaskRelation:
+    json: dict = field(repr=False)
+    kind: str
+    other_task_id: int
+    other_task_title: str
+
+    @classmethod
+    def from_json_map(cls, related_tasks):
+        return [
+            cls(task_json, kind, task_json["id"], task_json["title"])
+            for kind, tasks in (related_tasks or {}).items()
+            for task_json in tasks or []
+        ]
+
+    def short_str(self):
+        return f"{self.kind}: {ID_TITLE.format(self.other_task_id, self.other_task_title)}"
+
+
 @dataclass
 @custom_output
 @data_dict
@@ -266,6 +288,7 @@ class Task:
     done_at: datetime
     label_objects: typing.List[Label]
     assignee_objects: typing.List[Assignee]
+    relations: typing.List[TaskRelation]
     project: Project
     position: int
     bucket_id: int
@@ -302,6 +325,7 @@ class Task:
             parse_json_date(json["done_at"]),
             labels,
             assignees,
+            TaskRelation.from_json_map(json["related_tasks"]),
             project_object,
             json["position"],
             json["bucket_id"],

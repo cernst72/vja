@@ -18,7 +18,8 @@ TASK_LIST_FORMAT_DEFAULT = (
     '{x.due_date.strftime("%a %d.%m %H:%M") if x.due_date else "":15.15} '
     '{"A" if x.reminders else " "}'
     '{"R" if x.repeat_after else " "}'
-    '{"D" if x.description_text else " "} '
+    '{"D" if x.description_text else " "}'
+    '{"L" if x.relations else " "} '
     "{x.project.title:20.20} {x.labels:20.20} {x.urgency:3.1f}"
 )
 
