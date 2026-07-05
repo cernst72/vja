@@ -1,7 +1,7 @@
 import logging
 
 from vja.model import Task, Label, Assignee
-from vja.project_service import ProjectService
+from vja.service.project_service import ProjectService
 from vja.urgency import Urgency
 
 logger = logging.getLogger(__name__)

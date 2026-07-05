@@ -2,7 +2,7 @@ import logging
 from typing import Optional, List
 
 from vja import VjaError
-from vja.apiclient import ApiClient
+from vja.adapter.apiclient import ApiClient
 from vja.model import Project, User
 
 logger = logging.getLogger(__name__)
