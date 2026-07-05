@@ -1,11 +1,11 @@
 import logging
 
-from vja.apiclient import ApiClient
-from vja.filter import create_filters
+from vja.adapter.apiclient import ApiClient
+from vja.service.filter import create_filters
 from vja.model import Bucket, Label, User
 from vja.parse import rgetattr
-from vja.project_service import ProjectService
-from vja.task_service import TaskService
+from vja.service.project_service import ProjectService
+from vja.service.task_service import TaskService
 
 logger = logging.getLogger(__name__)
 DEFAULT_SORT_STRING = "done, -urgency, due_date, -priority, project.title, title"

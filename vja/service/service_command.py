@@ -2,7 +2,7 @@ import datetime
 import logging
 
 from vja import VjaError
-from vja.apiclient import ApiClient
+from vja.adapter.apiclient import ApiClient
 from vja.model import Assignee, Bucket, Label, Project
 from vja.parse import (
     datetime_to_isoformat,
@@ -10,8 +10,8 @@ from vja.parse import (
     parse_date_arg_to_timedelta,
     parse_json_date,
 )
-from vja.project_service import ProjectService
-from vja.task_service import TaskService
+from vja.service.project_service import ProjectService
+from vja.service.task_service import TaskService
 
 logger = logging.getLogger(__name__)
 

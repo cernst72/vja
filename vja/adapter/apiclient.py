@@ -3,7 +3,7 @@ import logging
 import requests
 
 from vja import VjaError
-from vja.authenticate import Login
+from vja.adapter.authenticate import Login
 
 logger = logging.getLogger(__name__)
 
