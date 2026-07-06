@@ -8,13 +8,15 @@ from typing import Optional
 from dateutil import tz, parser
 from parsedatetime import parsedatetime
 
+from vja import VjaError
+
 # if dates are given like 'tomorrow' or 'next mon' then this will be used as time
 DEFAULT_DATE_HOUR = 8
 DEFAULT_DATE_MINUTE = 0
 
 _timedelta_regex = re.compile(
     r"^((?P<weeks>[.\d]+?)w)? *"
-    r"^((?P<days>[.\d]+?)d)? *"
+    r"((?P<days>[.\d]+?)d)? *"
     r"((?P<hours>[.\d]+?)h)? *"
     r"((?P<minutes>[.\d]+?)m)? *"
     r"((?P<seconds>[.\d]+?)s?)?$"
@@ -60,7 +62,7 @@ def datetime_to_isoformat(date: datetime) -> Optional[str]:
 
 def parse_date_arg_to_timedelta(time_str: str) -> Optional[timedelta]:
     """
-    Parse a time string e.g. '2h 13m' or '1.5d' into a timedelta object.
+    Parse a time string e.g. '2h13m' or '1.5d' into a timedelta object.
     Based on Peter's answer at https://stackoverflow.com/a/51916936/2445204
     and virhilo's answer at https://stackoverflow.com/a/4628148/851699
     :param time_str: A string identifying a duration, e.g. '2h13.5m'
@@ -68,11 +70,10 @@ def parse_date_arg_to_timedelta(time_str: str) -> Optional[timedelta]:
     """
     if not time_str:
         return None
-    parts = _timedelta_regex.match(time_str)
-    assert (
-        parts is not None
-    ), f"""Could not parse any time information from '{time_str}'.
-    Examples of valid strings: '8h', '2d 8h 5m 2s', '2m4.3s'"""
+    parts = _timedelta_regex.match(time_str.lower())
+    if parts is None:
+        raise VjaError(f"""Could not parse any time information from '{time_str}'.
+        Examples of valid strings: '1w', '2d8h5m2s', '2.5m4.0s'""")
     time_params = {
         name: float(param) for name, param in parts.groupdict().items() if param
     }
