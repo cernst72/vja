@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, List
+from typing import List, Optional
 
 from vja import VjaError
 from vja.adapter.apiclient import ApiClient

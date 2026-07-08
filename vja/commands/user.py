@@ -1,7 +1,7 @@
 import click
 
 from vja import VjaError
-from vja.cli import with_application, catch_exception
+from vja.application import Application, catch_exception, with_application
 
 
 @click.group("user", help="Subcommand: user (see help)")
@@ -23,7 +23,7 @@ def user_group():
 )
 @with_application
 @catch_exception(handle=VjaError)
-def user_show(application, is_json=False, is_jsonvja=False):
+def user_show(application: Application, is_json=False, is_jsonvja=False):
     application.output.user(
         application.query_service.find_current_user(), is_json, is_jsonvja
     )

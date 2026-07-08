@@ -2,7 +2,7 @@ import click
 from click_aliases import ClickAliasedGroup
 
 from vja import VjaError
-from vja.cli import with_application, catch_exception
+from vja.application import Application, catch_exception, with_application
 
 
 @click.group("label", help="Subcommand: label (see help)", cls=ClickAliasedGroup)
@@ -11,7 +11,7 @@ def label_group():
     pass
 
 
-@label_group.command("ls", help="Print labels ... (id; title)")
+@label_group.command("ls", aliases=["list"], help="Print labels ... (id; title)")
 @click.option(
     "is_json", "--json", default=False, is_flag=True, help="Print as Vikunja json"
 )
@@ -27,7 +27,7 @@ def label_group():
 )
 @with_application
 @catch_exception(handle=VjaError)
-def label_ls(application, is_json, is_jsonvja, custom_format):
+def label_ls(application: Application, is_json, is_jsonvja, custom_format):
     if custom_format:
         custom_format = application.configuration.get_custom_format_string(
             custom_format
@@ -41,6 +41,6 @@ def label_ls(application, is_json, is_jsonvja, custom_format):
 @click.argument("title", required=True, nargs=-1)
 @with_application
 @catch_exception(handle=VjaError)
-def label_add(application, title):
+def label_add(application: Application, title):
     label = application.command_service.add_label(" ".join(title))
     click.echo(f"Created label {label.id}")
