@@ -182,7 +182,11 @@ class CommandService:
             else:
                 self._api_client.add_label_to_task(task_new.id, label.id)
 
-        assignee = self._user_from_name(assignee_name, task_remote["project_id"]) if assignee_name else None
+        assignee = (
+            self._user_from_name(assignee_name, task_remote["project_id"])
+            if assignee_name
+            else None
+        )
         if assignee:
             if task_new.has_assignee(assignee):
                 self._api_client.remove_assignee_from_task(task_new.id, assignee.id)
@@ -312,7 +316,9 @@ class CommandService:
         return label_found[0]
 
     def _user_from_name(self, name, project_id):
-        users_remote = Assignee.from_json_array(self._api_client.get_project_users(project_id))
+        users_remote = Assignee.from_json_array(
+            self._api_client.get_project_users(project_id)
+        )
         user_found = [u for u in users_remote if u.username == name]
         if not user_found:
             raise VjaError(f"User '{name}' not found in project {project_id}.")

@@ -2,10 +2,12 @@ import click
 from click_aliases import ClickAliasedGroup
 
 from vja import VjaError
-from vja.cli import with_application, catch_exception
+from vja.application import Application, catch_exception, with_application
 
 
-@click.group("task", help="(optional) subcommand: task (see help)", cls=ClickAliasedGroup)
+@click.group(
+    "task", help="(optional) subcommand: task (see help)", cls=ClickAliasedGroup
+)
 def task_group():
     # vja task
     pass
@@ -107,7 +109,14 @@ def task_group():
 @with_application
 @click.pass_context
 @catch_exception(handle=VjaError)
-def task_add(ctx, application, title, quiet_show=False, verbose_show=False, **args):
+def task_add(
+    ctx: click.Context,
+    application: Application,
+    title,
+    quiet_show=False,
+    verbose_show=False,
+    **args,
+):
     args_present = {k: v for k, v in args.items() if v is not None}
     task = application.command_service.add_task(" ".join(title), args_present.copy())
     if verbose_show or not quiet_show:
@@ -117,8 +126,7 @@ def task_add(ctx, application, title, quiet_show=False, verbose_show=False, **ar
 
 
 @task_group.command(
-    "clone", help="Clone task with given task_id. Set the new title",
-    aliases=["copy"]
+    "clone", help="Clone task with given task_id. Set the new title", aliases=["copy"]
 )
 @click.argument("task_id", required=True, type=click.INT)
 @click.argument("title", required=True, nargs=-1)
@@ -141,7 +149,14 @@ def task_add(ctx, application, title, quiet_show=False, verbose_show=False, **ar
 @with_application
 @click.pass_context
 @catch_exception(handle=VjaError)
-def task_clone(ctx, application, task_id, title, quiet_show=False, verbose_show=False):
+def task_clone(
+    ctx: click.Context,
+    application: Application,
+    task_id,
+    title,
+    quiet_show=False,
+    verbose_show=False,
+):
     task = application.command_service.clone_task(task_id, " ".join(title))
     if verbose_show or not quiet_show:
         click.echo(
@@ -285,7 +300,14 @@ def task_clone(ctx, application, task_id, title, quiet_show=False, verbose_show=
 @with_application
 @click.pass_context
 @catch_exception(handle=VjaError)
-def task_edit(ctx, application, task_ids, quiet_show=False, verbose_show=False, **args):
+def task_edit(
+    ctx: click.Context,
+    application: Application,
+    task_ids,
+    quiet_show=False,
+    verbose_show=False,
+    **args,
+):
     args_present = {k: v for k, v in args.items() if v is not None}
     for task_id in task_ids:
         if args_present:
@@ -322,7 +344,13 @@ def task_edit(ctx, application, task_ids, quiet_show=False, verbose_show=False, 
 @with_application
 @click.pass_context
 @catch_exception(handle=VjaError)
-def task_toggle(ctx, application, task_id, quiet_show=False, verbose_show=False):
+def task_toggle(
+    ctx: click.Context,
+    application: Application,
+    task_id,
+    quiet_show=False,
+    verbose_show=False,
+):
     task = application.command_service.toggle_task_done(task_id)
     if verbose_show or not quiet_show:
         click.echo(f"Modified task {task.id} in project {task.project.id}")
@@ -357,7 +385,12 @@ def task_toggle(ctx, application, task_id, quiet_show=False, verbose_show=False)
 @click.pass_context
 @catch_exception(handle=VjaError)
 def task_defer(
-    ctx, application, task_ids, delay_by, quiet_show=False, verbose_show=False
+    ctx: click.Context,
+    application: Application,
+    task_ids,
+    delay_by,
+    quiet_show=False,
+    verbose_show=False,
 ):
     for task_id in task_ids:
         task = application.command_service.defer_task(task_id, delay_by)
@@ -382,7 +415,7 @@ def task_defer(
 )
 @with_application
 @catch_exception(handle=VjaError)
-def task_delete(application, task_ids, quiet_show=False):
+def task_delete(application: Application, task_ids, quiet_show=False):
     for task_id in task_ids:
         application.command_service.delete_task(task_id)
         if not quiet_show:
@@ -391,6 +424,7 @@ def task_delete(application, task_ids, quiet_show=False):
 
 @task_group.command(
     "ls",
+    aliases=["list"],
     help="List tasks ... (task-id; priority; is_favorite; title; due_date; "
     "has reminder; parent-project; project; labels; urgency). "
     "Optionally limit output to given TASK_IDs.",
@@ -499,7 +533,7 @@ def task_delete(application, task_ids, quiet_show=False):
 @with_application
 @catch_exception(handle=VjaError)
 def task_ls(
-    application,
+    application: Application,
     task_ids,
     is_json,
     is_jsonvja,
@@ -540,7 +574,7 @@ def task_ls(
 )
 @with_application
 @catch_exception(handle=VjaError)
-def task_show(application, tasks, is_json, is_jsonvja):
+def task_show(application: Application, tasks, is_json, is_jsonvja):
     for task_id in tasks:
         task = application.query_service.find_task_by_id(task_id)
         application.output.task(task, is_json, is_jsonvja)
@@ -554,7 +588,7 @@ def task_show(application, tasks, is_json, is_jsonvja):
 @click.argument("tasks", required=False, type=click.INT, nargs=-1)
 @with_application
 @catch_exception(handle=VjaError)
-def task_open(application, tasks):
+def task_open(application: Application, tasks):
     if not tasks:
         application.open_browser_task("")
     else:

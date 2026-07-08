@@ -2,10 +2,12 @@ import click
 from click_aliases import ClickAliasedGroup
 
 from vja import VjaError
-from vja.cli import with_application, catch_exception
+from vja.application import Application, catch_exception, with_application
 
 
-@click.group("bucket", help="Subcommand: Kanban buckets (see help)", cls=ClickAliasedGroup)
+@click.group(
+    "bucket", help="Subcommand: Kanban buckets (see help)", cls=ClickAliasedGroup
+)
 def bucket_group():
     # vja bucket
     pass
@@ -20,13 +22,14 @@ def bucket_group():
 @click.argument("title", nargs=-1, required=True)
 @with_application
 @catch_exception(handle=VjaError)
-def bucket_add(application, title, project):
+def bucket_add(application: Application, title, project):
     bucket = application.command_service.add_bucket(project, " ".join(title))
     click.echo(f"Created bucket {bucket.id} in project {project}")
 
 
 @bucket_group.command(
     "ls",
+    aliases=["list"],
     help="Show Kanban buckets of given project (only the first Kanban View)... "
     "(id; title; limit; count tasks)",
 )
@@ -55,7 +58,7 @@ def bucket_add(application, title, project):
 )
 @with_application
 @catch_exception(handle=VjaError)
-def bucket_ls(application, project_id, is_json, is_jsonvja, custom_format):
+def bucket_ls(application: Application, project_id, is_json, is_jsonvja, custom_format):
     if custom_format:
         custom_format = application.configuration.get_custom_format_string(
             custom_format

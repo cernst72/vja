@@ -1,6 +1,6 @@
 import logging
 
-from vja.model import Task, Label, Assignee
+from vja.model import Assignee, Label, Task
 from vja.service.project_service import ProjectService
 from vja.urgency import Urgency
 

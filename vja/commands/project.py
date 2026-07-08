@@ -2,7 +2,7 @@ import click
 from click_aliases import ClickAliasedGroup
 
 from vja import VjaError
-from vja.cli import with_application, catch_exception
+from vja.application import Application, catch_exception, with_application
 
 
 @click.group("project", help="Subcommand: project (see help)", cls=ClickAliasedGroup)
@@ -22,13 +22,15 @@ def project_group():
 @click.argument("title", nargs=-1, required=True)
 @with_application
 @catch_exception(handle=VjaError)
-def project_add(application, title, parent_project=None):
+def project_add(application: Application, title, parent_project=None):
     project = application.command_service.add_project(parent_project, " ".join(title))
     click.echo(f"Created project {project.id}")
 
 
 @project_group.command(
-    "ls", help="Print projects ... (id; title; description; parent_project_id)"
+    "ls",
+    aliases=["list"],
+    help="Print projects ... (id; title; description; parent_project_id)",
 )
 @click.option(
     "is_json", "--json", default=False, is_flag=True, help="Print as Vikunja json"
@@ -45,7 +47,7 @@ def project_add(application, title, parent_project=None):
 )
 @with_application
 @catch_exception(handle=VjaError)
-def project_ls(application, is_json, is_jsonvja, custom_format):
+def project_ls(application: Application, is_json, is_jsonvja, custom_format):
     if custom_format:
         custom_format = application.configuration.get_custom_format_string(
             custom_format
@@ -72,7 +74,7 @@ def project_ls(application, is_json, is_jsonvja, custom_format):
 )
 @with_application
 @catch_exception(handle=VjaError)
-def project_show(application, project_id, is_json, is_jsonvja):
+def project_show(application: Application, project_id, is_json, is_jsonvja):
     application.output.project(
         application.query_service.find_project_by_id(project_id), is_json, is_jsonvja
     )
@@ -82,5 +84,5 @@ def project_show(application, project_id, is_json, is_jsonvja):
 @click.argument("project_id", required=True, type=click.INT)
 @with_application
 @catch_exception(handle=VjaError)
-def project_open(application, project_id):
+def project_open(application: Application, project_id):
     application.open_browser_project(project_id)
