@@ -22,14 +22,24 @@ class ProjectService:
             self.fill_ancestors()
         return self._project_by_id.values()
 
-    def find_project_by_id(self, project_id: int) -> Optional[Project]:
+    def find_project_by_id_or_title(self, project: str) -> Project:
+        if project.isdigit():
+            return self.find_project_by_id(int(project))
+        else:
+            return self.find_project_by_title(project)
+
+
+    def find_project_by_id(self, project_id: int) -> Project:
         if not self._project_by_id:
             self._project_by_id = {
                 x["id"]: Project.from_json(x, [])
                 for x in self._api_client.get_projects()
             }
             self.fill_ancestors()
-        return self._project_by_id.get(project_id)
+        result = self._project_by_id.get(project_id)
+        if not result:
+            raise VjaError(f"Project with id {project_id} does not exist.")
+        return result
 
     def find_project_by_title(self, title) -> Project:
         project_objects = [
