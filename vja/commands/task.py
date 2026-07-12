@@ -37,7 +37,7 @@ def task_group():
     "--project",
     "--project-id",
     "--project_id",
-    help="Project (id or name), defaults to project from user settings, than to first favorite project",
+    help="Project (id or title), defaults to project from user settings, then to first favorite project",
 )
 @click.option(
     "note", "-n", "--note", "--notes", "--description", help="Set description (note)"
@@ -208,7 +208,7 @@ def task_clone(
     "--project",
     "--project-id",
     "--project_id",
-    help="Move to project with id",
+    help="Move to project (id or title)",
 )
 @click.option(
     "position",
@@ -484,14 +484,14 @@ def task_delete(application: Application, task_ids, quiet_show=False):
     "where <operator> in (eq, ne, gt, lt, ge, le, before, after, contains). "
     "Multiple occurrences of --filter are allowed and will be combined with logical AND.",
 )
-@click.option("label_filter", "-l", "--label", help="Filter by label (regex or id)")
+@click.option("label_filter", "-l", "--label", help="Filter by label (id or title-regex)")
 @click.option(
     "project_filter",
     "-o",
     "--project",
     "--project-id",
     "--project_id",
-    help="Filter by project (regex or id)",
+    help="Filter by project (id or title-regex)",
 )
 @click.option(
     "upper_project_filter",

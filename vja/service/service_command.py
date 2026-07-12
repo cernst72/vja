@@ -96,11 +96,7 @@ class CommandService:
     def add_task(self, title, args: dict):
         args.update({"title": title})
         if args.get("project_id"):
-            project_arg = args.pop("project_id")
-            if str(project_arg).isdigit():
-                project_id = project_arg
-            else:
-                project_id = self._project_service.find_project_by_title(project_arg).id
+            project_id = self._project_service.find_project_by_id_or_title(args.pop("project_id")).id
         else:
             project_id = self._project_service.get_default_project().id
         label_names = args.pop("label")
@@ -167,7 +163,9 @@ class CommandService:
                     )
                 }
             )
-
+        if args.get("project_id"):
+            args.update({"project_id":
+                         self._project_service.find_project_by_id_or_title(args.pop("project_id")).id})
         payload = self._args_to_payload(args)
         logger.debug("update fields: %s", payload)
         task_remote.update(payload)

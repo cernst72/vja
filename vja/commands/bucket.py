@@ -40,8 +40,7 @@ def bucket_add(application: Application, title, project):
     "--project-id",
     "--project_id",
     required=True,
-    type=click.INT,
-    help="Show buckets of project with id",
+    help="Show buckets of project (project_id or title)",
 )
 @click.option(
     "is_json", "--json", default=False, is_flag=True, help="Print as Vikunja json"

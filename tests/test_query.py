@@ -35,7 +35,7 @@ class TestProject:
 
 class TestBucket:
     def test_bucket_ls(self, runner):
-        res = invoke(runner, "bucket ls --project-id=1")
+        res = invoke(runner, "bucket ls --project-id=Inbox")
         assert re.search(r"To-Do|Backlog", res.output)
 
     def test_bucket_ls_custom_format(self, runner):
