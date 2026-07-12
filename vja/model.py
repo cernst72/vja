@@ -23,7 +23,7 @@ def custom_output(cls):
     def _str_value(v):
         if isinstance(v, datetime):
             return v.strftime("%a %Y-%m-%d %H:%M:%S")
-        if isinstance(v, (Project, ProjectView, Label, TaskReminder, Assignee)):
+        if isinstance(v, (Project, ProjectView, Label, TaskReminder, Assignee, Bucket)):
             return v.short_str()
         if isinstance(v, list):
             return [_str_value(x) for x in v]
@@ -212,6 +212,26 @@ class Assignee:
         return f"id={self.id},username={self.username}"
 
 
+@dataclass(frozen=True)
+@data_dict
+class TaskBucket:
+    json: dict = field(repr=False)
+    id: int
+    project_view_id: int
+    title: str
+
+    @classmethod
+    def from_json(cls, json):
+        return cls(json, json["id"], json["project_view_id"], json["title"])
+
+    @classmethod
+    def from_json_array(cls, json_array):
+        return [TaskBucket.from_json(x) for x in json_array or []]
+
+    def short_str(self):
+        return f"id={self.id},project_view_id={self.project_view_id},title={self.title}"
+
+
 @dataclass
 @custom_output
 @data_dict
@@ -268,7 +288,7 @@ class Task:
     assignee_objects: typing.List[Assignee]
     project: Project
     position: int
-    bucket_id: int
+    bucket_objects: typing.List[TaskBucket]
     created: datetime
     updated: datetime
     urgency: float = field(init=False)
@@ -281,8 +301,12 @@ class Task:
     def assignees(self):
         return ",".join(a.username for a in self.assignee_objects or [])
 
+    @property
+    def buckets(self):
+        return ",".join(b.title for b in self.bucket_objects or [])
+
     @classmethod
-    def from_json(cls, json, project_object, labels, assignees):
+    def from_json(cls, json, project_object, labels, assignees, buckets):
         return cls(
             json,
             json["id"],
@@ -304,7 +328,7 @@ class Task:
             assignees,
             project_object,
             json["position"],
-            json["bucket_id"],
+            buckets,
             parse_json_date(json["created"]),
             parse_json_date(json["updated"]),
         )
