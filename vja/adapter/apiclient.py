@@ -202,7 +202,8 @@ class ApiClient:
 
     def get_task(self, task_id):
         url = f"{self._api_url}/tasks/{task_id}"
-        return self._get_json(url)
+        params = {"expand": "buckets"}
+        return self._get_json(url, params)
 
     def put_task(self, project_id, payload):
         return self._put_json(

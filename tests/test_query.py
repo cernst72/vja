@@ -59,6 +59,7 @@ class TestSingleTask:
     def test_task_show(self, runner):
         res = invoke(runner, "show 1")
         assert re.search(r"id: 1", res.output)
+        assert res.output
 
     def test_task_show_json(self, runner):
         res = invoke(runner, "show 1 --json")
@@ -72,6 +73,8 @@ class TestSingleTask:
         assert data["project"]["id"] is not None
         assert data["created"] is not None
         assert data["updated"] is not None
+        assert data["bucket_objects"] is not None
+        assert data["label_objects"] is not None
 
 
 class TestTaskLs:
