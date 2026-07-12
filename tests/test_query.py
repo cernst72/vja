@@ -215,6 +215,11 @@ class TestTaskLsFilter:
         data = json.loads(res.output)
         assert len(data) == 0
 
+    def test_task_filter_bucket(self, runner):
+        res = invoke(runner, ["ls", "--jsonvja", "--bucket=1"])
+        data = json.loads(res.output)
+        assert len(data) > 0
+
     def test_task_filter_urgency(self, runner):
         res = invoke(runner, ["ls", "--jsonvja", "--urgency=10"])
         data = json.loads(res.output)

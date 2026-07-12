@@ -4,12 +4,8 @@ import re
 import typing
 from datetime import datetime, timedelta
 
-from vja.parse import (
-    parse_bool_arg,
-    parse_date_arg_to_datetime,
-    parse_date_arg_to_timedelta,
-    rgetattr,
-)
+from vja.parse import (parse_bool_arg, parse_date_arg_to_datetime,
+                       parse_date_arg_to_timedelta, rgetattr)
 
 logger = logging.getLogger(__name__)
 
@@ -88,6 +84,10 @@ def _find_regex(regex, value):
     return bool(re.search(re.compile(regex, re.IGNORECASE), value))
 
 
+def _create_bucket_filter(value):
+    return lambda x: any(bucket.id == int(value) for bucket in x.bucket_objects)
+
+
 def _create_priority_filter(value):
     return _create_general_filter([f"priority {value}"])
 
@@ -115,6 +115,7 @@ _filter_mapping = {
     "label_filter": _create_label_filter,
     "project_filter": _create_project_filter,
     "upper_project_filter": _create_upper_project_filter,
+    "bucket_filter": _create_bucket_filter,
     "title_filter": _create_title_filter,
     "priority_filter": _create_priority_filter,
     "urgency_filter": _create_urgency_filter,

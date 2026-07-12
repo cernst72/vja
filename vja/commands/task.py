@@ -504,6 +504,15 @@ def task_delete(application: Application, task_ids, quiet_show=False):
     "All tasks whose project has the given argument as a ancestor are considered.",
 )
 @click.option(
+    "bucket_filter",
+    "-b",
+    "--bucket",
+    "--bucket-id",
+    "--bucket_id",
+    type=click.INT,
+    help="Filter by tasks in bucket",
+)
+@click.option(
     "priority_filter",
     "-p",
     "--prio",
