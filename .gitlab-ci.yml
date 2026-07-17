@@ -55,7 +55,6 @@ integration-test-prod:
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
-    VIKUNJA_IMAGE: vikunja/vikunja:2.3.0
   script:
     - *start_vikunja
     - export VJA_CONFIGDIR=tests/.vjatest_dind
@@ -107,11 +106,9 @@ release:
     PYPI_TOKEN: ${PYPI_VJA_TOKEN}
   before_script:
     - apt-get update && apt-get install -y --no-install-recommends git-core ca-certificates python3-full python-is-python3 twine
+    - python3 --version
     - npm install -g semantic-release @semantic-release/gitlab @semantic-release/changelog conventional-changelog-conventionalcommits @semantic-release/commit-analyzer @semantic-release/git semantic-release-pypi
   script:
-    - python3 --version
-    - python3 -m venv ./venv
-    - . ./venv/bin/activate
     - semantic-release
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "beta" || $CI_COMMIT_BRANCH == "rc"
