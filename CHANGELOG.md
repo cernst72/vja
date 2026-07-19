@@ -1,3 +1,5 @@
+## [5.4.0](https://gitlab.com/ce72/vja/compare/5.3.0...5.4.0) (2026-07-19)
+
 ## [5.3.0](https://gitlab.com/ce72/vja/compare/5.2.1...5.3.0) (2026-03-13)
 
 ### Features
