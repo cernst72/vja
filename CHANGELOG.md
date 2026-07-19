@@ -1,4 +1,26 @@
 ## [5.4.0](https://gitlab.com/ce72/vja/compare/5.3.0...5.4.0) (2026-07-19)
+### Features
+
+* show task relations ([fe49918](https://gitlab.com/ce72/vja/commit/fe49918724c175f5108a675e28412ecb458a4bb0))
+  👍 Thanks to Louis Bernardi!
+* add task relation add/remove commands ([23aedce](https://gitlab.com/ce72/vja/commit/23aedce3b89745d96c493a5907766ccb7b3f0208))
+  👍 Thanks to Louis Bernardi!
+* always support project title ([dfc6689](https://gitlab.com/ce72/vja/commit/dfc668911a14ed8e7c3f0ffc5d1743dfb08c1dd6))
+* **task ls:** option -b to filter by bucket-id ([d77b867](https://gitlab.com/ce72/vja/commit/d77b8673b0a15c83b176024567ea586c1b9ff46f))
+* **task show:** display task buckets ([800f4f9](https://gitlab.com/ce72/vja/commit/800f4f907aabb8b2de54faa07e21430c88c2c08c))
+* assume vikunja:2.2.0. Remove support for version<1.0.0 ([465d846](https://gitlab.com/ce72/vja/commit/465d8467844bee78ecbbc600fc6895e8eb0304de))
+
+### Bug Fixes
+
+* allow weeks ('w') in timedelta expressions and fix error handling ([35745c8](https://gitlab.com/ce72/vja/commit/35745c8d26416cef03f8cb6460b9ffe3d88076e5))
+* **clone:** allow to clone tasks without labels ([cbea8f4](https://gitlab.com/ce72/vja/commit/cbea8f465ebfa96b89b11cc0f60b6c1db9c0c661))
+
+### Automation
+* use current vikunja:2.3.0 for tests
+* simplify .gitlab-ci
+
+### Bug Fixes
+* refactor package structure
 
 ## [5.3.0](https://gitlab.com/ce72/vja/compare/5.2.1...5.3.0) (2026-03-13)
 
