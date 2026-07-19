@@ -3,6 +3,7 @@
 ### Features
 
 * add assignee option for tasks ([07c0c7a](https://gitlab.com/ce72/vja/commit/07c0c7acbfa0073e6a9c594807b75eee247db07d))
+👍 Thanks to @j-hugo!
 
 ## [5.2.1](https://gitlab.com/ce72/vja/compare/5.2.0...5.2.1) (2026-02-25)
 
@@ -25,10 +26,12 @@
 ### Features
 
 * add task delete command ([43a4021](https://gitlab.com/ce72/vja/commit/43a40213ea2798ebf72fa50419d053421c0f68b9))
+👍 Thanks to @lberna-glencore!
 
 ### Bug Fixes
 
 * **parse:** handle ISO 8601 timezone offsets in date argument parser ([dc8b001](https://gitlab.com/ce72/vja/commit/dc8b0017f7f81a4f934f3b2b5717ceeb89f8c940))
+👍 Thanks to @lberna-glencore!
 
 ### Documentation
 
