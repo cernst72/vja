@@ -91,8 +91,9 @@ class VjaConfiguration:
         logger.debug("Read config from %s", os.path.abspath(filepath))
         parser = configparser.RawConfigParser()
         if not parser.read(filepath):
+            msg = f"Could not load config file from {os.path.abspath(filepath)}"
             raise VjaError(
-                f"Could not load config file from {os.path.abspath(filepath)}"
+                msg
             )
         return parser
 
@@ -100,6 +101,7 @@ class VjaConfiguration:
         try:
             return self._parser.get(section, option)
         except (configparser.NoSectionError, configparser.NoOptionError) as ex:
+            msg = f"[{section}] [{option}] not specified in {self.file}. Dying."
             raise VjaError(
-                f"[{section}] [{option}] not specified in {self.file}. Dying."
+                msg
             ) from ex

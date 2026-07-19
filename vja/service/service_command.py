@@ -219,9 +219,8 @@ class CommandService:
                     old_reminders[0] = new_reminder  # overwrite first remote reminder
                 else:
                     old_reminders.pop(0)  # remove first remote reminder
-            else:
-                if new_reminder:
-                    old_reminders = [new_reminder]  # create single reminder
+            elif new_reminder:
+                old_reminders = [new_reminder]  # create single reminder
             args.update({"reminder": old_reminders})
 
     @staticmethod
@@ -319,18 +318,21 @@ class CommandService:
         )
         user_found = [u for u in users_remote if u.username == name]
         if not user_found:
-            raise VjaError(f"User '{name}' not found in project {project_id}.")
+            msg = f"User '{name}' not found in project {project_id}."
+            raise VjaError(msg)
         return user_found[0]
 
     def _validate_add_task(self, title, label_names):
         tasks_remote = self._api_client.get_tasks(exclude_completed=True)
         if any(task for task in tasks_remote if task["title"] == title):
+            msg = "Task with title does exist. You may want to run with --force-create."
             raise VjaError(
-                "Task with title does exist. You may want to run with --force-create."
+                msg
             )
         for label_name in label_names:
             labels_remote = Label.from_json_array(self._api_client.get_labels())
             if not any(label for label in labels_remote if label.title == label_name):
+                msg = 'Label does not exist. You may want to execute "label add" or run with --force-create.'
                 raise VjaError(
-                    'Label does not exist. You may want to execute "label add" or run with --force-create.'
+                    msg
                 )

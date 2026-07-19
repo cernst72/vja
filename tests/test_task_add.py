@@ -2,9 +2,9 @@ from tests.conftest import invoke
 from tests.test_command_helpers import (
     DATE_2_ISO,
     TOMORROW_AT_8_ISO,
-    json_for_created_task,
     has_assignee_with_username,
     has_label_with_title,
+    json_for_created_task,
 )
 
 

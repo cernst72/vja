@@ -1,5 +1,4 @@
 import dataclasses
-import typing
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
@@ -29,7 +28,7 @@ def custom_output(cls):
             return [_str_value(x) for x in v]
         return str(v)
 
-    setattr(cls, "__str__", __str__)
+    cls.__str__ = __str__
     return cls
 
 
@@ -49,7 +48,7 @@ def data_dict(cls):
     def _is_data_dict(v):
         return hasattr(v, "data_dict") and callable(v.data_dict)
 
-    setattr(cls, "data_dict", data_dict_function)
+    cls.data_dict = data_dict_function
     return cls
 
 
@@ -119,8 +118,8 @@ class Project:
     is_favorite: bool
     is_archived: bool
     parent_project_id: int
-    ancestor_projects: typing.List["Project"]
-    views: typing.List[ProjectView]
+    ancestor_projects: list["Project"]
+    views: list[ProjectView]
 
     @classmethod
     def from_json(cls, json, ancestor_projects):
@@ -311,7 +310,7 @@ class Task:
     priority: int
     is_favorite: bool
     due_date: datetime
-    reminders: typing.List[TaskReminder]
+    reminders: list[TaskReminder]
     repeat_mode: int
     repeat_after: timedelta
     start_date: datetime
@@ -319,12 +318,12 @@ class Task:
     percent_done: float
     done: bool
     done_at: datetime
-    label_objects: typing.List[Label]
-    assignee_objects: typing.List[Assignee]
-    relations: typing.List[TaskRelation]
+    label_objects: list[Label]
+    assignee_objects: list[Assignee]
+    relations: list[TaskRelation]
     project: Project
     position: int
-    bucket_objects: typing.List[TaskBucket]
+    bucket_objects: list[TaskBucket]
     created: datetime
     updated: datetime
     urgency: float = field(init=False)

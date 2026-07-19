@@ -5,7 +5,6 @@ from dateutil import tz
 from tests.conftest import invoke
 from tests.test_command_helpers import (
     TODAY,
-    TODAY_ISO,
     TOMORROW,
     TOMORROW_AT_8_ISO,
     has_label_with_title,
@@ -33,7 +32,9 @@ class TestEditGeneral:
         after = json_for_task_id(runner, 1)
         assert (
             after["due_date"]
-            == datetime.datetime(2042, 1, 30, 15, 45, 0, tzinfo=tz.tzoffset(None, -2 * 3600))
+            == datetime.datetime(
+                2042, 1, 30, 15, 45, 0, tzinfo=tz.tzoffset(None, -2 * 3600)
+            )
             .astimezone(tz.tzlocal())
             .replace(tzinfo=None)
             .isoformat()
@@ -51,11 +52,17 @@ class TestEditGeneral:
 
         invoke(runner, ["edit", "1", "--due=tomorrow 15:00"])
         after = json_for_task_id(runner, 1)
-        assert after["due_date"] == (TOMORROW.replace(hour=15, minute=0, second=0)).isoformat()
+        assert (
+            after["due_date"]
+            == (TOMORROW.replace(hour=15, minute=0, second=0)).isoformat()
+        )
 
         invoke(runner, "edit 1 --due=today")
         after = json_for_task_id(runner, 1)
-        assert after["due_date"] == (TODAY.replace(hour=15, minute=0, second=0)).isoformat()
+        assert (
+            after["due_date"]
+            == (TODAY.replace(hour=15, minute=0, second=0)).isoformat()
+        )
 
     def test_toggle_label(self, runner):
         labels_0 = json_for_task_id(runner, 1)["label_objects"]
@@ -66,7 +73,9 @@ class TestEditGeneral:
 
         assert labels_0 != labels_1
         assert labels_0 == labels_2
-        assert has_label_with_title(labels_0, "tag1") or has_label_with_title(labels_1, "tag1")
+        assert has_label_with_title(labels_0, "tag1") or has_label_with_title(
+            labels_1, "tag1"
+        )
 
     def test_append_note(self, runner):
         invoke(runner, "edit 1 --note=line1")

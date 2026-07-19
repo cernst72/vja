@@ -1,11 +1,14 @@
 import logging
 import operator
 import re
-import typing
 from datetime import datetime, timedelta
 
-from vja.parse import (parse_bool_arg, parse_date_arg_to_datetime,
-                       parse_date_arg_to_timedelta, rgetattr)
+from vja.parse import (
+    parse_bool_arg,
+    parse_date_arg_to_datetime,
+    parse_date_arg_to_timedelta,
+    rgetattr,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +19,7 @@ def _create_due_date_filter(value: str):
     return _create_general_filter([f"due_date {value}"])
 
 
-def _create_general_filter(values: typing.List[str]):
+def _create_general_filter(values: list[str]):
     return [_create_single_general_filter(x) for x in values]
 
 

@@ -3,7 +3,7 @@ import logging
 
 import click
 
-from vja.model import User, Task, Project
+from vja.model import Project, Task, User
 
 PROJECT_LIST_FORMAT_DEFAULT = (
     "{x.id:5} {x.title:20.20} {x.description:20.20} {x.parent_project_id:5}"

@@ -3,6 +3,7 @@ import os
 import subprocess
 import sys
 
+import click
 import pytest
 from click.testing import CliRunner
 
@@ -58,18 +59,17 @@ def _create_project_and_task():
 def run_vja(command, expected_return=None):
     vja_command = "vja " + command
     result = subprocess.run(vja_command.split(), capture_output=True, check=False)
-    if result.returncode:
-        if expected_return != result.returncode:
-            print(f"!!! Non-zero result ({result.returncode}) from vja {command}")
-            sys.stdout.write(result.stdout.decode("utf-8"))
-            sys.stdout.write(result.stderr.decode("utf-8"))
-            sys.exit(1)
+    if result.returncode and expected_return != result.returncode:
+        click.echo(f"!!! Non-zero result ({result.returncode}) from vja {command}")
+        sys.stdout.write(result.stdout.decode("utf-8"))
+        sys.stdout.write(result.stderr.decode("utf-8"))
+        sys.exit(1)
 
 
 
 def pytest_configure(config):
     if "VJA_CONFIGDIR" not in os.environ:
-        print(
+        click.echo(
             "!!! Precondition not met. You must set VJA_CONFIGDIR in environment variables !!!"
         )
         sys.exit(1)

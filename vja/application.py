@@ -63,13 +63,13 @@ class Application:
     def open_browser_task(self, task_id):
         url = self.configuration.get_frontend_url().rstrip("/")
         if task_id:
-            url += f"/tasks/{str(task_id)}"
+            url += f"/tasks/{task_id!s}"
         webbrowser.open_new_tab(url)
 
     def open_browser_project(self, project_id):
         url = (
             self.configuration.get_frontend_url().rstrip("/")
-            + f"/projects/{str(project_id)}"
+            + f"/projects/{project_id!s}"
         )
         webbrowser.open_new_tab(url)
 

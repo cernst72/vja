@@ -1,5 +1,11 @@
 from tests.conftest import invoke
-from tests.test_command_helpers import DATE_1_ISO, DATE_2_ISO, TOMORROW_ISO, YESTERDAY_ISO, json_for_task_id
+from tests.test_command_helpers import (
+    DATE_1_ISO,
+    DATE_2_ISO,
+    TOMORROW_ISO,
+    YESTERDAY_ISO,
+    json_for_task_id,
+)
 
 
 class TestDeferTask:

@@ -3,9 +3,8 @@ import re
 import time
 from datetime import datetime, timedelta
 from html.parser import HTMLParser
-from typing import Optional
 
-from dateutil import tz, parser
+from dateutil import parser, tz
 from parsedatetime import parsedatetime
 
 from vja import VjaError
@@ -25,7 +24,7 @@ _timedelta_regex = re.compile(
 
 def parse_date_arg_to_datetime(
     text: str, default_hour=DEFAULT_DATE_HOUR, default_minute=DEFAULT_DATE_MINUTE
-) -> Optional[datetime]:
+) -> datetime | None:
     if not text:
         return None
 
@@ -51,36 +50,38 @@ def parse_date_arg_to_datetime(
 
 def parse_date_arg_to_iso(
     text: str, default_hour=DEFAULT_DATE_HOUR, default_minute=DEFAULT_DATE_MINUTE
-) -> Optional[str]:
+) -> str | None:
     date_value = parse_date_arg_to_datetime(text, default_hour, default_minute)
     return datetime_to_isoformat(date_value) if date_value else None
 
 
-def datetime_to_isoformat(date: datetime) -> Optional[str]:
+def datetime_to_isoformat(date: datetime) -> str | None:
     return date.astimezone(tz.tzlocal()).isoformat() if date else None
 
 
-def parse_date_arg_to_timedelta(time_str: str) -> Optional[timedelta]:
-    """
-    Parse a time string e.g. '2h13m' or '1.5d' into a timedelta object.
+def parse_date_arg_to_timedelta(time_str: str) -> timedelta | None:
+    """Parse a time string e.g. '2h13m' or '1.5d' into a timedelta object.
     Based on Peter's answer at https://stackoverflow.com/a/51916936/2445204
     and virhilo's answer at https://stackoverflow.com/a/4628148/851699
     :param time_str: A string identifying a duration, e.g. '2h13.5m'
-    :return datetime.timedelta: A datetime.timedelta object
+    :return datetime.timedelta: A datetime.timedelta object.
     """
     if not time_str:
         return None
     parts = _timedelta_regex.match(time_str.lower())
     if parts is None:
-        raise VjaError(f"""Could not parse any time information from '{time_str}'.
-        Examples of valid strings: '1w', '2d8h5m2s', '2.5m4.0s'""")
+        msg = (
+            f"""Could not parse any time information from '{time_str}'.
+        Examples of valid strings: '1w', '2d8h5m2s', '2.5m4.0s'"""
+        )
+        raise VjaError(msg)
     time_params = {
         name: float(param) for name, param in parts.groupdict().items() if param
     }
     return timedelta(**time_params)
 
 
-def parse_json_date(json_date: str) -> Optional[datetime]:
+def parse_json_date(json_date: str) -> datetime | None:
     if json_date and json_date > "0001-01-02T00:00:00Z":
         return parser.isoparse(json_date).astimezone(tz.tzlocal()).replace(tzinfo=None)
     return None

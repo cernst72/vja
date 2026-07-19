@@ -14,7 +14,7 @@ class TestTaskLsFilter:
         res = invoke(runner, ["ls", "--jsonvja", "--due-date=after next week"])
         data = json.loads(res.output)
         assert len(data) == 0
-        res = invoke(runner, ["ls", "--jsonvja", "--due-date=" ""])
+        res = invoke(runner, ["ls", "--jsonvja", "--due-date="])
         data = json.loads(res.output)
         assert len(data) > 0
         assert all(i["due_date"] is None for i in data)
@@ -35,7 +35,7 @@ class TestTaskLsFilter:
         assert len(data) == 0
 
     def test_task_filter_label_empty(self, runner):
-        res = invoke(runner, ["ls", "--jsonvja", "--label=" ""])
+        res = invoke(runner, ["ls", "--jsonvja", "--label="])
         data = json.loads(res.output)
         assert len(data) > 0
         assert all(len(i["label_objects"]) == 0 for i in data)
@@ -115,9 +115,13 @@ class TestTaskLsFilter:
         assert len(json.loads(res.output)) > 0
         res = invoke(runner, ["ls", "--jsonvja", "--filter=priority gt 5"])
         assert len(json.loads(res.output)) == 0
-        res = invoke(runner, ["ls", "--jsonvja", "--filter=title contains At least one"])
+        res = invoke(
+            runner, ["ls", "--jsonvja", "--filter=title contains At least one"]
+        )
         assert len(json.loads(res.output)) > 0
-        res = invoke(runner, ["ls", "--jsonvja", "--filter=title contains TASK_NOT_CREATED"])
+        res = invoke(
+            runner, ["ls", "--jsonvja", "--filter=title contains TASK_NOT_CREATED"]
+        )
         assert len(json.loads(res.output)) == 0
 
     def test_task_filter_general_label(self, runner):
@@ -131,10 +135,13 @@ class TestTaskLsFilter:
         assert all("my_tag" not in _labels_from_task_json(task) for task in data)
 
     def test_task_filter_general_combined(self, runner):
-        res = invoke(runner, ["ls", "--jsonvja", "--filter=id gt 0", "--filter=id lt 2"])
+        res = invoke(
+            runner, ["ls", "--jsonvja", "--filter=id gt 0", "--filter=id lt 2"]
+        )
         data = json.loads(res.output)
         assert len(data) == 1
         assert all(i["id"] == 1 for i in data)
+
 
 def _labels_from_task_json(task):
     return " ".join(label["title"] for label in task["label_objects"] or [])

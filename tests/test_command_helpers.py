@@ -28,8 +28,7 @@ def json_for_task_id(runner, task_id):
     res = invoke(runner, f"show {task_id} --jsonvja")
 
     assert res.exit_code == 0, res
-    data = json.loads(res.output)
-    return data
+    return json.loads(res.output)
 
 
 def has_label_with_title(labels, title):

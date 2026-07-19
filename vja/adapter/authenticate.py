@@ -2,7 +2,6 @@ import json
 import logging
 import os
 import time
-from typing import Optional
 
 import click
 import jwt
@@ -18,12 +17,13 @@ class Login:
     def __init__(self, api_url, token_file):
         self._api_url = api_url
         self._token_file = token_file
-        self._token: dict[str, Optional[str]] = {"access": None, "refresh": None}
+        self._token: dict[str, str | None] = {"access": None, "refresh": None}
 
     @property
     def _access_token(self):
         if not self._token["access"]:
-            raise KeyError("access token not set! call authenticate()")
+            msg = "access token not set! call authenticate()"
+            raise KeyError(msg)
         return self._token["access"]
 
     @property
@@ -59,7 +59,8 @@ class Login:
 
     def refresh_access_token(self):
         if not self._token.get("refresh"):
-            raise KeyError("refresh token not set! call authenticate()")
+            msg = "refresh token not set! call authenticate()"
+            raise KeyError(msg)
         logger.debug("Refreshing access token")
         refresh_url = f"{self._api_url}/user/token/refresh"
         refresh_token = self._token.get("refresh")
@@ -84,7 +85,7 @@ class Login:
         try:
             with open(self._token_file, encoding="utf-8") as token_file:
                 data = json.load(token_file)
-        except IOError:
+        except OSError:
             return False
         self._token["access"] = data.get("token")
         if not self._token["access"]:
@@ -133,5 +134,6 @@ class Login:
         try:
             return response.json()
         except Exception as e:
-            logger.error("Expected valid json, but found %s", response.text)
-            raise VjaError("Cannot parse json in response.") from e
+            logger.exception("Expected valid json, but found %s", response.text)
+            msg = "Cannot parse json in response."
+            raise VjaError(msg) from e

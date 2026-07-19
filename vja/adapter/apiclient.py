@@ -14,8 +14,9 @@ def inject_access_token(func):
             headers = self.authenticate(force_login=False)
             return func(self, headers=headers, *args, **kwargs)
         except KeyError as e:
+            msg = f"need access token to call function {func.__name__}; call authenticate()"
             raise VjaError(
-                f"need access token to call function {func.__name__}; call authenticate()"
+                msg
             ) from e
 
     return wrapper
@@ -35,12 +36,14 @@ def handle_http_error(func):
                 status = getattr(response, "status_code", None)
                 if status == 401:
                     return _handle_http_401(self, response, func, args, kwargs)
+                msg = f"HTTP-Error {status}, url={url}, body={getattr(response, 'text', None)}"
                 raise VjaError(
-                    f"HTTP-Error {status}, url={url}, body={getattr(response, 'text', None)}"
+                    msg
                 ) from error
 
             # Non-HTTP request exceptions (connection issues, timeouts, etc.)
-            raise VjaError(f"Request failed: {error}") from error
+            msg = f"Request failed: {error}"
+            raise VjaError(msg) from error
 
     return wrapper
 
@@ -135,8 +138,9 @@ class ApiClient:
         try:
             return response.json()
         except Exception as e:
-            logger.error("Expected valid json, but found %s", response.text)
-            raise VjaError("Cannot parse json in response.") from e
+            logger.exception("Expected valid json, but found %s", response.text)
+            msg = "Cannot parse json in response."
+            raise VjaError(msg) from e
 
     def authenticate(
         self, force_login=True, username=None, password=None, totp_passcode=None
@@ -147,8 +151,9 @@ class ApiClient:
             )
             return self._login.get_auth_header()
         except requests.HTTPError as error:
+            msg = f"HTTP-Error {error.response.status_code}, url={error.response.url}, body={error.response.text}"
             raise VjaError(
-                f"HTTP-Error {error.response.status_code}, url={error.response.url}, body={error.response.text}"
+                msg
             ) from error
 
     def refresh_access_token(self):

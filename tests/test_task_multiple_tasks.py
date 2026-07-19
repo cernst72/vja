@@ -1,5 +1,3 @@
-import datetime
-
 from tests.conftest import invoke
 from tests.test_command_helpers import TODAY_ISO, json_for_task_id
 
