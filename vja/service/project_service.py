@@ -13,16 +13,16 @@ logger = logging.getLogger(__name__)
 class ProjectService:
     def __init__(self, api_client: ApiClient):
         self._api_client = api_client
-        self._project_by_id: dict[int, Project] = {}
+        self._project_by_id_cache: dict[int, Project] = {}
 
     def find_all_projects(self) -> list[Project]:
-        if not self._project_by_id:
-            self._project_by_id = {
+        if not self._project_by_id_cache:
+            self._project_by_id_cache = {
                 x["id"]: Project.from_json(x, [])
                 for x in self._api_client.get_projects()
             }
             self.fill_ancestors()
-        return list(self._project_by_id.values())
+        return list(self._project_by_id_cache.values())
 
     def find_project_by_id_or_title(self, project: str) -> Project:
         if project.isdigit():
@@ -31,13 +31,13 @@ class ProjectService:
 
 
     def find_project_by_id(self, project_id: int) -> Project:
-        if not self._project_by_id:
-            self._project_by_id = {
+        if not self._project_by_id_cache:
+            self._project_by_id_cache = {
                 x["id"]: Project.from_json(x, [])
                 for x in self._api_client.get_projects()
             }
             self.fill_ancestors()
-        result = self._project_by_id.get(project_id)
+        result = self._project_by_id_cache.get(project_id)
         if not result:
             msg = f"Project with id {project_id} does not exist."
             raise VjaError(msg)
@@ -75,7 +75,7 @@ class ProjectService:
         return project_found
 
     def fill_ancestors(self):
-        for project in self._project_by_id.values():
+        for project in self._project_by_id_cache.values():
             ancestor_projects = []
             ancestor = self.get_ancestor_project(project.id, project.parent_project_id)
             while ancestor:
@@ -88,4 +88,4 @@ class ProjectService:
     def get_ancestor_project(self, project_id, parent_project_id) -> Project | None:
         if parent_project_id in (project_id, 0) or project_id == 0:
             return None
-        return self._project_by_id.get(parent_project_id)
+        return self._project_by_id_cache.get(parent_project_id)

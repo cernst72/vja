@@ -130,7 +130,7 @@ class Project:
             json["description"],
             json["is_favorite"],
             json["is_archived"],
-            json["parent_project_id"],
+            json.get("parent_project_id", 0),
             ancestor_projects,
             ProjectView.from_json_array(json["views"]),
         )
