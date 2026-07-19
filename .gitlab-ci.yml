@@ -109,6 +109,8 @@ release:
     - python3 --version
     - npm install -g semantic-release @semantic-release/gitlab @semantic-release/changelog conventional-changelog-conventionalcommits @semantic-release/commit-analyzer @semantic-release/git semantic-release-pypi
   script:
+    - python3 -m venv ./venv
+    - . ./venv/bin/activate
     - semantic-release
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "beta" || $CI_COMMIT_BRANCH == "rc"

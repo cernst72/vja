@@ -1,5 +1,18 @@
 ## [5.4.1](https://gitlab.com/ce72/vja/compare/5.4.0...5.4.1) (2026-07-19)
 
+### Bug Fixes
+
+* **project:** tolerate missing parent_project_id ([26c10c5](https://gitlab.com/ce72/vja/commit/26c10c5b2b771f8acaa6aadd29e246759c80472d))
+
+### Other
+* **test** Assume vikunja:2.4.0 for tests
+* **test** refactor tests
+
+### Reverts
+
+* Revert "ci(Changelog): support non-semantic formatted commits" ([5016c19](https://gitlab.com/ce72/vja/commit/5016c199fbc17acc7907655a7775ed917f90d3a3))
+
+
 ## [5.4.0](https://gitlab.com/ce72/vja/compare/5.3.0...5.4.0) (2026-07-19)
 ### Features
 
