@@ -1,135 +1,6 @@
 import json
-import re
 
 from tests.conftest import invoke
-
-
-class TestUser:
-    def test_user_show(self, runner):
-        res = invoke(runner, "user show")
-        assert re.search(r"username=\'test\'", res.output)
-
-    def test_user_show_json(self, runner):
-        res = invoke(runner, "user show --json")
-        assert json.loads(res.output)["username"] == "test"
-
-    def test_user_show_jsonvja(self, runner):
-        res = invoke(runner, "user show --jsonvja")
-        assert json.loads(res.output)["username"] == "test"
-
-
-class TestProject:
-    def test_project_ls(self, runner):
-        res = invoke(runner, "project ls")
-        assert re.search(r"test-project", res.output)
-
-    def test_project_show(self, runner):
-        res = invoke(runner, "project show 1")
-        assert len(res.output) > 0
-
-    def test_project_ls_custom_format(self, runner):
-        res = invoke(runner, "project ls --custom-format=ids_only")
-        for line in res.output:
-            assert re.match(r"^-?\d*$", line)
-
-
-class TestBucket:
-    def test_bucket_ls(self, runner):
-        res = invoke(runner, "bucket ls --project-id=Inbox")
-        assert re.search(r"To-Do|Backlog", res.output)
-
-    def test_bucket_ls_custom_format(self, runner):
-        res = invoke(runner, "bucket ls --project-id=1 --custom-format=ids_only")
-        for line in res.output:
-            assert re.match(r"^\d*$", line)
-
-
-class TestLabel:
-    def test_label_ls(self, runner):
-        res = invoke(runner, "label ls")
-        assert re.search(r"my_tag", res.output)
-
-    def test_label_ls_custom_format(self, runner):
-        res = invoke(runner, "label ls --custom-format=ids_only")
-        for line in res.output:
-            assert re.match(r"^\d*$", line)
-
-
-class TestSingleTask:
-    def test_task_show(self, runner):
-        res = invoke(runner, "show 1")
-        assert re.search(r"id: 1", res.output)
-        assert res.output
-
-    def test_task_show_json(self, runner):
-        res = invoke(runner, "show 1 --json")
-        assert json.loads(res.output)["id"] == 1
-
-    def test_task_show_jsonvja(self, runner):
-        res = invoke(runner, "show 1 --jsonvja")
-        data = json.loads(res.output)
-        assert data["id"] == 1
-        assert data["title"] is not None
-        assert data["project"]["id"] is not None
-        assert data["created"] is not None
-        assert data["updated"] is not None
-        assert data["bucket_objects"] is not None
-        assert data["label_objects"] is not None
-
-
-class TestTaskLs:
-    def test_task_ls(self, runner):
-        res = invoke(runner, "ls")
-        assert re.search(r"At least one task", res.output)
-
-    def test_task_ls_json(self, runner):
-        res = invoke(runner, "ls --json")
-        assert json.loads(res.output)[0]["title"] is not None
-
-    def test_task_ls_jsonvja(self, runner):
-        res = invoke(runner, "ls --jsonvja")
-        data = json.loads(res.output)[0]
-        assert data["title"] is not None
-
-    def test_filter_id(self, runner):
-        res = invoke(runner, ["ls", "--jsonvja", "2"])
-        data = json.loads(res.output)
-        assert data[0]["id"] == 2
-        res = invoke(runner, ["ls", "--jsonvja", "1", "2"])
-        data = json.loads(res.output)
-        assert len(data) == 2
-        assert data[0]["id"] in [1, 2]
-        assert data[1]["id"] in [1, 2]
-
-    def test_sort_id(self, runner):
-        res = invoke(runner, ["ls", "--jsonvja", "--sort=id"])
-        data = json.loads(res.output)
-        assert data[0]["id"] == 1
-        res = invoke(runner, ["ls", "--jsonvja", "--sort=-id"])
-        data = json.loads(res.output)
-        assert data[0]["id"] > 1
-
-    def test_sort_combined(self, runner):
-        res = invoke(
-            runner,
-            [
-                "ls",
-                "--jsonvja",
-                "--sort=due_date, is_favorite, -priority, project.title",
-            ]
-        )
-        data = json.loads(res.output)
-        assert data[0]["due_date"] is not None
-        assert data[-1]["due_date"] is None
-
-    def test_task_custom_format(self, runner):
-        res = invoke(runner, "ls --custom-format=ids_only")
-        for line in res.output:
-            assert re.match(r"^\d*$", line)
-
-    def test_task_custom_format_long(self, runner):
-        res = invoke(runner, "ls --custom-format=tasklist_long")
-        assert re.search(r"At least one task", res.output)
 
 
 class TestTaskLsFilter:
@@ -143,7 +14,7 @@ class TestTaskLsFilter:
         res = invoke(runner, ["ls", "--jsonvja", "--due-date=after next week"])
         data = json.loads(res.output)
         assert len(data) == 0
-        res = invoke(runner, ["ls", "--jsonvja", "--due-date=" """"""])
+        res = invoke(runner, ["ls", "--jsonvja", "--due-date=" ""])
         data = json.loads(res.output)
         assert len(data) > 0
         assert all(i["due_date"] is None for i in data)
@@ -164,7 +35,7 @@ class TestTaskLsFilter:
         assert len(data) == 0
 
     def test_task_filter_label_empty(self, runner):
-        res = invoke(runner, ["ls", "--jsonvja", "--label=" """"""])
+        res = invoke(runner, ["ls", "--jsonvja", "--label=" ""])
         data = json.loads(res.output)
         assert len(data) > 0
         assert all(len(i["label_objects"]) == 0 for i in data)
@@ -244,13 +115,9 @@ class TestTaskLsFilter:
         assert len(json.loads(res.output)) > 0
         res = invoke(runner, ["ls", "--jsonvja", "--filter=priority gt 5"])
         assert len(json.loads(res.output)) == 0
-        res = invoke(
-            runner, ["ls", "--jsonvja", "--filter=title contains At least one"]
-        )
+        res = invoke(runner, ["ls", "--jsonvja", "--filter=title contains At least one"])
         assert len(json.loads(res.output)) > 0
-        res = invoke(
-            runner, ["ls", "--jsonvja", "--filter=title contains TASK_NOT_CREATED"]
-        )
+        res = invoke(runner, ["ls", "--jsonvja", "--filter=title contains TASK_NOT_CREATED"])
         assert len(json.loads(res.output)) == 0
 
     def test_task_filter_general_label(self, runner):
@@ -264,32 +131,10 @@ class TestTaskLsFilter:
         assert all("my_tag" not in _labels_from_task_json(task) for task in data)
 
     def test_task_filter_general_combined(self, runner):
-        res = invoke(
-            runner, ["ls", "--jsonvja", "--filter=id gt 0", "--filter=id lt 2"]
-        )
+        res = invoke(runner, ["ls", "--jsonvja", "--filter=id gt 0", "--filter=id lt 2"])
         data = json.loads(res.output)
         assert len(data) == 1
         assert all(i["id"] == 1 for i in data)
-
-
-class TestRelationDisplay:
-    def test_show_displays_relation_and_inverse(self, runner):
-        res = invoke(runner, "show 1")
-        assert re.search(r"related: id=2", res.output)
-        res = invoke(runner, "show 2")
-        assert re.search(r"related: id=1", res.output)
-
-    def test_list_returns_relations(self, runner):
-        res = invoke(runner, "ls --jsonvja")
-        tasks = json.loads(res.output)
-        task_1 = next(task for task in tasks if task["id"] == 1)
-        assert any(r["other_task_id"] == 2 for r in task_1["relations"])
-
-    def test_list_shows_relation_flag(self, runner):
-        lines = invoke(runner, "ls").output.splitlines()
-        task_1_line = next(line for line in lines if line.strip().startswith("1 ("))
-        assert "L" in task_1_line
-
 
 def _labels_from_task_json(task):
     return " ".join(label["title"] for label in task["label_objects"] or [])
