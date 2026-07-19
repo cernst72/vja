@@ -47,18 +47,24 @@ def _create_project_and_task():
     )
     run_vja("task add Task in subproject --force-create --project-id=grand-child")
     run_vja("task add A task without a label --force-create")
+    run_vja("relation rm 1 related 2", 1)
+    run_vja("relation rm 1 subtask 2", 1)
+    run_vja("relation rm 1 subtask 3", 1)
+    run_vja("relation add 1 related 2")
     run_vja("task ls")
     run_vja("task show 1")
 
 
-def run_vja(command):
+def run_vja(command, expected_return=None):
     vja_command = "vja " + command
     result = subprocess.run(vja_command.split(), capture_output=True, check=False)
     if result.returncode:
-        print(f"!!! Non-zero result ({result.returncode}) from command {command}")
-        sys.stdout.write(result.stdout.decode("utf-8"))
-        sys.stdout.write(result.stderr.decode("utf-8"))
-        sys.exit(1)
+        if expected_return != result.returncode:
+            print(f"!!! Non-zero result ({result.returncode}) from vja {command}")
+            sys.stdout.write(result.stdout.decode("utf-8"))
+            sys.stdout.write(result.stderr.decode("utf-8"))
+            sys.exit(1)
+
 
 
 def pytest_configure(config):
