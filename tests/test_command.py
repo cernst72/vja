@@ -162,7 +162,7 @@ class TestEditGeneral:
 
     def test_edit_project(self, runner):
         invoke(runner, "project add another project")
-        invoke(runner, "edit 1 --project-id=1")
+        invoke(runner, "edit 1 --project-id=Inbox")
         project_1 = json_for_task_id(runner, 1)["project"]["id"]
         invoke(runner, "edit 1 -o 2")
         project_2 = json_for_task_id(runner, 1)["project"]["id"]

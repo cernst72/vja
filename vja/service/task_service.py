@@ -1,7 +1,7 @@
 import logging
 
-from vja.model import Task, Label, Assignee
-from vja.project_service import ProjectService
+from vja.model import Assignee, Label, Task, TaskBucket
+from vja.service.project_service import ProjectService
 from vja.urgency import Urgency
 
 logger = logging.getLogger(__name__)
@@ -18,6 +18,7 @@ class TaskService:
         )
         labels = Label.from_json_array(task_json["labels"])
         assignees = Assignee.from_json_array(task_json["assignees"])
-        task = Task.from_json(task_json, project_object, labels, assignees)
+        buckets = TaskBucket.from_json_array(task_json.get("buckets", []))
+        task = Task.from_json(task_json, project_object, labels, assignees, buckets)
         task.urgency = self._urgency.compute_for(task)
         return task

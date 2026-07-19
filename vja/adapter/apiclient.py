@@ -3,7 +3,7 @@ import logging
 import requests
 
 from vja import VjaError
-from vja.authenticate import Login
+from vja.adapter.authenticate import Login
 
 logger = logging.getLogger(__name__)
 
@@ -197,12 +197,14 @@ class ApiClient:
         if self._cache["tasks"] is None:
             url = f"{self._api_url}/tasks"
             params = {"filter": "done=false"} if exclude_completed else {}
-            self._cache["tasks"] = self._get_json(url, params) or []
+            params.update({"expand": "buckets"})
+            self._cache["tasks"] = self._get_json(url, params) or None
         return self._cache["tasks"]
 
     def get_task(self, task_id):
         url = f"{self._api_url}/tasks/{task_id}"
-        return self._get_json(url)
+        params = {"expand": "buckets"}
+        return self._get_json(url, params)
 
     def put_task(self, project_id, payload):
         return self._put_json(

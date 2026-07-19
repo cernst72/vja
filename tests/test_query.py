@@ -35,7 +35,7 @@ class TestProject:
 
 class TestBucket:
     def test_bucket_ls(self, runner):
-        res = invoke(runner, "bucket ls --project-id=1")
+        res = invoke(runner, "bucket ls --project-id=Inbox")
         assert re.search(r"To-Do|Backlog", res.output)
 
     def test_bucket_ls_custom_format(self, runner):
@@ -59,6 +59,7 @@ class TestSingleTask:
     def test_task_show(self, runner):
         res = invoke(runner, "show 1")
         assert re.search(r"id: 1", res.output)
+        assert res.output
 
     def test_task_show_json(self, runner):
         res = invoke(runner, "show 1 --json")
@@ -72,6 +73,8 @@ class TestSingleTask:
         assert data["project"]["id"] is not None
         assert data["created"] is not None
         assert data["updated"] is not None
+        assert data["bucket_objects"] is not None
+        assert data["label_objects"] is not None
 
 
 class TestTaskLs:
@@ -211,6 +214,11 @@ class TestTaskLsFilter:
         res = invoke(runner, ["ls", "--jsonvja", "--title=Not created"])
         data = json.loads(res.output)
         assert len(data) == 0
+
+    def test_task_filter_bucket(self, runner):
+        res = invoke(runner, ["ls", "--jsonvja", "--bucket=1"])
+        data = json.loads(res.output)
+        assert len(data) > 0
 
     def test_task_filter_urgency(self, runner):
         res = invoke(runner, ["ls", "--jsonvja", "--urgency=10"])

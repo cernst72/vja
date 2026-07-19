@@ -1,11 +1,11 @@
 import logging
 
-from vja.apiclient import ApiClient
-from vja.filter import create_filters
+from vja.adapter.apiclient import ApiClient
 from vja.model import Bucket, Label, User
 from vja.parse import rgetattr
-from vja.project_service import ProjectService
-from vja.task_service import TaskService
+from vja.service.project_service import ProjectService
+from vja.service.task_filter import create_filters
+from vja.service.task_service import TaskService
 
 logger = logging.getLogger(__name__)
 DEFAULT_SORT_STRING = "done, -urgency, due_date, -priority, project.title, title"
@@ -34,11 +34,11 @@ class QueryService:
         return self._project_service.find_project_by_id(project_id)
 
     # bucket
-    def find_buckets_in_first_kanban_view(self, project_id):
-        project = self._project_service.find_project_by_id(project_id)
+    def find_buckets_in_first_kanban_view(self, arg_project: str):
+        project = self._project_service.find_project_by_id_or_title(arg_project)
         project_view = project.get_first_kanban_project_view()
         return Bucket.from_json_array(
-            self._api_client.get_buckets(project_id, project_view.id)
+            self._api_client.get_buckets(project.id, project_view.id)
         )
 
     # label
