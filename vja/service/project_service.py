@@ -1,11 +1,8 @@
 import logging
-from typing import TYPE_CHECKING
 
 from vja import VjaError
+from vja.adapter.apiclient import ApiClient
 from vja.model import Project, User
-
-if TYPE_CHECKING:
-    from vja.adapter.apiclient import ApiClient
 
 logger = logging.getLogger(__name__)
 
