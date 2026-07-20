@@ -1,5 +1,10 @@
 ## [5.4.2](https://gitlab.com/ce72/vja/compare/5.4.1...5.4.2) (2026-07-20)
 
+### Bug Fixes
+
+* ApiClient not defined on python 3.13 ([98b3968](https://gitlab.com/ce72/vja/commit/98b39682c4094e08a7e38f627ac9cde383e40b4a))
+
+
 ## [5.4.1](https://gitlab.com/ce72/vja/compare/5.4.0...5.4.1) (2026-07-19)
 
 ### Bug Fixes
