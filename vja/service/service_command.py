@@ -3,7 +3,7 @@ import logging
 
 from vja import VjaError
 from vja.adapter.apiclient import ApiClient
-from vja.model import Assignee, Bucket, Label, Project
+from vja.model import Assignee, Bucket, Label, Project, Task
 from vja.parse import (
     datetime_to_isoformat,
     parse_date_arg_to_iso,
@@ -35,32 +35,24 @@ class CommandService:
         logger.info("Logged out")
 
     # project
-    def add_project(self, parent_project, title):
+    def add_project(self, title: str, parent_project: str) -> Project:
         if parent_project:
-            if str(parent_project).isdigit():
-                parent_project_id = parent_project
-            else:
-                parent_project_id = self._project_service.find_project_by_title(
-                    parent_project
-                ).id
+            parent_project_id = self._project_service.find_project_by_id_or_title(parent_project).id
         else:
             parent_project_id = None
-        project_json = self._api_client.put_project(parent_project_id, title)
+        project_json = self._api_client.create_project(title, parent_project_id)
         return Project.from_json(project_json, [])
 
     # bucket
-    def add_bucket(self, project_query, title):
-        if str(project_query).isdigit():
-            project = self._project_service.find_project_by_id(project_query)
-        else:
-            project = self._project_service.find_project_by_title(project_query)
-        project_view = next(x for x in project.views if x.view_kind == "kanban")
-        bucket_json = self._api_client.put_bucket(project.id, project_view.id, title)
+    def add_bucket(self, project_query: str, title: str) -> Bucket:
+        project = self._project_service.find_project_by_id_or_title(project_query)
+        project_view = project.get_first_kanban_project_view()
+        bucket_json = self._api_client.create_bucket(project.id, project_view.id, title)
         return Bucket.from_json(bucket_json)
 
     # label
-    def add_label(self, title):
-        label_json = self._api_client.put_label(title)
+    def add_label(self, title: str) -> Label:
+        label_json = self._api_client.create_label(title)
         return Label.from_json(label_json)
 
     # tasks
@@ -86,17 +78,19 @@ class CommandService:
         "reminder": {"field": "reminders", "mapping": (lambda x: x)},
     }
 
-    def _args_to_payload(self, args: dict):
+    def _args_to_payload(self, args: dict) -> dict:
         payload = {}
         for arg_name, arg_value in args.items():
             mapper = self._arg_to_json[arg_name]
             payload[mapper["field"]] = mapper["mapping"](arg_value)
         return payload
 
-    def add_task(self, title, args: dict):
+    def add_task(self, title, args: dict) -> Task:
         args.update({"title": title})
         if args.get("project_id"):
-            project_id = self._project_service.find_project_by_id_or_title(args.pop("project_id")).id
+            project_id = self._project_service.find_project_by_id_or_title(
+                args.pop("project_id")
+            ).id
         else:
             project_id = self._project_service.get_default_project().id
         label_names = args.pop("label")
@@ -113,7 +107,7 @@ class CommandService:
         if not is_force:
             self._validate_add_task(title, label_names)
         logger.debug("put task: %s", payload)
-        task_json = self._api_client.put_task(project_id, payload)
+        task_json = self._api_client.create_task(project_id, payload)
         task = self._task_service.task_from_json(task_json)
         for label_name in label_names:
             label = self._label_from_name(label_name, is_force) if label_name else None
@@ -124,7 +118,7 @@ class CommandService:
             self._api_client.add_assignee_to_task(task.id, assignee.id)
         return task
 
-    def clone_task(self, task_id: int, title: str):
+    def clone_task(self, task_id: int, title: str) -> Task:
         task_remote = self._api_client.get_task(task_id)
         task_remote.update({"id": None})
         task_remote.update({"title": title})
@@ -132,7 +126,7 @@ class CommandService:
         task_remote.update({"bucket_id": 0})
 
         logger.debug("put task: %s", task_remote)
-        task_json = self._api_client.put_task(task_remote["project_id"], task_remote)
+        task_json = self._api_client.create_task(task_remote["project_id"], task_remote)
         task = self._task_service.task_from_json(task_json)
 
         for label in task_remote["labels"] or []:
@@ -141,7 +135,7 @@ class CommandService:
             self._api_client.add_assignee_to_task(task.id, assignee["id"])
         return task
 
-    def edit_task(self, task_id: int, args: dict):
+    def edit_task(self, task_id: int, args: dict) -> Task:
         task_remote = self._api_client.get_task(task_id)
         label_name = args.pop("label") if args.get("label") else None
         assignee_name = args.pop("assignee") if args.get("assignee") else None
@@ -164,13 +158,18 @@ class CommandService:
                 }
             )
         if args.get("project_id"):
-            args.update({"project_id":
-                         self._project_service.find_project_by_id_or_title(args.pop("project_id")).id})
+            args.update(
+                {
+                    "project_id": self._project_service.find_project_by_id_or_title(
+                        args.pop("project_id")
+                    ).id
+                }
+            )
         payload = self._args_to_payload(args)
         logger.debug("update fields: %s", payload)
         task_remote.update(payload)
         logger.debug("post task: %s", task_remote)
-        task_json = self._api_client.post_task(task_id, task_remote)
+        task_json = self._api_client.update_task(task_id, task_remote)
         task_new = self._task_service.task_from_json(task_json)
 
         label = self._label_from_name(label_name, is_force) if label_name else None
@@ -181,7 +180,7 @@ class CommandService:
                 self._api_client.add_label_to_task(task_new.id, label.id)
 
         assignee = (
-            self._user_from_name(assignee_name, task_remote["project_id"])
+            self._user_from_name(assignee_name, int(task_remote["project_id"]))
             if assignee_name
             else None
         )
@@ -193,7 +192,7 @@ class CommandService:
         return task_new
 
     @staticmethod
-    def _update_due_date(args, task_remote):
+    def _update_due_date(args: dict, task_remote: dict):
         # keep using time of remote task, if none is given
         arg_due = args.get("due")
         remote_date = parse_json_date(task_remote["due_date"])
@@ -206,7 +205,7 @@ class CommandService:
         args.update({"due": arg_date})
 
     @staticmethod
-    def _update_reminder(args, task_remote):
+    def _update_reminder(args: dict, task_remote: dict):
         reminder_arg = args.get("reminder")
         CommandService._parse_reminder_arg(reminder_arg, args)
 
@@ -224,7 +223,7 @@ class CommandService:
             args.update({"reminder": old_reminders})
 
     @staticmethod
-    def _parse_reminder_arg(reminder_arg, args):
+    def _parse_reminder_arg(reminder_arg: str | None, args: dict):
         if reminder_arg is None:
             return
         if reminder_arg == "due":
@@ -251,13 +250,13 @@ class CommandService:
                 {"reminder": [{"reminder": parse_date_arg_to_iso(reminder_arg)}]}
             )
 
-    def toggle_task_done(self, task_id):
+    def toggle_task_done(self, task_id: int) -> Task:
         task_remote = self._api_client.get_task(task_id)
         task_remote.update({"done": not task_remote["done"]})
-        task_json = self._api_client.post_task(task_id, task_remote)
+        task_json = self._api_client.update_task(task_id, task_remote)
         return self._task_service.task_from_json(task_json)
 
-    def defer_task(self, task_id, delay_by):
+    def defer_task(self, task_id: int, delay_by: str) -> Task:
         timedelta = parse_date_arg_to_timedelta(delay_by)
         args = {}
 
@@ -283,28 +282,34 @@ class CommandService:
         payload = self._args_to_payload(args)
         logger.debug("update fields: %s", payload)
         task_remote.update(payload)
-        task_json = self._api_client.post_task(task_id, task_remote)
+        task_json = self._api_client.update_task(task_id, task_remote)
         return self._task_service.task_from_json(task_json)
 
-    def delete_task(self, task_id):
+    def delete_task(self, task_id: int):
         self._api_client.delete_task(task_id)
 
-    def add_relation(self, task_id, relation_kind, other_task_id):
+    def add_relation(
+        self, task_id: int, relation_kind: str, other_task_id: int
+    ) -> Task:
         self._api_client.add_relation_to_task(task_id, relation_kind, other_task_id)
         return self._task_service.task_from_json(self._api_client.get_task(task_id))
 
-    def remove_relation(self, task_id, relation_kind, other_task_id):
-        self._api_client.remove_relation_from_task(task_id, relation_kind, other_task_id)
+    def remove_relation(
+        self, task_id: int, relation_kind: str, other_task_id: int
+    ) -> Task:
+        self._api_client.remove_relation_from_task(
+            task_id, relation_kind, other_task_id
+        )
         return self._task_service.task_from_json(self._api_client.get_task(task_id))
 
-    def _label_from_name(self, name, is_force):
+    def _label_from_name(self, name: str | None, is_force: bool) -> Label | None:
         if not name:
             return None
         labels_remote = Label.from_json_array(self._api_client.get_labels())
         label_found = [label for label in labels_remote if label.title == name]
         if not label_found:
             if is_force:
-                return Label.from_json(self._api_client.put_label(name))
+                return self.add_label(name)
             logger.warning(
                 'Ignoring non existing label [%s]. You may want to execute "label add" first.',
                 name,
@@ -312,7 +317,7 @@ class CommandService:
             return None
         return label_found[0]
 
-    def _user_from_name(self, name, project_id):
+    def _user_from_name(self, name: str, project_id: int) -> Assignee:
         users_remote = Assignee.from_json_array(
             self._api_client.get_project_users(project_id)
         )
@@ -322,17 +327,13 @@ class CommandService:
             raise VjaError(msg)
         return user_found[0]
 
-    def _validate_add_task(self, title, label_names):
+    def _validate_add_task(self, title: str, label_names: list[str]):
         tasks_remote = self._api_client.get_tasks(exclude_completed=True)
         if any(task for task in tasks_remote if task["title"] == title):
             msg = "Task with title does exist. You may want to run with --force-create."
-            raise VjaError(
-                msg
-            )
+            raise VjaError(msg)
         for label_name in label_names:
             labels_remote = Label.from_json_array(self._api_client.get_labels())
             if not any(label for label in labels_remote if label.title == label_name):
                 msg = 'Label does not exist. You may want to execute "label add" or run with --force-create.'
-                raise VjaError(
-                    msg
-                )
+                raise VjaError(msg)

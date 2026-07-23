@@ -20,13 +20,13 @@ class VjaConfiguration:
         self._parser = self._load(self._file)
 
     @property
-    def file(self):
+    def file(self) -> Path:
         return self._file
 
-    def get_api_url(self):
+    def get_api_url(self) -> str:
         return self._get("application", "api_url")
 
-    def get_frontend_url(self):
+    def get_frontend_url(self) -> str:
         return self._get("application", "frontend_url")
 
     def get_token_file(self):
@@ -41,7 +41,7 @@ class VjaConfiguration:
     def get_urgency_label_keywords(self):
         return self._parser.get("urgency_keywords", "label_keywords", fallback=None)
 
-    def get_urgency_coefficients(self):
+    def get_urgency_coefficients(self) -> dict:
         try:
             return dict(self._parser.items("urgency_coefficients"))
         except (configparser.NoSectionError, configparser.NoOptionError):
@@ -92,16 +92,12 @@ class VjaConfiguration:
         parser = configparser.RawConfigParser()
         if not parser.read(filepath):
             msg = f"Could not load config file from {os.path.abspath(filepath)}"
-            raise VjaError(
-                msg
-            )
+            raise VjaError(msg)
         return parser
 
-    def _get(self, section, option):
+    def _get(self, section, option) -> str:
         try:
             return self._parser.get(section, option)
         except (configparser.NoSectionError, configparser.NoOptionError) as ex:
             msg = f"[{section}] [{option}] not specified in {self.file}. Dying."
-            raise VjaError(
-                msg
-            ) from ex
+            raise VjaError(msg) from ex

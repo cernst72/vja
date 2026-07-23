@@ -10,7 +10,7 @@ ID_TITLE = "id={},title={}"
 def custom_output(cls):
     hidden_attribute_names = ["json", "description_text"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Returns a string containing only the non-null attribute values, excluding json attribute ."""
         return "\n".join(
             f"{attribute.name}: {_str_value(getattr(self, attribute.name))}"
@@ -22,7 +22,10 @@ def custom_output(cls):
     def _str_value(v):
         if isinstance(v, datetime):
             return v.strftime("%a %Y-%m-%d %H:%M:%S")
-        if isinstance(v, (Project, ProjectView, Label, TaskReminder, TaskRelation, Assignee, Bucket)):
+        if isinstance(
+            v,
+            (Project, ProjectView, Label, TaskReminder, TaskRelation, Assignee, Bucket),
+        ):
             return v.short_str()
         if isinstance(v, list):
             return [_str_value(x) for x in v]
@@ -62,7 +65,7 @@ class User:
     default_project_id: int
 
     @classmethod
-    def from_json(cls, json):
+    def from_json(cls, json: dict) -> User:
         return cls(
             json,
             json["id"],
@@ -86,7 +89,7 @@ class ProjectView:
     done_bucket_id: int
 
     @classmethod
-    def from_json(cls, json):
+    def from_json(cls, json: dict) -> ProjectView:
         return cls(
             json,
             json["id"],
@@ -99,10 +102,10 @@ class ProjectView:
         )
 
     @classmethod
-    def from_json_array(cls, json_array):
+    def from_json_array(cls, json_array: dict) -> list[ProjectView]:
         return [ProjectView.from_json(x) for x in json_array or []]
 
-    def short_str(self):
+    def short_str(self) -> str:
         return ID_TITLE.format(self.id, self.title)
 
 
@@ -118,11 +121,11 @@ class Project:
     is_favorite: bool
     is_archived: bool
     parent_project_id: int
-    ancestor_projects: list["Project"]
+    ancestor_projects: list[Project]
     views: list[ProjectView]
 
     @classmethod
-    def from_json(cls, json, ancestor_projects):
+    def from_json(cls, json: dict, ancestor_projects: list[Project]) -> Project:
         return cls(
             json,
             json["id"],
@@ -136,13 +139,15 @@ class Project:
         )
 
     @classmethod
-    def from_json_array(cls, json_array, ancestor_projects):
+    def from_json_array(
+        cls, json_array: dict, ancestor_projects: list[Project]
+    ) -> list[Project]:
         return [Project.from_json(x, ancestor_projects) for x in json_array or []]
 
-    def get_first_kanban_project_view(self):
+    def get_first_kanban_project_view(self) -> ProjectView:
         return next(x for x in self.views if x.view_kind == "kanban")
 
-    def short_str(self):
+    def short_str(self) -> str:
         return ID_TITLE.format(self.id, self.title)
 
 
@@ -157,7 +162,7 @@ class Bucket:
     count_tasks: int
 
     @classmethod
-    def from_json(cls, json):
+    def from_json(cls, json: dict) -> Bucket:
         return cls(
             json,
             json["id"],
@@ -168,7 +173,7 @@ class Bucket:
         )
 
     @classmethod
-    def from_json_array(cls, json_array):
+    def from_json_array(cls, json_array: dict) -> list[Bucket]:
         return [Bucket.from_json(x) for x in json_array or []]
 
 
@@ -180,14 +185,14 @@ class Label:
     title: str
 
     @classmethod
-    def from_json(cls, json):
+    def from_json(cls, json: dict) -> Label:
         return cls(json, json["id"], json["title"])
 
     @classmethod
-    def from_json_array(cls, json_array):
+    def from_json_array(cls, json_array: dict) -> list[Label]:
         return [Label.from_json(x) for x in json_array or []]
 
-    def short_str(self):
+    def short_str(self) -> str:
         return ID_TITLE.format(self.id, self.title)
 
 
@@ -200,14 +205,14 @@ class Assignee:
     name: str
 
     @classmethod
-    def from_json(cls, json):
+    def from_json(cls, json: dict) -> Assignee:
         return cls(json, json["id"], json["username"], json.get("name", ""))
 
     @classmethod
-    def from_json_array(cls, json_array):
+    def from_json_array(cls, json_array: dict) -> list[Assignee]:
         return [Assignee.from_json(x) for x in json_array or []]
 
-    def short_str(self):
+    def short_str(self) -> str:
         return f"id={self.id},username={self.username}"
 
 
@@ -220,14 +225,14 @@ class TaskBucket:
     title: str
 
     @classmethod
-    def from_json(cls, json):
+    def from_json(cls, json: dict) -> TaskBucket:
         return cls(json, json["id"], json["project_view_id"], json["title"])
 
     @classmethod
-    def from_json_array(cls, json_array):
+    def from_json_array(cls, json_array: dict) -> list[TaskBucket]:
         return [TaskBucket.from_json(x) for x in json_array or []]
 
-    def short_str(self):
+    def short_str(self) -> str:
         return f"id={self.id},project_view_id={self.project_view_id},title={self.title}"
 
 
@@ -237,12 +242,12 @@ class TaskBucket:
 # pylint: disable=too-many-instance-attributes
 class TaskReminder:
     json: dict = field(repr=False)
-    reminder: datetime
+    reminder: datetime | None
     relative_period: int
     relative_to: str
 
     @classmethod
-    def from_json(cls, json):
+    def from_json(cls, json: dict) -> TaskReminder:
         return cls(
             json,
             parse_json_date(json["reminder"]),
@@ -251,10 +256,10 @@ class TaskReminder:
         )
 
     @classmethod
-    def from_json_array(cls, json_array):
+    def from_json_array(cls, json_array: dict) -> list[TaskReminder]:
         return [TaskReminder.from_json(x) for x in json_array or []]
 
-    def short_str(self):
+    def short_str(self) -> str:
         return (
             f'reminder={self.reminder.isoformat() if self.reminder else " "},'
             f"period={self.relative_period},"
@@ -286,15 +291,17 @@ class TaskRelation:
     other_task_title: str
 
     @classmethod
-    def from_json_map(cls, related_tasks):
+    def from_json_map(cls, related_tasks: dict) -> list[TaskRelation]:
         return [
             cls(task_json, kind, task_json["id"], task_json["title"])
             for kind, tasks in (related_tasks or {}).items()
             for task_json in tasks or []
         ]
 
-    def short_str(self):
-        return f"{self.kind}: {ID_TITLE.format(self.other_task_id, self.other_task_title)}"
+    def short_str(self) -> str:
+        return (
+            f"{self.kind}: {ID_TITLE.format(self.other_task_id, self.other_task_title)}"
+        )
 
 
 @dataclass
@@ -309,39 +316,46 @@ class Task:
     description_text: str
     priority: int
     is_favorite: bool
-    due_date: datetime
+    due_date: datetime | None
     reminders: list[TaskReminder]
     repeat_mode: int
     repeat_after: timedelta
-    start_date: datetime
-    end_date: datetime
+    start_date: datetime | None
+    end_date: datetime | None
     percent_done: float
     done: bool
-    done_at: datetime
+    done_at: datetime | None
     label_objects: list[Label]
     assignee_objects: list[Assignee]
     relations: list[TaskRelation]
     project: Project
     position: int
     bucket_objects: list[TaskBucket]
-    created: datetime
-    updated: datetime
+    created: datetime | None
+    updated: datetime | None
     urgency: float = field(init=False)
 
     @property
-    def labels(self):
+    def labels(self) -> str:
         return ",".join(label.title for label in self.label_objects or [])
 
     @property
-    def assignees(self):
+    def assignees(self) -> str:
         return ",".join(a.username for a in self.assignee_objects or [])
 
     @property
-    def buckets(self):
+    def buckets(self) -> str:
         return ",".join(b.title for b in self.bucket_objects or [])
 
     @classmethod
-    def from_json(cls, json, project_object, labels, assignees, buckets):
+    def from_json(
+        cls,
+        json: dict,
+        project_object: Project,
+        labels: list[Label],
+        assignees: list[Assignee],
+        buckets: list[TaskBucket],
+    ) -> Task:
         return cls(
             json,
             json["id"],
@@ -369,8 +383,8 @@ class Task:
             parse_json_date(json["updated"]),
         )
 
-    def has_label(self, label):
+    def has_label(self, label: Label) -> bool:
         return any(x.id == label.id for x in self.label_objects)
 
-    def has_assignee(self, assignee):
+    def has_assignee(self, assignee: Assignee) -> bool:
         return any(x.id == assignee.id for x in self.assignee_objects)

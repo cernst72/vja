@@ -23,7 +23,7 @@ def project_group():
 @with_application
 @catch_exception(handle=VjaError)
 def project_add(application: Application, title, parent_project=None):
-    project = application.command_service.add_project(parent_project, " ".join(title))
+    project = application.command_service.add_project(" ".join(title), parent_project)
     click.echo(f"Created project {project.id}")
 
 

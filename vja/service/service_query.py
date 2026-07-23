@@ -1,7 +1,7 @@
 import logging
 
 from vja.adapter.apiclient import ApiClient
-from vja.model import Bucket, Label, User
+from vja.model import Bucket, Label, Project, Task, User
 from vja.parse import rgetattr
 from vja.service.project_service import ProjectService
 from vja.service.task_filter import create_filters
@@ -23,18 +23,18 @@ class QueryService:
         self._api_client = api_client
 
     # user
-    def find_current_user(self):
+    def find_current_user(self) -> User:
         return User.from_json(self._api_client.get_user())
 
     # project
-    def find_all_projects(self):
+    def find_all_projects(self) -> list[Project]:
         return self._project_service.find_all_projects()
 
-    def find_project_by_id(self, project_id):
+    def find_project_by_id(self, project_id: int) -> Project:
         return self._project_service.find_project_by_id(project_id)
 
     # bucket
-    def find_buckets_in_first_kanban_view(self, arg_project: str):
+    def find_buckets_in_first_kanban_view(self, arg_project: str) -> list[Bucket]:
         project = self._project_service.find_project_by_id_or_title(arg_project)
         project_view = project.get_first_kanban_project_view()
         return Bucket.from_json_array(
@@ -42,11 +42,13 @@ class QueryService:
         )
 
     # label
-    def find_all_labels(self):
+    def find_all_labels(self) -> list[Label]:
         return Label.from_json_array(self._api_client.get_labels())
 
     # tasks
-    def find_filtered_tasks(self, include_completed, sort_string, filter_args):
+    def find_filtered_tasks(
+        self, include_completed: bool, sort_string: str, filter_args: dict
+    ) -> list[Task]:
         task_object_array = [
             self._task_service.task_from_json(x)
             for x in self._api_client.get_tasks(exclude_completed=not include_completed)
@@ -54,16 +56,16 @@ class QueryService:
         filtered_tasks = self._filter(task_object_array, filter_args)
         return self._sort(filtered_tasks, sort_string)
 
-    def find_task_by_id(self, task_id: int):
+    def find_task_by_id(self, task_id: int) -> Task:
         return self._task_service.task_from_json(self._api_client.get_task(task_id))
 
     @staticmethod
-    def _filter(task_object_array, filter_args):
+    def _filter(task_object_array: list[Task], filter_args: dict) -> list:
         filters = create_filters(filter_args)
         return list(filter(lambda x: all(f(x) for f in filters), task_object_array))
 
     @staticmethod
-    def _sort(filtered_tasks, sort_string):
+    def _sort(filtered_tasks: list[Task], sort_string: str) -> list[Task]:
         sort_string = sort_string or DEFAULT_SORT_STRING
         sort_fields = [
             {"name": x.strip().strip("-"), "reverse": x.strip().startswith("-")}

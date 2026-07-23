@@ -23,7 +23,7 @@ _timedelta_regex = re.compile(
 
 
 def parse_date_arg_to_datetime(
-    text: str, default_hour=DEFAULT_DATE_HOUR, default_minute=DEFAULT_DATE_MINUTE
+    text: str | None, default_hour=DEFAULT_DATE_HOUR, default_minute=DEFAULT_DATE_MINUTE
 ) -> datetime | None:
     if not text:
         return None
@@ -49,17 +49,17 @@ def parse_date_arg_to_datetime(
 
 
 def parse_date_arg_to_iso(
-    text: str, default_hour=DEFAULT_DATE_HOUR, default_minute=DEFAULT_DATE_MINUTE
+    text: str | None, default_hour=DEFAULT_DATE_HOUR, default_minute=DEFAULT_DATE_MINUTE
 ) -> str | None:
     date_value = parse_date_arg_to_datetime(text, default_hour, default_minute)
     return datetime_to_isoformat(date_value) if date_value else None
 
 
-def datetime_to_isoformat(date: datetime) -> str | None:
+def datetime_to_isoformat(date: datetime | None) -> str | None:
     return date.astimezone(tz.tzlocal()).isoformat() if date else None
 
 
-def parse_date_arg_to_timedelta(time_str: str) -> timedelta | None:
+def parse_date_arg_to_timedelta(time_str: str | None) -> timedelta | None:
     """Parse a time string e.g. '2h13m' or '1.5d' into a timedelta object.
     Based on Peter's answer at https://stackoverflow.com/a/51916936/2445204
     and virhilo's answer at https://stackoverflow.com/a/4628148/851699
@@ -81,13 +81,13 @@ def parse_date_arg_to_timedelta(time_str: str) -> timedelta | None:
     return timedelta(**time_params)
 
 
-def parse_json_date(json_date: str) -> datetime | None:
+def parse_json_date(json_date: str | None) -> datetime | None:
     if json_date and json_date > "0001-01-02T00:00:00Z":
         return parser.isoparse(json_date).astimezone(tz.tzlocal()).replace(tzinfo=None)
     return None
 
 
-def parse_bool_arg(text: str) -> bool:
+def parse_bool_arg(text: str | None) -> bool:
     return text.lower() in ["true", "1", "t", "y", "yes"] if text else False
 
 

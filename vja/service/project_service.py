@@ -26,27 +26,16 @@ class ProjectService:
             return self.find_project_by_id(int(project))
         return self.find_project_by_title(project)
 
-
     def find_project_by_id(self, project_id: int) -> Project:
-        if not self._project_by_id_cache:
-            self._project_by_id_cache = {
-                x["id"]: Project.from_json(x, [])
-                for x in self._api_client.get_projects()
-            }
-            self.fill_ancestors()
+        self.find_all_projects()
         result = self._project_by_id_cache.get(project_id)
         if not result:
             msg = f"Project with id {project_id} does not exist."
             raise VjaError(msg)
         return result
 
-    def find_project_by_title(self, title) -> Project:
-        project_objects = [
-            Project.from_json(x, []) for x in self._api_client.get_projects()
-        ]
-        if not project_objects:
-            msg = "No projects exist. Go and create at least one."
-            raise VjaError(msg)
+    def find_project_by_title(self, title: str) -> Project:
+        project_objects = self.find_all_projects()
         project_found = [x for x in project_objects if x.title == title]
         if not project_found:
             msg = f"Project with title {title} does not exist."
@@ -55,20 +44,19 @@ class ProjectService:
 
     def get_default_project(self) -> Project:
         user = User.from_json(self._api_client.get_user())
-        project_found = self.find_project_by_id(user.default_project_id)
-        if project_found is None:
-            project_objects = [
-                Project.from_json(x, []) for x in self._api_client.get_projects()
-            ]
+        if user.default_project_id == 0:
+            project_objects = self.find_all_projects()
             if not project_objects:
                 msg = "No projects exist. Go and create at least one."
                 raise VjaError(msg)
             project_objects.sort(key=lambda x: x.id)
             favorite_projects = [x for x in project_objects if x.is_favorite]
             if favorite_projects:
-                project_found = favorite_projects[0]
+                project_found = favorite_projects[0]  # first favorite
             else:
-                project_found = project_objects[0]
+                project_found = project_objects[0]  # first project at all
+        else:
+            project_found = self.find_project_by_id(user.default_project_id)
         return project_found
 
     def fill_ancestors(self):
@@ -82,7 +70,9 @@ class ProjectService:
                 )
             project.ancestor_projects = ancestor_projects
 
-    def get_ancestor_project(self, project_id, parent_project_id) -> Project | None:
+    def get_ancestor_project(
+        self, project_id: int, parent_project_id: int
+    ) -> Project | None:
         if parent_project_id in (project_id, 0) or project_id == 0:
             return None
         return self._project_by_id_cache.get(parent_project_id)

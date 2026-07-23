@@ -36,13 +36,9 @@ class Login:
         if self._load_tokens_from_file() and not force:
             try:
                 self._refresh_proactively()
-            except Exception as e:
+            except Exception:
                 # ignore, use expired token to trigger 401 and refresh in authenticate()
-                logger.debug(
-                    "failed to refresh local access token: %s: %s",
-                    type(e).__name__,
-                    e,
-                )
+                pass
             return
         username = username or click.prompt("Username")
         password = password or click.prompt("Password", hide_input=True)

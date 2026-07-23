@@ -426,7 +426,8 @@ def task_delete(application: Application, task_ids, quiet_show=False):
     "ls",
     aliases=["list"],
     help="List tasks ... (task-id; priority; is_favorite; title; due_date; "
-    "has reminder; parent-project; project; labels; urgency). "
+    "has alert; is repeating; has description; has linked tasks; "
+    "parent-project; project; labels; urgency). "
     "Optionally limit output to given TASK_IDs.",
 )
 @click.argument("task_ids", type=click.INT, nargs=-1)
@@ -484,7 +485,9 @@ def task_delete(application: Application, task_ids, quiet_show=False):
     "where <operator> in (eq, ne, gt, lt, ge, le, before, after, contains). "
     "Multiple occurrences of --filter are allowed and will be combined with logical AND.",
 )
-@click.option("label_filter", "-l", "--label", help="Filter by label (id or title-regex)")
+@click.option(
+    "label_filter", "-l", "--label", help="Filter by label (id or title-regex)"
+)
 @click.option(
     "project_filter",
     "-o",
