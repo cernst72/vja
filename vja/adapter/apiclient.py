@@ -38,7 +38,6 @@ def _handle_http_401(client, response, func, args, kwargs):
     logger.debug("Handle HTTP 401 error: %s", response.text)
     body_json = response_to_json(response)
     if body_json.get("code") == 11:
-        # will only happen in vikunja > 2.0
         try:
             # try refresh first
             client.refresh_access_token()
@@ -51,9 +50,7 @@ def _handle_http_401(client, response, func, args, kwargs):
             client.authenticate(force_login=True)
             return func(client, *args, **kwargs)
 
-    logger.info(
-        "HTTP-Error 401, interactive login required...",
-    )
+    logger.info("HTTP-Error 401, interactive login required...")
     # force login and retry once
     client.authenticate(force_login=True)
     return func(client, *args, **kwargs)
@@ -62,9 +59,13 @@ def _handle_http_401(client, response, func, args, kwargs):
 class ApiClient:
     def __init__(self, api_url: str, token_file):
         logger.debug("Connecting to api_url %s", api_url)
+        if "/v1" in api_url:
+            raise VjaError(
+                "Only v2 api is supported. Make sure Vikunja Server is >= 2.4.0 and configure api_url to /v2"
+            )
         self._api_url = api_url
         self._cache = {"projects": None, "labels": None, "tasks": None}
-        self._login = Login(api_url, token_file)
+        self._login = Login(self._api_url, token_file)
 
     @handle_http_error
     @inject_access_token
@@ -74,7 +75,9 @@ class ApiClient:
         response = requests.get(url, headers=headers, params=params, timeout=30)
         response.raise_for_status()
         json_result = response_to_json(response)
-        total_pages = int(response.headers.get("x-pagination-total-pages", 1))
+        total_pages = int(json_result.get("total_pages", 1))
+        if isinstance(json_result, dict) and "items" in json_result:
+            json_result = json_result.get("items") or []
         if total_pages > 1:
             logger.debug(
                 "Trying to load all pages. Consider to increase MAXITEMSPERPAGE on your server instead."
@@ -84,7 +87,10 @@ class ApiClient:
                 params["page"] = page
                 response = requests.get(url, headers=headers, params=params, timeout=30)
                 response.raise_for_status()
-                json_result = json_result + response_to_json(response)
+                page_result = response_to_json(response)
+                if isinstance(page_result, dict) and "items" in page_result:
+                    page_result = page_result.get("items") or []
+                    json_result.extend(page_result)
         return json_result
 
     @handle_http_error
@@ -142,16 +148,16 @@ class ApiClient:
 
     def create_project(self, title: str, parent_project_id: int | None) -> dict:
         payload = {"title": title, "parent_project_id": parent_project_id}
-        return self._put_json(f"{self._api_url}/projects", payload=payload)
+        return self._post_json(f"{self._api_url}/projects", payload=payload)
 
     def get_buckets(self, project_id: int, project_view_id: int) -> list[dict]:
         return self._get_json(
-            f"{self._api_url}/projects/{project_id}/views/{project_view_id}/tasks"
+            f"{self._api_url}/projects/{project_id}/views/{project_view_id}/buckets"
         )
 
     def create_bucket(self, project_id: int, project_view_id: int, title: str) -> dict:
         payload = {"title": title}
-        return self._put_json(
+        return self._post_json(
             f"{self._api_url}/projects/{project_id}/views/{project_view_id}/buckets",
             payload=payload,
         )
@@ -163,7 +169,7 @@ class ApiClient:
 
     def create_label(self, title: str) -> dict:
         payload = {"title": title}
-        return self._put_json(f"{self._api_url}/labels", payload=payload)
+        return self._post_json(f"{self._api_url}/labels", payload=payload)
 
     def get_tasks(self, exclude_completed: bool = True) -> list[dict]:
         if self._cache["tasks"] is None:
@@ -179,12 +185,12 @@ class ApiClient:
         return self._get_json(url, params)
 
     def create_task(self, project_id: int, payload: dict) -> dict:
-        return self._put_json(
+        return self._post_json(
             f"{self._api_url}/projects/{project_id}/tasks", payload=payload
         )
 
     def update_task(self, task_id: int, payload: dict) -> dict:
-        return self._post_json(f"{self._api_url}/tasks/{task_id}", payload=payload)
+        return self._put_json(f"{self._api_url}/tasks/{task_id}", payload=payload)
 
     def delete_task(self, task_id: int) -> None:
         self._delete_json(f"{self._api_url}/tasks/{task_id}")
@@ -192,7 +198,7 @@ class ApiClient:
     def add_label_to_task(self, task_id: int, label_id: int) -> dict:
         task_label_url = f"{self._api_url}/tasks/{task_id}/labels"
         payload = {"label_id": label_id}
-        return self._put_json(task_label_url, payload=payload)
+        return self._post_json(task_label_url, payload=payload)
 
     def remove_label_from_task(self, task_id: int, label_id: int) -> None:
         task_label_url = f"{self._api_url}/tasks/{task_id}/labels/{label_id}"
@@ -203,7 +209,7 @@ class ApiClient:
     ) -> dict:
         task_relation_url = f"{self._api_url}/tasks/{task_id}/relations"
         payload = {"other_task_id": other_task_id, "relation_kind": relation_kind}
-        return self._put_json(task_relation_url, payload=payload)
+        return self._post_json(task_relation_url, payload=payload)
 
     def remove_relation_from_task(
         self, task_id: int, relation_kind: str, other_task_id: int
@@ -213,12 +219,12 @@ class ApiClient:
         )
         self._delete_json(task_relation_url)
 
-    def get_project_users(self, project_id: int) -> list[dict]:
-        return self._get_json(f"{self._api_url}/projects/{project_id}/projectusers")
+    def get_project_users(self, project_id: int)  -> list[dict]:
+        return self._get_json(f"{self._api_url}/projects/{project_id}/users/search")
 
     def add_assignee_to_task(self, task_id: int, user_id: int) -> dict:
         payload = {"user_id": user_id}
-        return self._put_json(
+        return self._post_json(
             f"{self._api_url}/tasks/{task_id}/assignees", payload=payload
         )
 

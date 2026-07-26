@@ -23,7 +23,7 @@ stages:
   - docker compose -f tests/docker-compose.yml pull vikunja
   - docker compose -f tests/docker-compose.yml up -d
   - sleep 1s
-  - curl --retry 5 --retry-all-errors --retry-delay 1 "http://docker:3456/api/v1/info"
+  - curl --retry 5 --retry-all-errors --retry-delay 1 "http://docker:3456/api/v2/info"
 
 old-python-versions:
   stage: test

@@ -10,13 +10,9 @@ Manage your tasks and projects directly from the terminal with simple commands.
 It provides a command line interface for adding, viewing and editing todo tasks on a Vikunja Server.
 The goal is to support a command line based task workflow ~ similar to taskwarrior.
 
-**❗Important change in vja 5.0.0**
+**❗Important change in vja 6.0.0**
 
-Due to an breaking API change in Vikunja, `vja` with version >= 5.0.0 will only support Vikunja with version >= 1.0.0, while `vja` < 5.0.0 is recommended for older Vikunja servers.
-
-**❗Important change in vja 4.10**
-
-New name for configuration file (`config.rc`) and XDG conform path lookup, see [Configuration](#configuration)
+Vikunja server with version >= 2.4.0 is required. Please configure your api_url to /v2, like `api_url=https://my.domain/api/v2` 
 
 ## Table of contents
 <!-- TOC -->
@@ -85,13 +81,13 @@ A full example can be found in [config.rc](https://gitlab.com/ce72/vja/-/blob/ma
   ```shell
   [application]
   frontend_url=https://try.vikunja.io/
-  api_url=https://try.vikunja.io/api/v1
+  api_url=https://try.vikunja.io/api/v2
   ```
   (If you cloned from git, you may copy the folder `.config/vja` to your `$HOME/.config` directory instead.)
 - Adjust to your needs.
   `frontend_url` and `api_url` must point to your own Vikunja server.
   Especially, the api_url must be reachable from your client. This can be verified, for example,
-  by `curl https://mydomain.com/api/v1/info`.
+  by `curl https://mydomain.com/api/v2/info`.
 
 You may change the location of the configuration directory with an environment variable
 like `VJA_CONFIGDIR=/not/my/home`.

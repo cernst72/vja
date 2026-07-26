@@ -42,7 +42,7 @@ class TestLoginLogout:
         assert "Logged out" in caplog.text
         with pytest.raises(Exception) as exception:
             invoke(runner, "-u testxx -p testxx user show", expected_return_code=1)
-            assert "412 Client Error" in exception.value
+            assert "HTTP-Error" in exception.value
         invoke(runner, "-u test -p test user show")
 
     def test_logout_login_password_from_stdin(self, runner, caplog):
@@ -56,7 +56,7 @@ class TestLoginLogout:
         assert "Logged out" in caplog.text
         with pytest.raises(Exception) as exception:
             invoke(runner, "user show", user_input="testy\ntesty\n")
-            assert "412 Client Error" in exception.value
+            assert "HTTP-Error" in exception.value
         invoke(runner, "-u test -p test user show")
 
     def test_prompt_when_invalid_token(self, runner, caplog):

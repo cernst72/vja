@@ -107,9 +107,10 @@ class CommandService:
 
         if not is_force:
             self._validate_add_task(title, label_names)
+        logger.debug("Add task: %s", payload)
 
         payload = self._args_to_payload(args)
-        logger.debug("put task: %s", payload)
+        logger.debug("Add task: %s", payload)
         task_json = self._api_client.create_task(project_id, payload)
         task = self._task_service.task_from_json(task_json)
 
@@ -131,8 +132,9 @@ class CommandService:
     def clone_task(self, task_id: int, title: str) -> Task:
         task_remote = self._api_client.get_task(task_id)
         task_remote.update({"id": None, "title": title, "position": 0, "bucket_id": 0})
+        self._clear_for_update(task_remote)
 
-        logger.debug("put task: %s", task_remote)
+        logger.debug("Create task: %s", task_remote)
         task_json = self._api_client.create_task(task_remote["project_id"], task_remote)
         task = self._task_service.task_from_json(task_json)
 
@@ -142,17 +144,21 @@ class CommandService:
             self._api_client.add_assignee_to_task(task.id, assignee["id"])
         return task
 
+    def _clear_for_update(self, task_remote: dict):
+        task_remote.pop("max_permission", None)
+
     def edit_task(self, task_id: int, args: dict) -> Task:
         task_remote = self._api_client.get_task(task_id)
+        self._clear_for_update(task_remote)
         label_name = args.pop("label") if args.get("label") else None
         assignee_name = args.pop("assignee") if args.get("assignee") else None
         is_force = args.pop("force_create", False)
 
         self._preprocess_edit_args(args, task_remote)
         payload = self._args_to_payload(args)
-        logger.debug("update fields: %s", payload)
+        logger.debug("Edit fields: %s", payload)
         task_remote.update(payload)
-        logger.debug("post task: %s", task_remote)
+        logger.debug("Update task: %s", task_remote)
         task_json = self._api_client.update_task(task_id, task_remote)
         task_new = self._task_service.task_from_json(task_json)
 
@@ -254,6 +260,7 @@ class CommandService:
 
     def toggle_task_done(self, task_id: int) -> Task:
         task_remote = self._api_client.get_task(task_id)
+        self._clear_for_update(task_remote)
         task_remote["done"] = not task_remote["done"]
         task_json = self._api_client.update_task(task_id, task_remote)
         return self._task_service.task_from_json(task_json)
@@ -263,6 +270,7 @@ class CommandService:
         args = {}
 
         task_remote = self._api_client.get_task(task_id)
+        self._clear_for_update(task_remote)
         due_date = parse_json_date(task_remote["due_date"])
         if due_date:
             now = datetime.datetime.now().replace(microsecond=0)
@@ -281,7 +289,7 @@ class CommandService:
                 args["reminder"] = old_reminders
 
         payload = self._args_to_payload(args)
-        logger.debug("update fields: %s", payload)
+        logger.debug("Update task: %s", payload)
         task_remote.update(payload)
         task_json = self._api_client.update_task(task_id, task_remote)
         return self._task_service.task_from_json(task_json)
