@@ -80,11 +80,13 @@ class Login:
     def logout(self):
         if self._load_tokens_from_file():
             response = requests.post(
-                f"{self._api_url}/user/logout",
+                f"{self._api_url}/logout",
                 headers=self.get_auth_header(),
                 timeout=10,
             )
             logger.debug("logout: %s", response.text)
+            if response.status_code >= 400:
+                logger.warning("Remote logout failed: %s", response.text)
         if os.path.isfile(self._token_file):
             os.remove(self._token_file)
         self._token = {"access": None, "refresh": None}
