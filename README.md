@@ -157,7 +157,7 @@ Note: Fish completions in the directory above will be automatically loaded for n
 
 ### Prepare python virtual environment
 
-Python >= 3.9 is recommended. First create a local environment:
+First create a local environment:
 
 ```shell
 python -m venv ./venv
