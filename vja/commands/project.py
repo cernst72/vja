@@ -61,7 +61,7 @@ def project_ls(application: Application, is_json, is_jsonvja, custom_format):
 
 
 @project_group.command("show", help="Show project details")
-@click.argument("project_id", required=True, type=click.INT)
+@click.argument("project", required=True)
 @click.option(
     "is_json", "--json", default=False, is_flag=True, help="Print as Vikunja json"
 )
@@ -74,15 +74,15 @@ def project_ls(application: Application, is_json, is_jsonvja, custom_format):
 )
 @with_application
 @catch_exception(handle=VjaError)
-def project_show(application: Application, project_id, is_json, is_jsonvja):
+def project_show(application: Application, project: str, is_json, is_jsonvja):
     application.output.project(
-        application.query_service.find_project_by_id(project_id), is_json, is_jsonvja
+        application.query_service.find_project(project), is_json, is_jsonvja
     )
 
 
 @project_group.command("open", help="Open project in webbrowser")
-@click.argument("project_id", required=True, type=click.INT)
+@click.argument("project", required=True)
 @with_application
 @catch_exception(handle=VjaError)
-def project_open(application: Application, project_id):
-    application.open_browser_project(project_id)
+def project_open(application: Application, project):
+    application.open_browser_project(application.query_service.find_project(project).id)

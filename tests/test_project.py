@@ -8,8 +8,12 @@ class TestProject:
         res = invoke(runner, "project ls")
         assert re.search(r"test-project", res.output)
 
-    def test_project_show(self, runner):
+    def test_project_show_by_id(self, runner):
         res = invoke(runner, "project show 1")
+        assert len(res.output) > 0
+
+    def test_project_show_by_title(self, runner):
+        res = invoke(runner, "project show test-project")
         assert len(res.output) > 0
 
     def test_project_ls_custom_format(self, runner):

@@ -30,8 +30,8 @@ class QueryService:
     def find_all_projects(self) -> list[Project]:
         return self._project_service.find_all_projects()
 
-    def find_project_by_id(self, project_id: int) -> Project:
-        return self._project_service.find_project_by_id(project_id)
+    def find_project(self, project: str) -> Project:
+        return self._project_service.find_project_by_id_or_title(project)
 
     # bucket
     def find_buckets_in_first_kanban_view(self, arg_project: str) -> list[Bucket]:
