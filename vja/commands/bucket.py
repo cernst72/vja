@@ -17,7 +17,12 @@ def bucket_group():
     "add", help="Add bucket with title to the first Kanban View of the project"
 )
 @click.option(
-    "project", "-o", "--project", "--project-id", help="Create bucket in given project."
+    "project",
+    "-o",
+    "--project",
+    "--project-id",
+    "--project_id",
+    help="Create bucket in given project.",
 )
 @click.argument("title", nargs=-1, required=True)
 @with_application
@@ -53,7 +58,10 @@ def bucket_add(application: Application, title, project):
     help="Print as vja application json",
 )
 @click.option(
-    "custom_format", "--custom-format", help="Format with template from .vjacli/vja.rc"
+    "custom_format",
+    "--custom-format",
+    "--custom_format",
+    help="Format with template from .vjacli/vja.rc",
 )
 @with_application
 @catch_exception(handle=VjaError)

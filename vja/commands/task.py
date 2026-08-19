@@ -102,6 +102,7 @@ def task_group():
 @click.option(
     "force_create",
     "--force-create",
+    "--force_create",
     "--force",
     is_flag=True,
     help="Force creation of non existing label",
@@ -442,7 +443,10 @@ def task_delete(application: Application, task_ids, quiet_show=False):
     help="Print as vja application json",
 )
 @click.option(
-    "custom_format", "--custom-format", help="Format with template from .vjacli/vja.rc"
+    "custom_format",
+    "--custom-format",
+    "--custom_format",
+    help="Format with template from .vjacli/vja.rc",
 )
 @click.option(
     "sort_string",
@@ -455,6 +459,7 @@ def task_delete(application: Application, task_ids, quiet_show=False):
 @click.option(
     "include_completed",
     "--include-completed",
+    "--include_completed",
     "--all",
     default=False,
     is_flag=True,

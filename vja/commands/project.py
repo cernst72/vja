@@ -43,7 +43,10 @@ def project_add(application: Application, title, parent_project=None):
     help="Print as vja application json",
 )
 @click.option(
-    "custom_format", "--custom-format", help="Format with template from .vjacli/vja.rc"
+    "custom_format",
+    "--custom-format",
+    "--custom_format",
+    help="Format with template from .vjacli/vja.rc",
 )
 @with_application
 @catch_exception(handle=VjaError)
@@ -84,5 +87,5 @@ def project_show(application: Application, project: str, is_json, is_jsonvja):
 @click.argument("project", required=True)
 @with_application
 @catch_exception(handle=VjaError)
-def project_open(application: Application, project):
+def project_open(application: Application, project: str):
     application.open_browser_project(application.query_service.find_project(project).id)

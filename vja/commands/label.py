@@ -23,7 +23,10 @@ def label_group():
     help="Print as vja application json",
 )
 @click.option(
-    "custom_format", "--custom-format", help="Format with template from .vjacli/vja.rc"
+    "custom_format",
+    "--custom-format",
+    "--custom_format",
+    help="Format with template from .vjacli/vja.rc",
 )
 @with_application
 @catch_exception(handle=VjaError)
