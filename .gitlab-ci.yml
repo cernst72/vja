@@ -121,6 +121,7 @@ integration-test-unstable:
       when: manual
 
 release:
+  resource_group: semantic-release
   image: node:lts-slim
   stage: release
   variables:
