@@ -5,6 +5,32 @@ from vja import VjaError
 from vja.application import Application, catch_exception, with_application
 
 
+def quiet_option(func):
+    """Decorator that adds --quiet/-q option."""
+    return click.option(
+        "quiet_show",
+        "-q",
+        "--quiet-show",
+        "--quiet",
+        is_flag=True,
+        help="Hide confirmation message",
+    )(func)
+
+
+def output_options(func):
+    """Decorator that adds --quiet/-q and --verbose/-v options."""
+    func = click.option(
+        "verbose_show",
+        "-v",
+        "--verbose-show",
+        "--verbose",
+        is_flag=True,
+        help="Show resulting task when finished",
+    )(func)
+    func = quiet_option(func)
+    return func
+
+
 @click.group(
     "task", help="(optional) subcommand: task (see help)", cls=ClickAliasedGroup
 )
@@ -15,22 +41,7 @@ def task_group():
 
 @task_group.command("add", help="Add new task", aliases=["create"])
 @click.argument("title", required=True, nargs=-1)
-@click.option(
-    "quiet_show",
-    "-q",
-    "--quiet-show",
-    "--quiet",
-    is_flag=True,
-    help="Hide confirmation message",
-)
-@click.option(
-    "verbose_show",
-    "-v",
-    "--verbose-show",
-    "--verbose",
-    is_flag=True,
-    help="Show resulting task when finished",
-)
+@output_options
 @click.option(
     "project_id",
     "-o",
@@ -131,22 +142,7 @@ def task_add(
 )
 @click.argument("task_id", required=True, type=click.INT)
 @click.argument("title", required=True, nargs=-1)
-@click.option(
-    "quiet_show",
-    "-q",
-    "--quiet-show",
-    "--quiet",
-    is_flag=True,
-    help="Hide confirmation message",
-)
-@click.option(
-    "verbose_show",
-    "-v",
-    "--verbose-show",
-    "--verbose",
-    is_flag=True,
-    help="Show resulting task when finished",
-)
+@output_options
 @with_application
 @click.pass_context
 @catch_exception(handle=VjaError)
@@ -173,22 +169,7 @@ def task_clone(
     help="Modify task/tasks. (Opens task in browser if no options are given)",
 )
 @click.argument("task_ids", required=True, type=click.INT, nargs=-1)
-@click.option(
-    "quiet_show",
-    "-q",
-    "--quiet-show",
-    "--quiet",
-    is_flag=True,
-    help="Hide confirmation message",
-)
-@click.option(
-    "verbose_show",
-    "-v",
-    "--verbose-show",
-    "--verbose",
-    is_flag=True,
-    help="Show resulting task when finished",
-)
+@output_options
 @click.option("title", "-i", "--title", help="Set title")
 @click.option(
     "note", "-n", "--note", "--notes", "--description", help="Set description (note)"
@@ -326,22 +307,7 @@ def task_edit(
     help="Shortcut for marking / unmarking task as done",
 )
 @click.argument("task_id", required=True, type=click.INT)
-@click.option(
-    "quiet_show",
-    "-q",
-    "--quiet-show",
-    "--quiet",
-    is_flag=True,
-    help="Hide confirmation message",
-)
-@click.option(
-    "verbose_show",
-    "-v",
-    "--verbose-show",
-    "--verbose",
-    is_flag=True,
-    help="Show resulting task when finished",
-)
+@output_options
 @with_application
 @click.pass_context
 @catch_exception(handle=VjaError)
@@ -366,22 +332,7 @@ def task_toggle(
 )
 @click.argument("task_ids", required=True, type=click.INT, nargs=-1)
 @click.argument("delay_by", required=True)
-@click.option(
-    "quiet_show",
-    "-q",
-    "--quiet-show",
-    "--quiet",
-    is_flag=True,
-    help="Hide confirmation message",
-)
-@click.option(
-    "verbose_show",
-    "-v",
-    "--verbose-show",
-    "--verbose",
-    is_flag=True,
-    help="Show resulting task when finished",
-)
+@output_options
 @with_application
 @click.pass_context
 @catch_exception(handle=VjaError)
@@ -406,14 +357,7 @@ def task_defer(
     help="Delete task/tasks permanently.",
 )
 @click.argument("task_ids", required=True, type=click.INT, nargs=-1)
-@click.option(
-    "quiet_show",
-    "-q",
-    "--quiet-show",
-    "--quiet",
-    is_flag=True,
-    help="Hide confirmation message",
-)
+@quiet_option
 @with_application
 @catch_exception(handle=VjaError)
 def task_delete(application: Application, task_ids, quiet_show=False):
@@ -509,7 +453,7 @@ def task_delete(application: Application, task_ids, quiet_show=False):
     "--base",
     "--upper-project",
     help="Filter by base project (regex or id). "
-    "All tasks whose project has the given argument as a ancestor are considered.",
+    "All tasks whose project has the given argument as ancestor are considered.",
 )
 @click.option(
     "bucket_filter",

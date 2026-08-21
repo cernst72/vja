@@ -92,7 +92,9 @@ def parse_bool_arg(text: str | None) -> bool:
 
 
 class HTMLFilter(HTMLParser):
-    inner_text = ""
+    def __init__(self):
+        super().__init__()
+        self.inner_text = ""
 
     def handle_data(self, data):
         self.inner_text += data

@@ -59,7 +59,7 @@ def data_dict(cls):
 @dataclass(frozen=True)
 @data_dict
 class User:
-    json: dict = field(repr=False)
+    json: dict = field(repr=False, compare=False, hash=False)
     id: int
     username: str
     name: str
@@ -80,7 +80,7 @@ class User:
 @data_dict
 # pylint: disable=too-many-instance-attributes
 class ProjectView:
-    json: dict = field(repr=False)
+    json: dict = field(repr=False, compare=False)
     id: int
     title: str
     project_id: int
@@ -115,7 +115,7 @@ class ProjectView:
 @data_dict
 # pylint: disable=too-many-instance-attributes
 class Project:
-    json: dict = field(repr=False)
+    json: dict = field(repr=False, compare=False)
     id: int
     title: str
     description: str
@@ -155,7 +155,7 @@ class Project:
 @dataclass(frozen=True)
 @data_dict
 class Bucket:
-    json: dict = field(repr=False)
+    json: dict = field(repr=False, compare=False, hash=False)
     id: int
     title: str
     limit: int
@@ -181,7 +181,7 @@ class Bucket:
 @dataclass(frozen=True)
 @data_dict
 class Label:
-    json: dict = field(repr=False)
+    json: dict = field(repr=False, compare=False, hash=False)
     id: int
     title: str
 
@@ -200,7 +200,7 @@ class Label:
 @dataclass(frozen=True)
 @data_dict
 class Assignee:
-    json: dict = field(repr=False)
+    json: dict = field(repr=False, compare=False, hash=False)
     id: int
     username: str
     name: str
@@ -220,7 +220,7 @@ class Assignee:
 @dataclass(frozen=True)
 @data_dict
 class TaskBucket:
-    json: dict = field(repr=False)
+    json: dict = field(repr=False, compare=False, hash=False)
     id: int
     project_view_id: int
     title: str
@@ -242,7 +242,7 @@ class TaskBucket:
 @data_dict
 # pylint: disable=too-many-instance-attributes
 class TaskReminder:
-    json: dict = field(repr=False)
+    json: dict = field(repr=False, compare=False)
     reminder: datetime | None
     relative_period: int
     relative_to: str
@@ -286,7 +286,7 @@ RELATION_KINDS = (
 @dataclass(frozen=True)
 @data_dict
 class TaskRelation:
-    json: dict = field(repr=False)
+    json: dict = field(repr=False, compare=False, hash=False)
     kind: str
     other_task_id: int
     other_task_title: str
@@ -310,7 +310,7 @@ class TaskRelation:
 @data_dict
 # pylint: disable=too-many-instance-attributes
 class Task:
-    json: dict = field(repr=False)
+    json: dict = field(repr=False, compare=False)
     id: int
     title: str
     description: str
@@ -353,9 +353,6 @@ class Task:
         cls,
         json: dict,
         project_object: Project,
-        labels: list[Label],
-        assignees: list[Assignee],
-        buckets: list[TaskBucket],
     ):
         return cls(
             json,
@@ -374,12 +371,12 @@ class Task:
             json["percent_done"],
             json["done"],
             parse_json_date(json["done_at"]),
-            labels,
-            assignees,
+            Label.from_json_array(json["labels"]),
+            Assignee.from_json_array(json["assignees"]),
             TaskRelation.from_json_map(json["related_tasks"]),
             project_object,
             json["position"],
-            buckets,
+            TaskBucket.from_json_array(json.get("buckets", [])),
             parse_json_date(json["created"]),
             parse_json_date(json["updated"]),
         )

@@ -41,3 +41,7 @@ Changelog = "https://gitlab.com/ce72/vja/-/blob/main/CHANGELOG.md"
 
 [tool.setuptools.packages.find]
 include = ["vja*"]
+
+[tool.pylint.design]
+max-args = 8
+max-positional-arguments = 8

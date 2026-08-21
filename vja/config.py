@@ -29,8 +29,8 @@ class VjaConfiguration:
     def get_frontend_url(self) -> str:
         return self._get("application", "frontend_url")
 
-    def get_token_file(self):
-        return os.path.join(self._directory, _TOKEN_JSON)
+    def get_token_file(self) -> Path:
+        return self._directory / _TOKEN_JSON
 
     def get_custom_format_string(self, template_key):
         return self._parser.get("output", template_key, fallback=None)
@@ -56,42 +56,45 @@ class VjaConfiguration:
             candidate = config_path / _FILENAME
             if candidate.is_file():
                 return config_path
+            logger.warning(
+                "VJA_CONFIGDIR is set to '%s' but '%s' was not found there.",
+                config_path,
+                _FILENAME,
+            )
 
         # 2) $XDG_CONFIG_HOME/vja/config.rc
         xdg_config_home = os.getenv("XDG_CONFIG_HOME")
         if xdg_config_home:
             config_path = Path(xdg_config_home).expanduser() / "vja"
-            if config_path.is_dir():
-                candidate = config_path / _FILENAME
-                if candidate.is_file():
-                    return config_path
+            candidate = config_path / _FILENAME
+            if candidate.is_file():
+                return config_path
 
         # 3) $HOME/.config/vja/config.rc
-        home = os.getenv("HOME") or str(Path.home())
-        config_path = Path(home).expanduser() / ".config" / "vja"
+        config_path = Path.home() / ".config" / "vja"
         candidate = config_path / _FILENAME
         if candidate.is_file():
             return config_path
 
         # 4) Legacy: $HOME/.vjacli/vja.rc
-        return Path.home().expanduser() / ".vjacli"
+        return Path.home() / ".vjacli"
 
     def get_config_file(self) -> Path:
         if self._directory.name != ".vjacli":
             return self._directory / _FILENAME
         logger.info(
             "Using legacy config path %s. Please move your config file (and token.json) to %s.",
-            os.path.abspath(self._directory / _FILENAME_LEGACY),
-            os.path.abspath(self._directory.parent / ".config" / "vja" / _FILENAME),
+            self._directory / _FILENAME_LEGACY,
+            self._directory.parent / ".config" / "vja" / _FILENAME,
         )
         return self._directory / _FILENAME_LEGACY
 
     @staticmethod
-    def _load(filepath):
-        logger.debug("Read config from %s", os.path.abspath(filepath))
+    def _load(filepath: Path):
+        logger.debug("Read config from %s", filepath.resolve())
         parser = configparser.RawConfigParser()
         if not parser.read(filepath):
-            msg = f"Could not load config file from {os.path.abspath(filepath)}"
+            msg = f"Could not load config file from {filepath.resolve()}"
             raise VjaError(msg)
         return parser
 
