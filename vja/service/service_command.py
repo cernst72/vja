@@ -332,8 +332,8 @@ class CommandService:
         if any(task for task in tasks_remote if task["title"] == title):
             msg = "Task with title does exist. You may want to run with --force-create."
             raise VjaError(msg)
+        labels_remote = Label.from_json_array(self._api_client.get_labels())
         for label_name in label_names:
-            labels_remote = Label.from_json_array(self._api_client.get_labels())
             if not any(label for label in labels_remote if label.title == label_name):
                 msg = 'Label does not exist. You may want to execute "label add" or run with --force-create.'
                 raise VjaError(msg)
