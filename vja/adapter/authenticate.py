@@ -47,14 +47,9 @@ class Login:
         username = username or click.prompt("Username")
         password = password or click.prompt("Password", hide_input=True)
         response = self._post_login_request(username, password, totp_passcode)
-        if response.status_code == 412:
-            payload = response_to_json(response)
-            if payload.get("detail") == "Invalid totp passcode.":
-                totp_passcode = totp_passcode or click.prompt("One-time password")
-                response = self._post_login_request(username, password, totp_passcode)
         if (
             response.status_code == 412
-            and response_to_json(response)["message"] == "Invalid totp passcode."
+            and response_to_json(response)["detail"] == "Invalid totp passcode."
         ):
             totp_passcode = totp_passcode or click.prompt("One-time password")
             response = self._post_login_request(username, password, totp_passcode)

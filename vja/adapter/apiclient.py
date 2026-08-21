@@ -115,7 +115,6 @@ class ApiClient:
         response = requests.delete(url, headers=headers, json=payload, timeout=30)
         logger.debug("DELETE response: %s - %s", response, response.text)
         response.raise_for_status()
-        return response_to_json(response)
 
     def authenticate(
         self, force_login=True, username=None, password=None, totp_passcode=None

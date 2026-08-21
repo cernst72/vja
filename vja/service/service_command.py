@@ -107,7 +107,6 @@ class CommandService:
 
         if not is_force:
             self._validate_add_task(title, label_names)
-        logger.debug("Add task: %s", payload)
 
         payload = self._args_to_payload(args)
         logger.debug("Add task: %s", payload)
