@@ -12,7 +12,7 @@ The goal is to support a command line based task workflow ~ similar to taskwarri
 
 **❗Important change in vja 6.0.0**
 
-Vikunja server with version >= 2.4.0 is required. Please configure your api_url to /v2, like `api_url=https://my.domain/api/v2` 
+Vikunja server with version >= 2.5.0 is required. Please configure your api_url to /v2, like `api_url=https://my.domain/api/v2` 
 
 ## Table of contents
 <!-- TOC -->

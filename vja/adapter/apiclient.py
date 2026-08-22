@@ -64,7 +64,7 @@ class ApiClient:
         logger.debug("Connecting to api_url %s", api_url)
         if "/v1" in api_url:
             raise VjaError(
-                "Only v2 api is supported. Make sure Vikunja Server is >= 2.4.0 and configure api_url to /v2"
+                "Only v2 api is supported. Make sure Vikunja Server is >= 2.5.0 and configure api_url to /v2"
             )
         self._api_url = api_url
         self._cache : dict = {"projects": None, "labels": None, "tasks": None}
