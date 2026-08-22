@@ -1,5 +1,4 @@
 import dataclasses
-import typing
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
@@ -103,7 +102,7 @@ class ProjectView:
         )
 
     @classmethod
-    def from_json_array(cls, json_array: dict):
+    def from_json_array(cls, json_array: list[dict] | None):
         return [ProjectView.from_json(x) for x in json_array or []]
 
     def short_str(self) -> str:
@@ -122,11 +121,11 @@ class Project:
     is_favorite: bool
     is_archived: bool
     parent_project_id: int
-    ancestor_projects: typing.List["Project"]
-    views: typing.List["ProjectView"]
+    ancestor_projects: list["Project"]
+    views: list["ProjectView"]
 
     @classmethod
-    def from_json(cls, json: dict, ancestor_projects: typing.List["Project"]):
+    def from_json(cls, json: dict, ancestor_projects: list["Project"]):
         return cls(
             json,
             json["id"],
@@ -141,7 +140,7 @@ class Project:
 
     @classmethod
     def from_json_array(
-        cls, json_array: dict, ancestor_projects: typing.List["Project"]
+        cls, json_array: list[dict] | None, ancestor_projects: list["Project"]
     ):
         return [Project.from_json(x, ancestor_projects) for x in json_array or []]
 
@@ -174,7 +173,7 @@ class Bucket:
         )
 
     @classmethod
-    def from_json_array(cls, json_array: dict):
+    def from_json_array(cls, json_array: list[dict] | None):
         return [Bucket.from_json(x) for x in json_array or []]
 
 
@@ -190,7 +189,7 @@ class Label:
         return cls(json, json["id"], json["title"])
 
     @classmethod
-    def from_json_array(cls, json_array: dict):
+    def from_json_array(cls, json_array: list[dict] | None):
         return [Label.from_json(x) for x in json_array or []]
 
     def short_str(self) -> str:
@@ -210,7 +209,7 @@ class Assignee:
         return cls(json, json["id"], json["username"], json.get("name", ""))
 
     @classmethod
-    def from_json_array(cls, json_array: dict):
+    def from_json_array(cls, json_array: list[dict] | None):
         return [Assignee.from_json(x) for x in json_array or []]
 
     def short_str(self) -> str:
@@ -230,7 +229,7 @@ class TaskBucket:
         return cls(json, json["id"], json["project_view_id"], json["title"])
 
     @classmethod
-    def from_json_array(cls, json_array: dict):
+    def from_json_array(cls, json_array: list[dict] | None):
         return [TaskBucket.from_json(x) for x in json_array or []]
 
     def short_str(self) -> str:
@@ -257,7 +256,7 @@ class TaskReminder:
         )
 
     @classmethod
-    def from_json_array(cls, json_array: dict):
+    def from_json_array(cls, json_array: list[dict] | None):
         return [TaskReminder.from_json(x) for x in json_array or []]
 
     def short_str(self) -> str:
@@ -292,7 +291,7 @@ class TaskRelation:
     other_task_title: str
 
     @classmethod
-    def from_json_map(cls, related_tasks: dict):
+    def from_json_map(cls, related_tasks: dict | None):
         return [
             cls(task_json, kind, task_json["id"], task_json["title"])
             for kind, tasks in (related_tasks or {}).items()
