@@ -27,10 +27,10 @@ class CommandService:
         self._task_service = task_service
         self._api_client = api_client
 
-    def login(self, username, password, totp_passcode):
+    def login(self, username: str, password: str, totp_passcode: str | None) -> None:
         self._api_client.authenticate(True, username, password, totp_passcode)
 
-    def logout(self):
+    def logout(self) -> None:
         self._api_client.logout()
         logger.info("Logged out")
 
@@ -89,7 +89,7 @@ class CommandService:
             payload[mapper["field"]] = mapper["mapping"](arg_value)
         return payload
 
-    def add_task(self, title, args: dict) -> Task:
+    def add_task(self, title: str, args: dict) -> Task:
         args["title"] = title
         if args.get("project_id"):
             project_id = self._project_service.find_project_by_id_or_title(
@@ -240,7 +240,7 @@ class CommandService:
         args["reminder"] = old_reminders
 
     @staticmethod
-    def _build_reminders(reminder_arg: str | None) -> list | None:
+    def _build_reminders(reminder_arg: str | None) -> list[dict] | None:
         """Parse a reminder CLI argument and return the reminders list (or None to clear)."""
         if reminder_arg is None:
             return None
@@ -265,7 +265,9 @@ class CommandService:
         return self._task_service.task_from_json(task_json)
 
     def defer_task(self, task_id: int, delay_by: str) -> Task:
-        timedelta = parse_date_arg_to_timedelta(delay_by)
+        delay = parse_date_arg_to_timedelta(delay_by)
+        if not delay:
+            raise VjaError(f"Cannot parse delay value: '{delay_by}'")
         args = {}
 
         task_remote = self._api_client.get_task(task_id)
@@ -274,16 +276,16 @@ class CommandService:
         if due_date:
             now = datetime.datetime.now().replace(microsecond=0)
             if due_date < now:
-                args["due"] = datetime_to_isoformat(now + timedelta)
+                args["due"] = datetime_to_isoformat(now + delay)
             else:
-                args["due"] = datetime_to_isoformat(due_date + timedelta)
+                args["due"] = datetime_to_isoformat(due_date + delay)
 
         old_reminders = task_remote.get("reminders")
         if old_reminders:
             reminder_date = parse_json_date(old_reminders[0].get("reminder"))
             is_absolute_reminder = not old_reminders[0].get("relative_to")
             if reminder_date and is_absolute_reminder:
-                deferred_iso = datetime_to_isoformat(reminder_date + timedelta)
+                deferred_iso = datetime_to_isoformat(reminder_date + delay)
                 old_reminders[0] = {"reminder": deferred_iso}
                 args["reminder"] = old_reminders
 
@@ -293,7 +295,7 @@ class CommandService:
         task_json = self._api_client.update_task(task_id, task_remote)
         return self._task_service.task_from_json(task_json)
 
-    def delete_task(self, task_id: int):
+    def delete_task(self, task_id: int) -> None:
         self._api_client.delete_task(task_id)
 
     def add_relation(

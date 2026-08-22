@@ -2,8 +2,6 @@ import json
 import logging
 import re
 
-import pytest
-
 from tests.conftest import invoke
 from vja.config import VjaConfiguration
 

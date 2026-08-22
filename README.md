@@ -16,25 +16,25 @@ Vikunja server with version >= 2.4.0 is required. Please configure your api_url 
 
 ## Table of contents
 <!-- TOC -->
-- [vja](#vja)
-  - [Table of contents](#table-of-contents)
-  - [Usage](#usage)
-  - [Installation](#installation)
-    - [Install with pipx (recommended)](#install-with-pipx-recommended)
-    - [Install with pip](#install-with-pip)
-  - [Configuration](#configuration)
-    - [Description of configuration](#description-of-configuration)
-      - [Required options](#required-options)
-      - [Optional options](#optional-options)
-    - [Shell completion](#shell-completion)
-      - [Bash](#bash)
-      - [Zsh](#zsh)
-      - [Fish](#fish)
-  - [Development](#development)
-    - [Prepare python virtual environment](#prepare-python-virtual-environment)
-    - [Local build](#local-build)
-      - [Local development install](#local-development-install)
-      - [Run integration test](#run-integration-test)
+* [vja](#vja)
+  * [Table of contents](#table-of-contents)
+  * [Usage](#usage)
+  * [Installation](#installation)
+    * [Install with pipx (recommended)](#install-with-pipx-recommended)
+    * [Install with pip](#install-with-pip)
+  * [Configuration](#configuration)
+    * [Description of configuration](#description-of-configuration)
+      * [Required options](#required-options)
+      * [Optional options](#optional-options)
+    * [Shell completion](#shell-completion)
+      * [Bash](#bash)
+      * [Zsh](#zsh)
+      * [Fish](#fish)
+  * [Development](#development)
+    * [Prepare python virtual environment](#prepare-python-virtual-environment)
+    * [Local build](#local-build)
+      * [Local development install](#local-development-install)
+      * [Run integration test](#run-integration-test)
 <!-- TOC -->
 ## Usage
 
@@ -103,17 +103,17 @@ like `VJA_CONFIGDIR=/not/my/home`.
 
 #### Optional options
 
-| Section                | Option              | Description                                                                                                                                                                                                                                                                                                  |
-|------------------------|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [output]               | arbitrary_name      | Python format strings which may be referenced on the command line by `--custom-format=<option_name>`. May contain any valid python f-Format string.<br>Take care: The format string may provide code which will be executed at runtime! Do not use `--custom-format` if you are unsure.<br> Default: missing |
-| [output]               | another_format      | Multiple formats can be defined for reference. (see above)                                                                                                                                                                                                                                                   |
-| [urgency_coefficients] | due_date_weight     | Weight of dueness in urgency score. Default: 1.0                                                                                                                                                                                                                                                             |
-| [urgency_coefficients] | priority_weight     | Weight of priority in urgency score. Default: 1.0                                                                                                                                                                                                                                                            |
-| [urgency_coefficients] | favorite_weight     | Weight of is_favorite in urgency score. Default: 1.0                                                                                                                                                                                                                                                         |
-| [urgency_coefficients] | project_weight      | Weight of keyword occurrence in project title in urgency score (see project_keywords). Default: 1.0                                                                                                                                                                                                                                 |
-| [urgency_coefficients] | label_weight        | Weight of keyword occurrence in label title in urgency score (see label_keywords). Default: 1.0                                                                                                                                                                                                                                   |
+| Section                | Option           | Description                                                                                                                                                                                                                                                                                                  |
+|------------------------|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [output]               | arbitrary_name   | Python format strings which may be referenced on the command line by `--custom-format=<option_name>`. May contain any valid python f-Format string.<br>Take care: The format string may provide code which will be executed at runtime! Do not use `--custom-format` if you are unsure.<br> Default: missing |
+| [output]               | another_format   | Multiple formats can be defined for reference. (see above)                                                                                                                                                                                                                                                   |
+| [urgency_coefficients] | due_date_weight  | Weight of dueness in urgency score. Default: 1.0                                                                                                                                                                                                                                                             |
+| [urgency_coefficients] | priority_weight  | Weight of priority in urgency score. Default: 1.0                                                                                                                                                                                                                                                            |
+| [urgency_coefficients] | favorite_weight  | Weight of is_favorite in urgency score. Default: 1.0                                                                                                                                                                                                                                                         |
+| [urgency_coefficients] | project_weight   | Weight of keyword occurrence in project title in urgency score (see project_keywords). Default: 1.0                                                                                                                                                                                                          |
+| [urgency_coefficients] | label_weight     | Weight of keyword occurrence in label title in urgency score (see label_keywords). Default: 1.0                                                                                                                                                                                                              |
 | [urgency_keywords]     | project_keywords | Tasks in projects with a title containing these keywords are considered more urgent. Default: None                                                                                                                                                                                                           |
-| [urgency_keywords]     | label_keywords      | Tasks labeled with one of these keywords are considered more urgent. Default: None                                                                                                                                                                                                                           |
+| [urgency_keywords]     | label_keywords   | Tasks labeled with one of these keywords are considered more urgent. Default: None                                                                                                                                                                                                                           |
 
 ### Shell completion
 
