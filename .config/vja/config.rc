@@ -1,6 +1,6 @@
 [application]
 frontend_url=https://try.vikunja.io/
-api_url=https://try.vikunja.io/api/v1
+api_url=https://try.vikunja.io/api/v2
 
 [output]
 # This section allows to specify custom output formats (i.e. selecting displayed columns).

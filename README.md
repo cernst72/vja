@@ -10,35 +10,31 @@ Manage your tasks and projects directly from the terminal with simple commands.
 It provides a command line interface for adding, viewing and editing todo tasks on a Vikunja Server.
 The goal is to support a command line based task workflow ~ similar to taskwarrior.
 
-**❗Important change in vja 5.0.0**
+**❗Important change in vja 6.0.0**
 
-Due to an breaking API change in Vikunja, `vja` with version >= 5.0.0 will only support Vikunja with version >= 1.0.0, while `vja` < 5.0.0 is recommended for older Vikunja servers.
-
-**❗Important change in vja 4.10**
-
-New name for configuration file (`config.rc`) and XDG conform path lookup, see [Configuration](#configuration)
+Vikunja server with version >= 2.5.0 is required. Please configure your api_url to /v2, like `api_url=https://my.domain/api/v2` 
 
 ## Table of contents
 <!-- TOC -->
-- [vja](#vja)
-  - [Table of contents](#table-of-contents)
-  - [Usage](#usage)
-  - [Installation](#installation)
-    - [Install with pipx (recommended)](#install-with-pipx-recommended)
-    - [Install with pip](#install-with-pip)
-  - [Configuration](#configuration)
-    - [Description of configuration](#description-of-configuration)
-      - [Required options](#required-options)
-      - [Optional options](#optional-options)
-    - [Shell completion](#shell-completion)
-      - [Bash](#bash)
-      - [Zsh](#zsh)
-      - [Fish](#fish)
-  - [Development](#development)
-    - [Prepare python virtual environment](#prepare-python-virtual-environment)
-    - [Local build](#local-build)
-      - [Local development install](#local-development-install)
-      - [Run integration test](#run-integration-test)
+* [vja](#vja)
+  * [Table of contents](#table-of-contents)
+  * [Usage](#usage)
+  * [Installation](#installation)
+    * [Install with pipx (recommended)](#install-with-pipx-recommended)
+    * [Install with pip](#install-with-pip)
+  * [Configuration](#configuration)
+    * [Description of configuration](#description-of-configuration)
+      * [Required options](#required-options)
+      * [Optional options](#optional-options)
+    * [Shell completion](#shell-completion)
+      * [Bash](#bash)
+      * [Zsh](#zsh)
+      * [Fish](#fish)
+  * [Development](#development)
+    * [Prepare python virtual environment](#prepare-python-virtual-environment)
+    * [Local build](#local-build)
+      * [Local development install](#local-development-install)
+      * [Run integration test](#run-integration-test)
 <!-- TOC -->
 ## Usage
 
@@ -85,13 +81,13 @@ A full example can be found in [config.rc](https://gitlab.com/ce72/vja/-/blob/ma
   ```shell
   [application]
   frontend_url=https://try.vikunja.io/
-  api_url=https://try.vikunja.io/api/v1
+  api_url=https://try.vikunja.io/api/v2
   ```
   (If you cloned from git, you may copy the folder `.config/vja` to your `$HOME/.config` directory instead.)
 - Adjust to your needs.
   `frontend_url` and `api_url` must point to your own Vikunja server.
   Especially, the api_url must be reachable from your client. This can be verified, for example,
-  by `curl https://mydomain.com/api/v1/info`.
+  by `curl https://mydomain.com/api/v2/info`.
 
 You may change the location of the configuration directory with an environment variable
 like `VJA_CONFIGDIR=/not/my/home`.
@@ -107,17 +103,17 @@ like `VJA_CONFIGDIR=/not/my/home`.
 
 #### Optional options
 
-| Section                | Option              | Description                                                                                                                                                                                                                                                                                                  |
-|------------------------|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [output]               | arbitrary_name      | Python format strings which may be referenced on the command line by `--custom-format=<option_name>`. May contain any valid python f-Format string.<br>Take care: The format string may provide code which will be executed at runtime! Do not use `--custom-format` if you are unsure.<br> Default: missing |
-| [output]               | another_format      | Multiple formats can be defined for reference. (see above)                                                                                                                                                                                                                                                   |
-| [urgency_coefficients] | due_date_weight     | Weight of dueness in urgency score. Default: 1.0                                                                                                                                                                                                                                                             |
-| [urgency_coefficients] | priority_weight     | Weight of priority in urgency score. Default: 1.0                                                                                                                                                                                                                                                            |
-| [urgency_coefficients] | favorite_weight     | Weight of is_favorite in urgency score. Default: 1.0                                                                                                                                                                                                                                                         |
-| [urgency_coefficients] | project_weight      | Weight of keyword occurrence in project title in urgency score (see project_keywords). Default: 1.0                                                                                                                                                                                                                                 |
-| [urgency_coefficients] | label_weight        | Weight of keyword occurrence in label title in urgency score (see label_keywords). Default: 1.0                                                                                                                                                                                                                                   |
+| Section                | Option           | Description                                                                                                                                                                                                                                                                                                  |
+|------------------------|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [output]               | arbitrary_name   | Python format strings which may be referenced on the command line by `--custom-format=<option_name>`. May contain any valid python f-Format string.<br>Take care: The format string may provide code which will be executed at runtime! Do not use `--custom-format` if you are unsure.<br> Default: missing |
+| [output]               | another_format   | Multiple formats can be defined for reference. (see above)                                                                                                                                                                                                                                                   |
+| [urgency_coefficients] | due_date_weight  | Weight of dueness in urgency score. Default: 1.0                                                                                                                                                                                                                                                             |
+| [urgency_coefficients] | priority_weight  | Weight of priority in urgency score. Default: 1.0                                                                                                                                                                                                                                                            |
+| [urgency_coefficients] | favorite_weight  | Weight of is_favorite in urgency score. Default: 1.0                                                                                                                                                                                                                                                         |
+| [urgency_coefficients] | project_weight   | Weight of keyword occurrence in project title in urgency score (see project_keywords). Default: 1.0                                                                                                                                                                                                          |
+| [urgency_coefficients] | label_weight     | Weight of keyword occurrence in label title in urgency score (see label_keywords). Default: 1.0                                                                                                                                                                                                              |
 | [urgency_keywords]     | project_keywords | Tasks in projects with a title containing these keywords are considered more urgent. Default: None                                                                                                                                                                                                           |
-| [urgency_keywords]     | label_keywords      | Tasks labeled with one of these keywords are considered more urgent. Default: None                                                                                                                                                                                                                           |
+| [urgency_keywords]     | label_keywords   | Tasks labeled with one of these keywords are considered more urgent. Default: None                                                                                                                                                                                                                           |
 
 ### Shell completion
 

@@ -1,6 +1,6 @@
 [application]
 frontend_url=http://localhost:3456/
-api_url=http://localhost:3456/api/v1
+api_url=http://localhost:3456/api/v2
 
 [output]
 # This section allows to specify custom output formats (i.e. selecting displayed columns).

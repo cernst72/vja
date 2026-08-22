@@ -2,8 +2,6 @@ import json
 import logging
 import re
 
-import pytest
-
 from tests.conftest import invoke
 from vja.config import VjaConfiguration
 
@@ -36,14 +34,20 @@ class TestLoginLogout:
         invoke(runner, "logout")
         assert "Logged out" in caplog.text
         invoke(runner, "-u test -p test user show")
+        assert "Login successful" in caplog.text
 
     def test_logout_login_wrong_given_password(self, runner, caplog):
         invoke(runner, "logout")
         assert "Logged out" in caplog.text
-        with pytest.raises(Exception) as exception:
-            invoke(runner, "-u testxx -p testxx user show", expected_return_code=1)
-            assert "412 Client Error" in exception.value
+        invoke(
+            runner,
+            "-u testxx -p testxx user show",
+            expected_return_code=1,
+            catch_exceptions=True,
+        )
+        assert "Wrong username or password." in caplog.text
         invoke(runner, "-u test -p test user show")
+        assert "Login successful" in caplog.text
 
     def test_logout_login_password_from_stdin(self, runner, caplog):
         invoke(runner, "logout")
@@ -54,19 +58,31 @@ class TestLoginLogout:
     def test_logout_login_wrong_password_from_stdin(self, runner, caplog):
         invoke(runner, "logout")
         assert "Logged out" in caplog.text
-        with pytest.raises(Exception) as exception:
-            invoke(runner, "user show", user_input="testy\ntesty\n")
-            assert "412 Client Error" in exception.value
+        res = invoke(
+            runner,
+            "user show",
+            user_input="testy\ntesty\n",
+            expected_return_code=1,
+            catch_exceptions=True,
+        )
+        assert "Wrong username or password." in res.output
         invoke(runner, "-u test -p test user show")
+        assert "Login successful" in caplog.text
 
     def test_prompt_when_invalid_token(self, runner, caplog):
         self._invalidate_token()
-        invoke(runner, "user show", user_input="test\ntest\n")
+        res = invoke(runner, "user show", user_input="test\ntest\n")
+        assert "Username" in res.output
+        assert "Password" in res.output
         assert "Login successful" in caplog.text
 
-    def test_http_error(self, runner, capsys):
-        invoke(runner, "show 9999", expected_return_code=1)
-        assert "HTTP-Error 404" in capsys.readouterr().out
+    def test_http_error(self, runner, caplog):
+        res = invoke(
+            runner,
+            "show 9999",
+            expected_return_code=1,
+        )
+        assert "HTTP-Error 404" in res.output
 
     @staticmethod
     def _invalidate_token():

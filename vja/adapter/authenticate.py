@@ -49,7 +49,7 @@ class Login:
         response = self._post_login_request(username, password, totp_passcode)
         if (
             response.status_code == 412
-            and response_to_json(response)["message"] == "Invalid totp passcode."
+            and response_to_json(response)["detail"] == "Invalid totp passcode."
         ):
             totp_passcode = totp_passcode or click.prompt("One-time password")
             response = self._post_login_request(username, password, totp_passcode)
@@ -75,11 +75,13 @@ class Login:
     def logout(self):
         if self._load_tokens_from_file():
             response = requests.post(
-                f"{self._api_url}/user/logout",
+                f"{self._api_url}/logout",
                 headers=self.get_auth_header(),
                 timeout=10,
             )
             logger.debug("logout: %s", response.text)
+            if response.status_code >= 400:
+                logger.warning("Remote logout failed: %s", response.text)
         if os.path.isfile(self._token_file):
             os.remove(self._token_file)
         self._token = {"access": None, "refresh": None}

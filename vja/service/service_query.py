@@ -60,7 +60,7 @@ class QueryService:
         return self._task_service.task_from_json(self._api_client.get_task(task_id))
 
     @staticmethod
-    def _filter(task_object_array: list[Task], filter_args: dict) -> list:
+    def _filter(task_object_array: list[Task], filter_args: dict) -> list[Task]:
         filters = create_filters(filter_args)
         return list(filter(lambda x: all(f(x) for f in filters), task_object_array))
 

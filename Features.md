@@ -1,33 +1,33 @@
 # Features
 
 <!-- TOC -->
-- [Features](#features)
-  - [Login](#login)
-    - [API token](#api-token)
-  - [Tasks](#tasks)
-    - [Add Task](#add-task)
-      - [Clone](#clone)
-    - [List tasks](#list-tasks)
-      - [Urgency](#urgency)
-      - [Sort](#sort)
-      - [Filter](#filter)
-      - [Select](#select)
-    - [Show single task](#show-single-task)
-    - [Edit tasks](#edit-tasks)
-      - [Defer task](#defer-task)
-      - [Reminders](#reminders)
-      - [Batch editing](#batch-editing)
-    - [Delete task](#delete-task)
-    - [Task relations](#task-relations)
-  - [Open Vikunja in browser](#open-vikunja-in-browser)
-  - [Manage projects, labels, buckets](#manage-projects-labels-buckets)
-    - [Manage projects](#manage-projects)
-    - [Manage kanban buckets](#manage-kanban-buckets)
-    - [Manage labels](#manage-labels)
-  - [Output format](#output-format)
-    - [Example](#example)
-  - [Terminate session](#terminate-session)
-- [Appendix](#appendix)
+* [Features](#features)
+  * [Login](#login)
+    * [API token](#api-token)
+  * [Tasks](#tasks)
+    * [Add Task](#add-task)
+      * [Clone](#clone)
+    * [List tasks](#list-tasks)
+      * [Urgency](#urgency)
+      * [Sort](#sort)
+      * [Filter](#filter)
+      * [Select](#select)
+    * [Show single task](#show-single-task)
+    * [Edit tasks](#edit-tasks)
+      * [Defer task](#defer-task)
+      * [Reminders](#reminders)
+      * [Batch editing](#batch-editing)
+    * [Delete task](#delete-task)
+    * [Task relations](#task-relations)
+  * [Open Vikunja in browser](#open-vikunja-in-browser)
+  * [Manage projects, labels, buckets](#manage-projects-labels-buckets)
+    * [Manage projects](#manage-projects)
+    * [Manage kanban buckets](#manage-kanban-buckets)
+    * [Manage labels](#manage-labels)
+  * [Output format](#output-format)
+    * [Example](#example)
+  * [Terminate session](#terminate-session)
+* [Appendix](#appendix)
 <!-- TOC -->
 
 ## Login
@@ -38,7 +38,7 @@ The resulting token will be stored in a file named `token.json` next to your con
 
 ### API token
 
-Alternatively you may create an API token with sufficient rights in Vikunja ("Settings -> API Tokens")
+Alternatively you may create an API token with sufficient rights in Vikunja ("Settings → API Tokens")
 and save it to a file named `token.json` next to your configuration (e.g. `$HOME/.config/vja/config.rc`, see [README.md](README.md#configuration)).
 
 ```json
@@ -114,8 +114,7 @@ vja ls 10 13 14
 By default, tasks are sorted (amongst others) by their urgency, which is displayed in the last column. Urgency is
 calculated by regarding due_date, priority and is_favorite of the task, as well as the occurrence of keywords in the
 project title or the label titles. The weights of each factor and the keywords can be specified in the configuration
-file `~/.vjacli/vja.rc`. See Configuration section in [README.md](README.md). See [`.vjacli/vja.rc`](.vjacli/vja.rc) for an
-example.
+file `~/.vjacli/vja.rc`. See Configuration section in [README.md](README.md). 
 
 #### Sort
 
