@@ -1,3 +1,37 @@
+## [6.0.0](https://gitlab.com/ce72/vja/compare/5.4.2...6.0.0) (2026-08-22)
+
+### ⚠ BREAKING CHANGES
+
+* **api:** move to Vikunja api/v2
+
+### Features
+
+* **api:** move to Vikunja api/v2 ([20092a1](https://gitlab.com/ce72/vja/commit/20092a1aa3f0623712806de0d3b0cbf1b4b5b022))
+
+### Bug Fixes
+
+* **cli:** more option name aliases with underscore (_) ([4bbea16](https://gitlab.com/ce72/vja/commit/4bbea1687064c03454628988f3f7780887659109))
+* **project:** allow project title in `project show` and `project open` ([fb957d0](https://gitlab.com/ce72/vja/commit/fb957d0fe0e6a24c000bdeec515c861a27cefec3))
+
+### Misc
+
+* **deps:** update all dependencies ([65d7727](https://gitlab.com/ce72/vja/commit/65d7727e623164ab5fcc13b2a096d85e73c65e57))
+* refactor ([b1b4719](https://gitlab.com/ce72/vja/commit/b1b47194dacd4dce2d3ebc676e227667720b791e))
+* refactor ([c308559](https://gitlab.com/ce72/vja/commit/c308559177457b108615c06d04fd7247f1692853))
+* refactor ([27b202d](https://gitlab.com/ce72/vja/commit/27b202dd7af8d2098fec20e0fbbe9fb96ba16aa2))
+* remove self-referential type hints ([a3b5c64](https://gitlab.com/ce72/vja/commit/a3b5c646792393cfcf892791a45b326ed9977dd0)), closes [#14](https://gitlab.com/ce72/vja/issues/14)
+* **task add:** improve speed when adding task with multiple labels ([3a607ef](https://gitlab.com/ce72/vja/commit/3a607ef14259b44eb0c14f701160fc5623bd4c0f))
+
+### Automation
+
+* add minimal test with old python versions ([3b2a679](https://gitlab.com/ce72/vja/commit/3b2a6792045c05dbac652ed431ca8da0215e0e17))
+* add resource group to semantic release ([203745c](https://gitlab.com/ce72/vja/commit/203745c81dc16b2d32944f320fb956b3ad222bcd))
+* deprecate python versions < 3.12 ([495c28a](https://gitlab.com/ce72/vja/commit/495c28ae6e646ea54876a19d3fea660c5cba58ec))
+* deprecate python versions < 3.12 ([eaa0f70](https://gitlab.com/ce72/vja/commit/eaa0f709ea1edc316f2f45355564a00ecc140723))
+* pin conventional-changelog-conventionalcommits@9 ([baa0db8](https://gitlab.com/ce72/vja/commit/baa0db84b17aa8b8b09cb7bd948ab2b0915e1afc))
+* recreate changelog ([61b6416](https://gitlab.com/ce72/vja/commit/61b64166443e7f7a2c8612129d59914f6f912cff))
+* **test:** test against vikunja:2.5.0 by default ([8f70370](https://gitlab.com/ce72/vja/commit/8f703704e7bdd0dc2251db3e6d29ea976603f648))
+
 ## [5.4.2](https://gitlab.com/ce72/vja/compare/5.4.1...5.4.2) (2026-07-20)
 
 ### Bug Fixes
