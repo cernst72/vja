@@ -123,7 +123,9 @@ class CommandService:
             if label:
                 self._api_client.add_label_to_task(task.id, label.id)
 
-    def _add_assignees_to_task(self, task: Task, assignee_names: list[str], project_id: int):
+    def _add_assignees_to_task(
+        self, task: Task, assignee_names: list[str], project_id: int
+    ):
         for assignee_name in assignee_names:
             assignee = self._user_from_name(assignee_name, project_id)
             self._api_client.add_assignee_to_task(task.id, assignee.id)
@@ -338,7 +340,9 @@ class CommandService:
         return user_found[0]
 
     def _validate_add_task(self, title: str, label_names: list[str]):
-        tasks_remote = self._api_client.get_tasks(exclude_completed=True)
+        tasks_remote = self._api_client.get_tasks(
+            exclude_completed=True, include_buckets=False
+        )
         if any(task for task in tasks_remote if task["title"] == title):
             msg = "Task with title does exist. You may want to run with --force-create."
             raise VjaError(msg)

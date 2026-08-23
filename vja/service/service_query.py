@@ -51,7 +51,10 @@ class QueryService:
     ) -> list[Task]:
         task_object_array = [
             self._task_service.task_from_json(x)
-            for x in self._api_client.get_tasks(exclude_completed=not include_completed)
+            for x in self._api_client.get_tasks(
+                exclude_completed=not include_completed,
+                include_buckets="bucket_filter" in filter_args,
+            )
         ]
         filtered_tasks = self._filter(task_object_array, filter_args)
         return self._sort(filtered_tasks, sort_string)
