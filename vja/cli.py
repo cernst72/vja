@@ -6,8 +6,8 @@ from importlib import metadata
 import click
 from click_aliases import ClickAliasedGroup
 
-from vja import VjaError
-from vja.application import Application, catch_exception, with_application
+from vja.application import Application, with_application
+from vja.commands import auth as auth_module
 from vja.commands import bucket as buckets_module
 from vja.commands import label as labels_module
 from vja.commands import project as projects_module
@@ -56,7 +56,6 @@ def cli(
         logger.debug(metadata.version("vja"))
     else:
         logging.basicConfig(level=logging.INFO)
-        logging.getLogger().setLevel(logging.INFO)
     application = Application()
     ctx.obj = application
     if username:
@@ -69,6 +68,7 @@ cli.add_command(labels_module.label_group, aliases=["labels"])
 cli.add_command(projects_module.project_group, aliases=["projects"])
 cli.add_command(relations_module.relation_group, aliases=["relations"])
 cli.add_command(tasks_module.task_group, aliases=["tasks"])
+cli.add_command(auth_module.logout)
 
 # shortcuts for vja task commands
 cli.add_command(tasks_module.task_add, aliases=["create"])
@@ -80,13 +80,6 @@ cli.add_command(tasks_module.task_delete, aliases=["rm", "remove"])
 cli.add_command(tasks_module.task_ls, aliases=["list"])
 cli.add_command(tasks_module.task_show)
 cli.add_command(tasks_module.task_open)
-
-
-@cli.command("logout", help="Remove local access token")
-@with_application
-@catch_exception(handle=VjaError)
-def logout(application):
-    application.command_service.logout()
 
 
 if __name__ == "__main__":

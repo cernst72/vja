@@ -60,18 +60,17 @@ class Application:
     def configuration(self) -> VjaConfiguration:
         return self._configuration
 
-    def open_browser_task(self, task_id):
-        url = self.configuration.get_frontend_url().rstrip("/")
+    def _frontend_url(self) -> str:
+        return self._configuration.get_frontend_url().rstrip("/")
+
+    def open_browser_task(self, task_id: int | None = None) -> None:
+        url = self._frontend_url()
         if task_id:
-            url += f"/tasks/{task_id!s}"
+            url += f"/tasks/{task_id}"
         webbrowser.open_new_tab(url)
 
-    def open_browser_project(self, project_id):
-        url = (
-            self.configuration.get_frontend_url().rstrip("/")
-            + f"/projects/{project_id!s}"
-        )
-        webbrowser.open_new_tab(url)
+    def open_browser_project(self, project_id: int) -> None:
+        webbrowser.open_new_tab(f"{self._frontend_url()}/projects/{project_id}")
 
 
 with_application = click.make_pass_decorator(Application, ensure=True)

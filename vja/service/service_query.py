@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 from vja.adapter.apiclient import ApiClient
 from vja.model import Bucket, Label, Project, Task, User
@@ -47,7 +48,7 @@ class QueryService:
 
     # tasks
     def find_filtered_tasks(
-        self, include_completed: bool, sort_string: str, filter_args: dict
+        self, include_completed: bool, sort_string: str | None, filter_args: dict
     ) -> list[Task]:
         task_object_array = [
             self._task_service.task_from_json(x)
@@ -65,10 +66,10 @@ class QueryService:
     @staticmethod
     def _filter(task_object_array: list[Task], filter_args: dict) -> list[Task]:
         filters = create_filters(filter_args)
-        return list(filter(lambda x: all(f(x) for f in filters), task_object_array))
+        return [x for x in task_object_array if all(f(x) for f in filters)]
 
     @staticmethod
-    def _sort(filtered_tasks: list[Task], sort_string: str) -> list[Task]:
+    def _sort(filtered_tasks: list[Task], sort_string: str | None) -> list[Task]:
         sort_string = sort_string or DEFAULT_SORT_STRING
         sort_fields = [
             {"name": x.strip().strip("-"), "reverse": x.strip().startswith("-")}
@@ -76,16 +77,18 @@ class QueryService:
         ]
         for sort_field in reversed(sort_fields):
             filtered_tasks.sort(
-                key=lambda x, field=sort_field["name"]: (
-                    sortable_task_value(x, field) is None,
-                    sortable_task_value(x, field),
-                ),
+                key=lambda x, field=sort_field["name"]: _sort_key(x, field),
                 reverse=sort_field["reverse"],
             )
         return filtered_tasks
 
 
-def sortable_task_value(task, field):
+def _sort_key(task: Task, field: str) -> tuple[bool, Any]:
+    value = sortable_task_value(task, field)
+    return (value is None, value)
+
+
+def sortable_task_value(task: Task, field: str) -> Any:
     field_name = field
     if field in ("label", "labels"):
         field_name = "labels"

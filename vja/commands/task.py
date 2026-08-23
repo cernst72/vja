@@ -31,6 +31,14 @@ def output_options(func):
     return func
 
 
+def _echo_task_result(ctx, task, task_id: int, quiet_show: bool, verbose_show: bool):
+    """Common output logic for task-mutating commands."""
+    if verbose_show or not quiet_show:
+        click.echo(f"Modified task {task.id} in project {task.project.id}")
+    if verbose_show:
+        ctx.invoke(task_show, tasks=[task_id])
+
+
 @click.group(
     "task", help="(optional) subcommand: task (see help)", cls=ClickAliasedGroup
 )
@@ -130,7 +138,7 @@ def task_add(
     **args,
 ):
     args_present = {k: v for k, v in args.items() if v is not None}
-    task = application.command_service.add_task(" ".join(title), args_present.copy())
+    task = application.command_service.add_task(" ".join(title), args_present)
     if verbose_show or not quiet_show:
         click.echo(f"Created task {task.id} in project {task.project.id}")
     if verbose_show:
@@ -294,10 +302,7 @@ def task_edit(
     for task_id in task_ids:
         if args_present:
             task = application.command_service.edit_task(task_id, args_present.copy())
-            if verbose_show or not quiet_show:
-                click.echo(f"Modified task {task.id} in project {task.project.id}")
-            if verbose_show:
-                ctx.invoke(task_show, tasks=[task.id])
+            _echo_task_result(ctx, task, task_id, quiet_show, verbose_show)
         else:
             application.open_browser_task(task_id)
 
@@ -319,10 +324,7 @@ def task_toggle(
     verbose_show=False,
 ):
     task = application.command_service.toggle_task_done(task_id)
-    if verbose_show or not quiet_show:
-        click.echo(f"Modified task {task.id} in project {task.project.id}")
-    if verbose_show:
-        ctx.invoke(task_show, tasks=[task_id])
+    _echo_task_result(ctx, task, task_id, quiet_show, verbose_show)
 
 
 @task_group.command(
@@ -346,10 +348,7 @@ def task_defer(
 ):
     for task_id in task_ids:
         task = application.command_service.defer_task(task_id, delay_by)
-        if verbose_show or not quiet_show:
-            click.echo(f"Modified task {task.id} in project {task.project.id}")
-        if verbose_show:
-            ctx.invoke(task_show, tasks=[task_id])
+        _echo_task_result(ctx, task, task_id, quiet_show, verbose_show)
 
 
 @task_group.command(
@@ -518,7 +517,7 @@ def task_ls(
 
     application.output.task_array(tasks, is_json, is_jsonvja, custom_format)
     if verbose_ls:
-        click.echo(f"Count: {len(list(tasks))}")
+        click.echo(f"Count: {len(tasks)}")
 
 
 @task_group.command("show", help="Show task details. Multiple task ids may be given")
@@ -551,7 +550,7 @@ def task_show(application: Application, tasks, is_json, is_jsonvja):
 @catch_exception(handle=VjaError)
 def task_open(application: Application, tasks):
     if not tasks:
-        application.open_browser_task("")
+        application.open_browser_task()
     else:
         for task_id in tasks:
             application.open_browser_task(task_id)
