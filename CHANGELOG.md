@@ -1,3 +1,18 @@
+## [6.0.1](https://gitlab.com/ce72/vja/compare/6.0.0...6.0.1) (2026-08-24)
+
+### Bug Fixes
+
+* **bucket ls:** use correct endpoint to obtain task count ([338b95c](https://gitlab.com/ce72/vja/commit/338b95cafc7e3662fc8c7281031e36dcbc8b02a8))
+
+### Misc
+
+* do not expand buckets unless required ([5acb053](https://gitlab.com/ce72/vja/commit/5acb053ff252dae0444cfcb543c119e04dd8d2cb))
+* refactor ([9d73068](https://gitlab.com/ce72/vja/commit/9d73068e44771589e1b17490f27aa1eb0b512cbd))
+
+### Automation
+
+* edit Changelog.md ([8e067e7](https://gitlab.com/ce72/vja/commit/8e067e78cc307a6bd9b07fd4b0b06eb4f5778712))
+
 ## [6.0.0](https://gitlab.com/ce72/vja/compare/5.4.2...6.0.0) (2026-08-22)
 
 ### ⚠ BREAKING CHANGES
