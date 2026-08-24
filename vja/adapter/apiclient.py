@@ -171,7 +171,7 @@ class ApiClient:
 
     def get_buckets(self, project_id: int, project_view_id: int) -> list[dict]:
         return self._get_list(
-            f"{self._api_url}/projects/{project_id}/views/{project_view_id}/buckets"
+            f"{self._api_url}/projects/{project_id}/views/{project_view_id}/buckets/tasks"
         )
 
     def create_bucket(self, project_id: int, project_view_id: int, title: str) -> dict:
