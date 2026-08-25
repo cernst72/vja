@@ -6,7 +6,7 @@ from importlib import metadata
 import click
 from click_aliases import ClickAliasedGroup
 
-from vja.application import Application, with_application
+from vja.application import Application
 from vja.commands import auth as auth_module
 from vja.commands import bucket as buckets_module
 from vja.commands import label as labels_module

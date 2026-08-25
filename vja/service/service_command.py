@@ -145,7 +145,8 @@ class CommandService:
             self._api_client.add_assignee_to_task(task.id, assignee["id"])
         return task
 
-    def _clear_for_update(self, task_remote: dict):
+    @staticmethod
+    def _clear_for_update(task_remote: dict):
         task_remote.pop("max_permission", None)
 
     def edit_task(self, task_id: int, args: dict) -> Task:

@@ -12,12 +12,12 @@ def custom_output(cls):
     hidden_attribute_names = ["json", "description_text"]
 
     def __str__(self) -> str:
-        """Returns a string containing only the non-null attribute values, excluding json attribute ."""
+        """Returns a string containing only the non-null attribute values, excluding hidden attributes ."""
         return "\n".join(
             f"{attribute.name}: {_str_value(getattr(self, attribute.name))}"
             for attribute in dataclasses.fields(self)
             if attribute.name not in hidden_attribute_names
-            and getattr(self, attribute.name) is not None
+            and getattr(self, attribute.name)
         )
 
     def _str_value(v):
