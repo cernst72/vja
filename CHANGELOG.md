@@ -1,3 +1,9 @@
+## [6.0.2](https://gitlab.com/ce72/vja/compare/6.0.1...6.0.2) (2026-08-25)
+
+### Bug Fixes
+
+* **show:** exclude zero/empty attributes again ([1e1cc5b](https://gitlab.com/ce72/vja/commit/1e1cc5b32c855f141a2ea2a5e5ef937a571c9bf1))
+
 ## [6.0.1](https://gitlab.com/ce72/vja/compare/6.0.0...6.0.1) (2026-08-24)
 
 ### Bug Fixes
