@@ -84,28 +84,39 @@ class ApiClient:
     def _get_list(
         self, url: str, params: dict | None = None, headers: dict | None = None
     ) -> list[dict]:
-        response = requests.get(url, headers=headers, params=params or {}, timeout=30)
-        response.raise_for_status()
-        json_result = response_to_json(response)
-        total_pages = int(json_result.get("total_pages", 1))
-        if isinstance(json_result, dict) and "items" in json_result:
-            json_result = json_result.get("items") or []
+        request_params = dict(params or {})
+        first_page = self._get_page(url, request_params, headers)
+        items = self._extract_items(first_page)
+        total_pages = self._extract_total_pages(first_page)
         if total_pages > 1:
             logger.debug(
                 "Trying to load all pages. Consider to increase MAXITEMSPERPAGE on your server instead."
             )
             for page in range(2, total_pages + 1):
                 logger.debug("load page %s", page)
-                params["page"] = page
-                response = requests.get(
-                    url, headers=headers, params=params or {}, timeout=30
+                page_result = self._get_page(
+                    url, {**request_params, "page": page}, headers
                 )
-                response.raise_for_status()
-                page_result = response_to_json(response)
-                if isinstance(page_result, dict) and "items" in page_result:
-                    page_result = page_result.get("items") or []
-                    json_result.extend(page_result)
-        return json_result
+                items.extend(self._extract_items(page_result))
+        return items
+
+    @staticmethod
+    def _get_page(url: str, params: dict, headers: dict | None):
+        response = requests.get(url, headers=headers, params=params, timeout=30)
+        response.raise_for_status()
+        return response_to_json(response)
+
+    @staticmethod
+    def _extract_items(json_result) -> list[dict]:
+        if isinstance(json_result, dict):
+            return list(json_result.get("items") or [])
+        return list(json_result or [])
+
+    @staticmethod
+    def _extract_total_pages(json_result) -> int:
+        if isinstance(json_result, dict):
+            return int(json_result.get("total_pages", 1) or 1)
+        return 1
 
     @handle_http_error
     @inject_access_token
