@@ -47,9 +47,7 @@ def _handle_http_401(client, response, func, args, kwargs):
             return func(client, *args, **kwargs)
         except (requests.RequestException, VjaError):
             # fallback to interactive login
-            logger.info(
-                "Refresh failed or no refresh token; falling back to interactive login"
-            )
+            logger.info("Refresh failed or no refresh token; falling back to interactive login")
             client.authenticate(force_login=True)
             return func(client, *args, **kwargs)
 
@@ -72,31 +70,23 @@ class ApiClient:
 
     @handle_http_error
     @inject_access_token
-    def _get_one(
-        self, url: str, params: dict | None = None, headers: dict | None = None
-    ) -> dict:
+    def _get_one(self, url: str, params: dict | None = None, headers: dict | None = None) -> dict:
         response = requests.get(url, headers=headers, params=params or {}, timeout=30)
         response.raise_for_status()
         return response_to_json(response)
 
     @handle_http_error
     @inject_access_token
-    def _get_list(
-        self, url: str, params: dict | None = None, headers: dict | None = None
-    ) -> list[dict]:
+    def _get_list(self, url: str, params: dict | None = None, headers: dict | None = None) -> list[dict]:
         request_params = dict(params or {})
         first_page = self._get_page(url, request_params, headers)
         items = self._extract_items(first_page)
         total_pages = self._extract_total_pages(first_page)
         if total_pages > 1:
-            logger.debug(
-                "Trying to load all pages. Consider to increase MAXITEMSPERPAGE on your server instead."
-            )
+            logger.debug("Trying to load all pages. Consider to increase MAXITEMSPERPAGE on your server instead.")
             for page in range(2, total_pages + 1):
                 logger.debug("load page %s", page)
-                page_result = self._get_page(
-                    url, {**request_params, "page": page}, headers
-                )
+                page_result = self._get_page(url, {**request_params, "page": page}, headers)
                 items.extend(self._extract_items(page_result))
         return items
 
@@ -120,9 +110,7 @@ class ApiClient:
 
     @handle_http_error
     @inject_access_token
-    def _put_json(
-        self, url: str, payload: dict | None = None, headers: dict | None = None
-    ) -> dict:
+    def _put_json(self, url: str, payload: dict | None = None, headers: dict | None = None) -> dict:
         response = requests.put(url, headers=headers, json=payload, timeout=30)
         logger.debug("PUT response: %s - %s", response, response.text)
         response.raise_for_status()
@@ -130,9 +118,7 @@ class ApiClient:
 
     @handle_http_error
     @inject_access_token
-    def _post_json(
-        self, url: str, payload: dict | None = None, headers: dict | None = None
-    ) -> dict:
+    def _post_json(self, url: str, payload: dict | None = None, headers: dict | None = None) -> dict:
         response = requests.post(url, headers=headers, json=payload, timeout=30)
         logger.debug("POST response: %s - %s", response, response.text)
         response.raise_for_status()
@@ -140,20 +126,14 @@ class ApiClient:
 
     @handle_http_error
     @inject_access_token
-    def _delete_json(
-        self, url: str, payload: dict | None = None, headers: dict | None = None
-    ) -> None:
+    def _delete_json(self, url: str, payload: dict | None = None, headers: dict | None = None) -> None:
         response = requests.delete(url, headers=headers, json=payload, timeout=30)
         logger.debug("DELETE response: %s - %s", response, response.text)
         response.raise_for_status()
 
-    def authenticate(
-        self, force_login=True, username=None, password=None, totp_passcode=None
-    ) -> dict[str, str]:
+    def authenticate(self, force_login=True, username=None, password=None, totp_passcode=None) -> dict[str, str]:
         try:
-            self._login.validate_access_token(
-                force_login, username, password, totp_passcode
-            )
+            self._login.validate_access_token(force_login, username, password, totp_passcode)
             return self._login.get_auth_header()
         except requests.HTTPError as error:
             msg = f"HTTP-Error {error.response.status_code}, url={error.response.url}, body={error.response.text}"
@@ -181,9 +161,7 @@ class ApiClient:
         return self._post_json(f"{self._api_url}/projects", payload=payload)
 
     def get_buckets(self, project_id: int, project_view_id: int) -> list[dict]:
-        return self._get_list(
-            f"{self._api_url}/projects/{project_id}/views/{project_view_id}/buckets/tasks"
-        )
+        return self._get_list(f"{self._api_url}/projects/{project_id}/views/{project_view_id}/buckets/tasks")
 
     def create_bucket(self, project_id: int, project_view_id: int, title: str) -> dict:
         payload = {"title": title}
@@ -201,9 +179,7 @@ class ApiClient:
         payload = {"title": title}
         return self._post_json(f"{self._api_url}/labels", payload=payload)
 
-    def get_tasks(
-        self, include_buckets: bool = False, exclude_completed: bool = True
-    ) -> list[dict]:
+    def get_tasks(self, include_buckets: bool = False, exclude_completed: bool = True) -> list[dict]:
         if self._cache["tasks"] is None:
             url = f"{self._api_url}/tasks"
             params = {"filter": "done=false"} if exclude_completed else {}
@@ -218,9 +194,7 @@ class ApiClient:
         return self._get_one(url, params)
 
     def create_task(self, project_id: int, payload: dict) -> dict:
-        return self._post_json(
-            f"{self._api_url}/projects/{project_id}/tasks", payload=payload
-        )
+        return self._post_json(f"{self._api_url}/projects/{project_id}/tasks", payload=payload)
 
     def update_task(self, task_id: int, payload: dict) -> dict:
         return self._put_json(f"{self._api_url}/tasks/{task_id}", payload=payload)
@@ -237,19 +211,13 @@ class ApiClient:
         task_label_url = f"{self._api_url}/tasks/{task_id}/labels/{label_id}"
         self._delete_json(task_label_url)
 
-    def add_relation_to_task(
-        self, task_id: int, relation_kind: str, other_task_id: int
-    ) -> dict:
+    def add_relation_to_task(self, task_id: int, relation_kind: str, other_task_id: int) -> dict:
         task_relation_url = f"{self._api_url}/tasks/{task_id}/relations"
         payload = {"other_task_id": other_task_id, "relation_kind": relation_kind}
         return self._post_json(task_relation_url, payload=payload)
 
-    def remove_relation_from_task(
-        self, task_id: int, relation_kind: str, other_task_id: int
-    ) -> None:
-        task_relation_url = (
-            f"{self._api_url}/tasks/{task_id}/relations/{relation_kind}/{other_task_id}"
-        )
+    def remove_relation_from_task(self, task_id: int, relation_kind: str, other_task_id: int) -> None:
+        task_relation_url = f"{self._api_url}/tasks/{task_id}/relations/{relation_kind}/{other_task_id}"
         self._delete_json(task_relation_url)
 
     def get_project_users(self, project_id: int) -> list[dict]:
@@ -257,9 +225,7 @@ class ApiClient:
 
     def add_assignee_to_task(self, task_id: int, user_id: int) -> dict:
         payload = {"user_id": user_id}
-        return self._post_json(
-            f"{self._api_url}/tasks/{task_id}/assignees", payload=payload
-        )
+        return self._post_json(f"{self._api_url}/tasks/{task_id}/assignees", payload=payload)
 
     def remove_assignee_from_task(self, task_id: int, user_id: int) -> None:
         self._delete_json(f"{self._api_url}/tasks/{task_id}/assignees/{user_id}")

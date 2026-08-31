@@ -20,9 +20,7 @@ def setup_runner():
 def invoke(runner, command, expected_return_code=0, user_input=None, catch_exceptions=False):
     if isinstance(command, str):
         command = command.split()
-    res = runner.invoke(
-        cli, command, input=user_input, catch_exceptions=catch_exceptions
-    )
+    res = runner.invoke(cli, command, input=user_input, catch_exceptions=catch_exceptions)
     sys.stdout.write(res.output)
     if res.stderr_bytes:
         sys.stdout.write(res.stderr)
@@ -66,12 +64,9 @@ def run_vja(command, expected_return=None):
         sys.exit(1)
 
 
-
 def pytest_configure(config):
     if "VJA_CONFIGDIR" not in os.environ:
-        click.echo(
-            "!!! Precondition not met. You must set VJA_CONFIGDIR in environment variables !!!"
-        )
+        click.echo("!!! Precondition not met. You must set VJA_CONFIGDIR in environment variables !!!")
         sys.exit(1)
 
     _login_as_test_user()

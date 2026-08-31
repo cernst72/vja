@@ -32,9 +32,7 @@ def project_add(application: Application, title, parent_project=None):
     aliases=["list"],
     help="Print projects ... (id; title; description; parent_project_id)",
 )
-@click.option(
-    "is_json", "--json", default=False, is_flag=True, help="Print as Vikunja json"
-)
+@click.option("is_json", "--json", default=False, is_flag=True, help="Print as Vikunja json")
 @click.option(
     "is_jsonvja",
     "--jsonvja",
@@ -52,9 +50,7 @@ def project_add(application: Application, title, parent_project=None):
 @catch_exception(handle=VjaError)
 def project_ls(application: Application, is_json, is_jsonvja, custom_format):
     if custom_format:
-        custom_format = application.configuration.get_custom_format_string(
-            custom_format
-        )
+        custom_format = application.configuration.get_custom_format_string(custom_format)
     application.output.project_array(
         application.query_service.find_all_projects(),
         is_json,
@@ -65,9 +61,7 @@ def project_ls(application: Application, is_json, is_jsonvja, custom_format):
 
 @project_group.command("show", help="Show project details")
 @click.argument("project", required=True)
-@click.option(
-    "is_json", "--json", default=False, is_flag=True, help="Print as Vikunja json"
-)
+@click.option("is_json", "--json", default=False, is_flag=True, help="Print as Vikunja json")
 @click.option(
     "is_jsonvja",
     "--jsonvja",
@@ -78,9 +72,7 @@ def project_ls(application: Application, is_json, is_jsonvja, custom_format):
 @with_application
 @catch_exception(handle=VjaError)
 def project_show(application: Application, project: str, is_json, is_jsonvja):
-    application.output.project(
-        application.query_service.find_project(project), is_json, is_jsonvja
-    )
+    application.output.project(application.query_service.find_project(project), is_json, is_jsonvja)
 
 
 @project_group.command("open", help="Open project in webbrowser")

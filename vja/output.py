@@ -5,9 +5,7 @@ import click
 
 from vja.model import Project, Task, User
 
-PROJECT_LIST_FORMAT_DEFAULT = (
-    "{x.id:5} {x.title:20.20} {x.description:20.20} {x.parent_project_id:5}"
-)
+PROJECT_LIST_FORMAT_DEFAULT = "{x.id:5} {x.title:20.20} {x.description:20.20} {x.parent_project_id:5}"
 
 BUCKET_LIST_FORMAT_DEFAULT = "{x.id:5} {x.title:20.20} {x.limit:5} {x.count_tasks:6}"
 
@@ -27,7 +25,6 @@ logger = logging.getLogger(__name__)
 
 
 class Output:
-
     def user(self, user: User, is_json, is_jsonvja):
         self._dump(user, is_json, is_jsonvja)
 
@@ -69,11 +66,7 @@ class Output:
         elif is_jsonvja:
             click.echo(json.dumps([x.data_dict() for x in object_array], default=str))
         else:
-            for (
-                x
-            ) in (
-                object_array
-            ):  # it is mandatory that the variable name is 'x'. The template strings refer to it.
+            for x in object_array:  # it is mandatory that the variable name is 'x'. The template strings refer to it.
                 # https://stackoverflow.com/a/53671539/2935741
                 # Note: Using eval() is risky, because arbitrary code may be introduced via the configured formatting
                 # templates.

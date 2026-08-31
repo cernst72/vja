@@ -5,17 +5,13 @@ from vja import VjaError
 from vja.application import Application, catch_exception, with_application
 
 
-@click.group(
-    "bucket", help="Subcommand: Kanban buckets (see help)", cls=ClickAliasedGroup
-)
+@click.group("bucket", help="Subcommand: Kanban buckets (see help)", cls=ClickAliasedGroup)
 def bucket_group():
     # vja bucket
     pass
 
 
-@bucket_group.command(
-    "add", help="Add bucket with title to the first Kanban View of the project"
-)
+@bucket_group.command("add", help="Add bucket with title to the first Kanban View of the project")
 @click.option(
     "project",
     "-o",
@@ -35,8 +31,7 @@ def bucket_add(application: Application, title, project):
 @bucket_group.command(
     "ls",
     aliases=["list"],
-    help="Show Kanban buckets of given project (only the first Kanban View)... "
-    "(id; title; limit; count tasks)",
+    help="Show Kanban buckets of given project (only the first Kanban View)... (id; title; limit; count tasks)",
 )
 @click.option(
     "project_id",
@@ -47,9 +42,7 @@ def bucket_add(application: Application, title, project):
     required=True,
     help="Show buckets of project (project_id or title)",
 )
-@click.option(
-    "is_json", "--json", default=False, is_flag=True, help="Print as Vikunja json"
-)
+@click.option("is_json", "--json", default=False, is_flag=True, help="Print as Vikunja json")
 @click.option(
     "is_jsonvja",
     "--jsonvja",
@@ -67,9 +60,7 @@ def bucket_add(application: Application, title, project):
 @catch_exception(handle=VjaError)
 def bucket_ls(application: Application, project_id, is_json, is_jsonvja, custom_format):
     if custom_format:
-        custom_format = application.configuration.get_custom_format_string(
-            custom_format
-        )
+        custom_format = application.configuration.get_custom_format_string(custom_format)
     application.output.bucket_array(
         application.query_service.find_buckets_in_first_kanban_view(project_id),
         is_json,

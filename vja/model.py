@@ -35,8 +35,7 @@ def custom_output(cls):
         return "\n".join(
             f"{attribute.name}: {_str_value(getattr(self, attribute.name))}"
             for attribute in dataclasses.fields(self)
-            if attribute.name not in hidden_attribute_names
-            and getattr(self, attribute.name)
+            if attribute.name not in hidden_attribute_names and getattr(self, attribute.name)
         )
 
     def _str_value(v):
@@ -159,9 +158,7 @@ class Project:
         )
 
     @classmethod
-    def from_json_array(
-        cls, json_array: list[dict] | None, ancestor_projects: list["Project"]
-    ) -> list["Project"]:
+    def from_json_array(cls, json_array: list[dict] | None, ancestor_projects: list["Project"]) -> list["Project"]:
         return [Project.from_json(x, ancestor_projects) for x in json_array or []]
 
     def get_first_kanban_project_view(self) -> "ProjectView":
@@ -298,7 +295,7 @@ class TaskReminder:
 
     def short_str(self) -> str:
         return (
-            f'reminder={self.reminder.isoformat() if self.reminder else " "},'
+            f"reminder={self.reminder.isoformat() if self.reminder else ' '},"
             f"period={self.relative_period},"
             f"relative_to={self.relative_to}"
         )
@@ -330,9 +327,7 @@ class TaskRelation:
     @classmethod
     def from_json_map(cls, related_tasks: dict | None) -> list["TaskRelation"]:
         return [
-            cls.from_json(kind, task_json)
-            for kind, tasks in (related_tasks or {}).items()
-            for task_json in tasks or []
+            cls.from_json(kind, task_json) for kind, tasks in (related_tasks or {}).items() for task_json in tasks or []
         ]
 
     @classmethod
@@ -346,9 +341,7 @@ class TaskRelation:
         )
 
     def short_str(self) -> str:
-        return (
-            f"{self.kind}: {ID_TITLE.format(self.other_task_id, self.other_task_title)}"
-        )
+        return f"{self.kind}: {ID_TITLE.format(self.other_task_id, self.other_task_title)}"
 
 
 @dataclass

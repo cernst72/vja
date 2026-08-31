@@ -31,9 +31,7 @@ class Login:
     def _refresh_token(self):
         return self._token["refresh"] or None
 
-    def validate_access_token(
-        self, force=False, username=None, password=None, totp_passcode=None
-    ):
+    def validate_access_token(self, force=False, username=None, password=None, totp_passcode=None):
         if self._load_tokens_from_file() and not force:
             try:
                 self._refresh_proactively()
@@ -47,10 +45,7 @@ class Login:
         username = username or click.prompt("Username")
         password = password or click.prompt("Password", hide_input=True)
         response = self._post_login_request(username, password, totp_passcode)
-        if (
-            response.status_code == 412
-            and response_to_json(response)["detail"] == "Invalid totp passcode."
-        ):
+        if response.status_code == 412 and response_to_json(response)["detail"] == "Invalid totp passcode.":
             totp_passcode = totp_passcode or click.prompt("One-time password")
             response = self._post_login_request(username, password, totp_passcode)
         response.raise_for_status()

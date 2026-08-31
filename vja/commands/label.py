@@ -12,9 +12,7 @@ def label_group():
 
 
 @label_group.command("ls", aliases=["list"], help="Print labels ... (id; title)")
-@click.option(
-    "is_json", "--json", default=False, is_flag=True, help="Print as Vikunja json"
-)
+@click.option("is_json", "--json", default=False, is_flag=True, help="Print as Vikunja json")
 @click.option(
     "is_jsonvja",
     "--jsonvja",
@@ -32,12 +30,8 @@ def label_group():
 @catch_exception(handle=VjaError)
 def label_ls(application: Application, is_json, is_jsonvja, custom_format):
     if custom_format:
-        custom_format = application.configuration.get_custom_format_string(
-            custom_format
-        )
-    application.output.label_array(
-        application.query_service.find_all_labels(), is_json, is_jsonvja, custom_format
-    )
+        custom_format = application.configuration.get_custom_format_string(custom_format)
+    application.output.label_array(application.query_service.find_all_labels(), is_json, is_jsonvja, custom_format)
 
 
 @label_group.command("add", help="Add label with title")

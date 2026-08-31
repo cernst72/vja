@@ -42,6 +42,30 @@ Changelog = "https://gitlab.com/ce72/vja/-/blob/main/CHANGELOG.md"
 [tool.setuptools.packages.find]
 include = ["vja*"]
 
-[tool.pylint.design]
-max-args = 8
-max-positional-arguments = 8
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+  "E",    # pycodestyle errors
+  "F",    # pyflakes
+  "W",    # pycodestyle warnings
+  "I",    # isort
+  "UP",   # pyupgrade
+  "B",    # flake8-bugbear
+  "SIM",  # flake8-simplify
+  "RUF",  # ruff-specific rules
+]
+ignore = [
+  "B007",   # loop variable 'x' — used inside eval() template strings, invisible to ruff
+  "B904",   # raise ... from — catch_exception intentionally flattens the chain for CLI output
+  "E501",   # line too long — enforced via line-length, not per-line
+  "RUF012", # mutable class attr — _arg_to_json is a constant lookup table, never mutated
+  "SIM105", # contextlib.suppress — try/except/pass is clearer when the intent needs a comment
+  "SIM108", # ternary instead of if-else — often less readable
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["vja"]
+

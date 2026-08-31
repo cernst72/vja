@@ -39,9 +39,7 @@ def parse_date_arg_to_datetime(
     except (ValueError, OverflowError):
         pass
 
-    timetuple, pdt_context = parsedatetime.Calendar(
-        version=parsedatetime.VERSION_CONTEXT_STYLE
-    ).parse(text)
+    timetuple, pdt_context = parsedatetime.Calendar(version=parsedatetime.VERSION_CONTEXT_STYLE).parse(text)
     result = datetime.fromtimestamp(time.mktime(timetuple))
     if not pdt_context.hasTime:
         result = result.replace(hour=default_hour, minute=default_minute, second=0)
@@ -70,14 +68,10 @@ def parse_date_arg_to_timedelta(time_str: str | None) -> timedelta | None:
         return None
     parts = _timedelta_regex.match(time_str.lower())
     if parts is None:
-        msg = (
-            f"""Could not parse any time information from '{time_str}'.
+        msg = f"""Could not parse any time information from '{time_str}'.
         Examples of valid strings: '1w', '2d8h5m2s', '2.5m4.0s'"""
-        )
         raise VjaError(msg)
-    time_params = {
-        name: float(param) for name, param in parts.groupdict().items() if param
-    }
+    time_params = {name: float(param) for name, param in parts.groupdict().items() if param}
     return timedelta(**time_params)
 
 

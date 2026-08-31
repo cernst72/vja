@@ -39,9 +39,7 @@ def _echo_task_result(ctx, task, task_id: int, quiet_show: bool, verbose_show: b
         ctx.invoke(task_show, tasks=[task_id])
 
 
-@click.group(
-    "task", help="(optional) subcommand: task (see help)", cls=ClickAliasedGroup
-)
+@click.group("task", help="(optional) subcommand: task (see help)", cls=ClickAliasedGroup)
 def task_group():
     # vja task
     pass
@@ -58,9 +56,7 @@ def task_group():
     "--project_id",
     help="Project (id or title), defaults to project from user settings, then to first favorite project",
 )
-@click.option(
-    "note", "-n", "--note", "--notes", "--description", help="Set description (note)"
-)
+@click.option("note", "-n", "--note", "--notes", "--description", help="Set description (note)")
 @click.option("prio", "-p", "--prio", "--priority", help="Set priority")
 @click.option(
     "due",
@@ -145,9 +141,7 @@ def task_add(
         ctx.invoke(task_show, tasks=[task.id])
 
 
-@task_group.command(
-    "clone", help="Clone task with given task_id. Set the new title", aliases=["copy"]
-)
+@task_group.command("clone", help="Clone task with given task_id. Set the new title", aliases=["copy"])
 @click.argument("task_id", required=True, type=click.INT)
 @click.argument("title", required=True, nargs=-1)
 @output_options
@@ -164,9 +158,7 @@ def task_clone(
 ):
     task = application.command_service.clone_task(task_id, " ".join(title))
     if verbose_show or not quiet_show:
-        click.echo(
-            f"Created task {task.id} in project {task.project.id} as clone from {task_id}"
-        )
+        click.echo(f"Created task {task.id} in project {task.project.id} as clone from {task_id}")
     if verbose_show:
         ctx.invoke(task_show, tasks=[task.id])
 
@@ -179,9 +171,7 @@ def task_clone(
 @click.argument("task_ids", required=True, type=click.INT, nargs=-1)
 @output_options
 @click.option("title", "-i", "--title", help="Set title")
-@click.option(
-    "note", "-n", "--note", "--notes", "--description", help="Set description (note)"
-)
+@click.option("note", "-n", "--note", "--notes", "--description", help="Set description (note)")
 @click.option(
     "note_append",
     "-a",
@@ -208,9 +198,7 @@ def task_clone(
     type=click.INT,
     help="Set project position",
 )
-@click.option(
-    "bucket_id", "--bucket-id", "--bucket_id", type=click.INT, help="Set bucket id"
-)
+@click.option("bucket_id", "--bucket-id", "--bucket_id", type=click.INT, help="Set bucket id")
 @click.option(
     "kanban_position",
     "--kanban-position",
@@ -375,9 +363,7 @@ def task_delete(application: Application, task_ids, quiet_show=False):
     "Optionally limit output to given TASK_IDs.",
 )
 @click.argument("task_ids", type=click.INT, nargs=-1)
-@click.option(
-    "is_json", "--json", default=False, is_flag=True, help="Print as Vikunja json"
-)
+@click.option("is_json", "--json", default=False, is_flag=True, help="Print as Vikunja json")
 @click.option(
     "is_jsonvja",
     "--jsonvja",
@@ -433,9 +419,7 @@ def task_delete(application: Application, task_ids, quiet_show=False):
     "where <operator> in (eq, ne, gt, lt, ge, le, before, after, contains). "
     "Multiple occurrences of --filter are allowed and will be combined with logical AND.",
 )
-@click.option(
-    "label_filter", "-l", "--label", help="Filter by label (id or title-regex)"
-)
+@click.option("label_filter", "-l", "--label", help="Filter by label (id or title-regex)")
 @click.option(
     "project_filter",
     "-o",
@@ -504,14 +488,10 @@ def task_ls(
     **filter_args,
 ):
     if custom_format:
-        custom_format = application.configuration.get_custom_format_string(
-            custom_format
-        )
+        custom_format = application.configuration.get_custom_format_string(custom_format)
     filter_args = {k: v for k, v in filter_args.items() if v is not None}
 
-    tasks = application.query_service.find_filtered_tasks(
-        include_completed, sort_string, filter_args
-    )
+    tasks = application.query_service.find_filtered_tasks(include_completed, sort_string, filter_args)
     if task_ids:
         tasks = [t for t in tasks if t.id in task_ids]
 
@@ -522,9 +502,7 @@ def task_ls(
 
 @task_group.command("show", help="Show task details. Multiple task ids may be given")
 @click.argument("tasks", type=click.INT, nargs=-1)
-@click.option(
-    "is_json", "--json", default=False, is_flag=True, help="Print as Vikunja json"
-)
+@click.option("is_json", "--json", default=False, is_flag=True, help="Print as Vikunja json")
 @click.option(
     "is_jsonvja",
     "--jsonvja",
@@ -542,8 +520,7 @@ def task_show(application: Application, tasks, is_json, is_jsonvja):
 
 @task_group.command(
     name="open",
-    help="Open task in browser. Multiple task ids may be given. "
-    "If tasks is empty, then open vikunjas starting page.",
+    help="Open task in browser. Multiple task ids may be given. If tasks is empty, then open vikunjas starting page.",
 )
 @click.argument("tasks", required=False, type=click.INT, nargs=-1)
 @with_application

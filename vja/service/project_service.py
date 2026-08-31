@@ -16,10 +16,7 @@ class ProjectService:
 
     def find_all_projects(self) -> list[Project]:
         if not self._project_by_id_cache:
-            self._project_by_id_cache = {
-                x["id"]: Project.from_json(x, [])
-                for x in self._api_client.get_projects()
-            }
+            self._project_by_id_cache = {x["id"]: Project.from_json(x, []) for x in self._api_client.get_projects()}
             self._fill_ancestors()
         return list(self._project_by_id_cache.values())
 
@@ -65,14 +62,10 @@ class ProjectService:
             while ancestor and ancestor.id not in visited:
                 visited.add(ancestor.id)
                 ancestor_projects.append(ancestor)
-                ancestor = self._get_ancestor_project(
-                    ancestor.id, ancestor.parent_project_id
-                )
+                ancestor = self._get_ancestor_project(ancestor.id, ancestor.parent_project_id)
             project.ancestor_projects = ancestor_projects
 
-    def _get_ancestor_project(
-        self, project_id: int, parent_project_id: int
-    ) -> Project | None:
+    def _get_ancestor_project(self, project_id: int, parent_project_id: int) -> Project | None:
         if parent_project_id in (project_id, 0) or project_id == 0:
             return None
         return self._project_by_id_cache.get(parent_project_id)

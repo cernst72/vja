@@ -50,9 +50,7 @@ def relation_group():
 @with_application
 @click.pass_context
 @catch_exception(handle=VjaError)
-def relation_add(
-    ctx, application, task_id, kind, other_task_id, quiet_show=False, verbose_show=False
-):
+def relation_add(ctx, application, task_id, kind, other_task_id, quiet_show=False, verbose_show=False):
     task = application.command_service.add_relation(task_id, kind, other_task_id)
     if verbose_show or not quiet_show:
         click.echo(f"Modified task {task.id} in project {task.project.id}")
@@ -94,9 +92,7 @@ def relation_add(
 @with_application
 @click.pass_context
 @catch_exception(handle=VjaError)
-def relation_remove(
-    ctx, application, task_id, kind, other_task_id, quiet_show=False, verbose_show=False
-):
+def relation_remove(ctx, application, task_id, kind, other_task_id, quiet_show=False, verbose_show=False):
     task = application.command_service.remove_relation(task_id, kind, other_task_id)
     if verbose_show or not quiet_show:
         click.echo(f"Modified task {task.id} in project {task.project.id}")

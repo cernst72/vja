@@ -13,7 +13,6 @@ _TOKEN_JSON = "token.json"
 
 
 class VjaConfiguration:
-
     def __init__(self):
         self._directory = self.find_config_path()
         self._file = self.get_config_file()

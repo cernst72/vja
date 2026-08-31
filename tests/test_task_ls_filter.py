@@ -53,11 +53,7 @@ class TestTaskLsFilter:
         res = invoke(runner, ["ls", "--jsonvja", "--base-project=est-project"])
         data = json.loads(res.output)
         assert len(data) > 0
-        assert all(
-            i["project"]["title"] == "test-project"
-            or i["project"]["title"] == "grand-child"
-            for i in data
-        )
+        assert all(i["project"]["title"] == "test-project" or i["project"]["title"] == "grand-child" for i in data)
         assert any(i["project"]["title"] == "test-project" for i in data)
         assert any(i["project"]["title"] == "grand-child" for i in data)
         res = invoke(runner, ["ls", "--jsonvja", "--project=Not created"])
@@ -115,13 +111,9 @@ class TestTaskLsFilter:
         assert len(json.loads(res.output)) > 0
         res = invoke(runner, ["ls", "--jsonvja", "--filter=priority gt 5"])
         assert len(json.loads(res.output)) == 0
-        res = invoke(
-            runner, ["ls", "--jsonvja", "--filter=title contains At least one"]
-        )
+        res = invoke(runner, ["ls", "--jsonvja", "--filter=title contains At least one"])
         assert len(json.loads(res.output)) > 0
-        res = invoke(
-            runner, ["ls", "--jsonvja", "--filter=title contains TASK_NOT_CREATED"]
-        )
+        res = invoke(runner, ["ls", "--jsonvja", "--filter=title contains TASK_NOT_CREATED"])
         assert len(json.loads(res.output)) == 0
 
     def test_task_filter_general_label(self, runner):
@@ -135,9 +127,7 @@ class TestTaskLsFilter:
         assert all("my_tag" not in _labels_from_task_json(task) for task in data)
 
     def test_task_filter_general_combined(self, runner):
-        res = invoke(
-            runner, ["ls", "--jsonvja", "--filter=id gt 0", "--filter=id lt 2"]
-        )
+        res = invoke(runner, ["ls", "--jsonvja", "--filter=id gt 0", "--filter=id lt 2"])
         data = json.loads(res.output)
         assert len(data) == 1
         assert all(i["id"] == 1 for i in data)

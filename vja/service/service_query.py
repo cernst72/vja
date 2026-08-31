@@ -38,18 +38,14 @@ class QueryService:
     def find_buckets_in_first_kanban_view(self, arg_project: str) -> list[Bucket]:
         project = self._project_service.find_project_by_id_or_title(arg_project)
         project_view = project.get_first_kanban_project_view()
-        return Bucket.from_json_array(
-            self._api_client.get_buckets(project.id, project_view.id)
-        )
+        return Bucket.from_json_array(self._api_client.get_buckets(project.id, project_view.id))
 
     # label
     def find_all_labels(self) -> list[Label]:
         return Label.from_json_array(self._api_client.get_labels())
 
     # tasks
-    def find_filtered_tasks(
-        self, include_completed: bool, sort_string: str | None, filter_args: dict
-    ) -> list[Task]:
+    def find_filtered_tasks(self, include_completed: bool, sort_string: str | None, filter_args: dict) -> list[Task]:
         task_object_array = [
             self._task_service.task_from_json(x)
             for x in self._api_client.get_tasks(
@@ -72,8 +68,7 @@ class QueryService:
     def _sort(filtered_tasks: list[Task], sort_string: str | None) -> list[Task]:
         sort_string = sort_string or DEFAULT_SORT_STRING
         sort_fields = [
-            {"name": x.strip().strip("-"), "reverse": x.strip().startswith("-")}
-            for x in sort_string.split(",")
+            {"name": x.strip().strip("-"), "reverse": x.strip().startswith("-")} for x in sort_string.split(",")
         ]
         for sort_field in reversed(sort_fields):
             filtered_tasks.sort(

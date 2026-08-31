@@ -37,9 +37,7 @@ class CommandService:
     # project
     def add_project(self, title: str, parent_project: str) -> Project:
         if parent_project:
-            parent_project_id = self._project_service.find_project_by_id_or_title(
-                parent_project
-            ).id
+            parent_project_id = self._project_service.find_project_by_id_or_title(parent_project).id
         else:
             parent_project_id = None
         project_json = self._api_client.create_project(title, parent_project_id)
@@ -92,9 +90,7 @@ class CommandService:
     def add_task(self, title: str, args: dict) -> Task:
         args["title"] = title
         if args.get("project_id"):
-            project_id = self._project_service.find_project_by_id_or_title(
-                args.pop("project_id")
-            ).id
+            project_id = self._project_service.find_project_by_id_or_title(args.pop("project_id")).id
         else:
             project_id = self._project_service.get_default_project().id
         label_names = args.pop("label")
@@ -123,9 +119,7 @@ class CommandService:
             if label:
                 self._api_client.add_label_to_task(task.id, label.id)
 
-    def _add_assignees_to_task(
-        self, task: Task, assignee_names: list[str], project_id: int
-    ):
+    def _add_assignees_to_task(self, task: Task, assignee_names: list[str], project_id: int):
         for assignee_name in assignee_names:
             assignee = self._user_from_name(assignee_name, project_id)
             self._api_client.add_assignee_to_task(task.id, assignee.id)
@@ -177,14 +171,10 @@ class CommandService:
         if args.get("note_append"):
             append_note = args.pop("note_append")
             args["note"] = (
-                task_remote["description"] + "\n" + append_note
-                if task_remote["description"]
-                else append_note
+                task_remote["description"] + "\n" + append_note if task_remote["description"] else append_note
             )
         if args.get("project_id"):
-            args["project_id"] = self._project_service.find_project_by_id_or_title(
-                args.pop("project_id")
-            ).id
+            args["project_id"] = self._project_service.find_project_by_id_or_title(args.pop("project_id")).id
 
     def _toggle_label(self, task: Task, label_name: str | None, is_force: bool):
         label = self._label_from_name(label_name, is_force) if label_name else None
@@ -210,9 +200,7 @@ class CommandService:
         arg_due = args.get("due")
         remote_date = parse_json_date(task_remote["due_date"])
         if remote_date:
-            arg_date = parse_date_arg_to_iso(
-                arg_due, remote_date.hour, remote_date.minute
-            )
+            arg_date = parse_date_arg_to_iso(arg_due, remote_date.hour, remote_date.minute)
         else:
             arg_date = parse_date_arg_to_iso(arg_due)
         args["due"] = arg_date
@@ -251,9 +239,7 @@ class CommandService:
             return [{"relative_to": "due_date", "relative_period": 0}]
         if "due" in reminder_arg:
             reminder_due_args = reminder_arg.split(" ", 2)
-            duration = int(
-                parse_date_arg_to_timedelta(reminder_due_args[0]).total_seconds()
-            )
+            duration = int(parse_date_arg_to_timedelta(reminder_due_args[0]).total_seconds())
             sign = -1 if reminder_due_args[1] == "before" else 1
             return [{"relative_to": "due_date", "relative_period": sign * duration}]
         if reminder_arg == "":
@@ -301,18 +287,12 @@ class CommandService:
     def delete_task(self, task_id: int) -> None:
         self._api_client.delete_task(task_id)
 
-    def add_relation(
-        self, task_id: int, relation_kind: str, other_task_id: int
-    ) -> Task:
+    def add_relation(self, task_id: int, relation_kind: str, other_task_id: int) -> Task:
         self._api_client.add_relation_to_task(task_id, relation_kind, other_task_id)
         return self._task_service.task_from_json(self._api_client.get_task(task_id))
 
-    def remove_relation(
-        self, task_id: int, relation_kind: str, other_task_id: int
-    ) -> Task:
-        self._api_client.remove_relation_from_task(
-            task_id, relation_kind, other_task_id
-        )
+    def remove_relation(self, task_id: int, relation_kind: str, other_task_id: int) -> Task:
+        self._api_client.remove_relation_from_task(task_id, relation_kind, other_task_id)
         return self._task_service.task_from_json(self._api_client.get_task(task_id))
 
     def _label_from_name(self, name: str | None, is_force: bool) -> Label | None:
@@ -331,9 +311,7 @@ class CommandService:
         return label_found[0]
 
     def _user_from_name(self, name: str, project_id: int) -> Assignee:
-        users_remote = Assignee.from_json_array(
-            self._api_client.get_project_users(project_id)
-        )
+        users_remote = Assignee.from_json_array(self._api_client.get_project_users(project_id))
         user_found = [u for u in users_remote if u.username == name]
         if not user_found:
             msg = f"User '{name}' not found in project {project_id}."
@@ -341,9 +319,7 @@ class CommandService:
         return user_found[0]
 
     def _validate_add_task(self, title: str, label_names: list[str]):
-        tasks_remote = self._api_client.get_tasks(
-            exclude_completed=True, include_buckets=False
-        )
+        tasks_remote = self._api_client.get_tasks(exclude_completed=True, include_buckets=False)
         if any(task for task in tasks_remote if task["title"] == title):
             msg = "Task with title does exist. You may want to run with --force-create."
             raise VjaError(msg)

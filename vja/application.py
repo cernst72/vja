@@ -32,15 +32,11 @@ class Application:
     @catch_exception(handle=VjaError)
     def __init__(self):
         self._configuration = VjaConfiguration()
-        api_client = ApiClient(
-            self._configuration.get_api_url(), self._configuration.get_token_file()
-        )
+        api_client = ApiClient(self._configuration.get_api_url(), self._configuration.get_token_file())
         project_service = ProjectService(api_client)
         urgency_service = Urgency.from_config(self._configuration)
         task_service = TaskService(project_service, urgency_service)
-        self._command_service = CommandService(
-            project_service, task_service, api_client
-        )
+        self._command_service = CommandService(project_service, task_service, api_client)
         self._query_service = QueryService(project_service, task_service, api_client)
         self._output = Output()
 

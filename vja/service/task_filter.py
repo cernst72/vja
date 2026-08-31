@@ -70,12 +70,12 @@ def _create_project_filter(value):
 
 def _create_upper_project_filter(value):
     if str(value).isdigit():
-        return lambda x: x.project.id == int(value) or any(
-            ancestor.id == int(value) for ancestor in x.project.ancestor_projects
+        return lambda x: (
+            x.project.id == int(value) or any(ancestor.id == int(value) for ancestor in x.project.ancestor_projects)
         )
-    return lambda task: _find_regex(value, task.project.title) or any(
-        _find_regex(value, ancestor.title)
-        for ancestor in task.project.ancestor_projects
+    return lambda task: (
+        _find_regex(value, task.project.title)
+        or any(_find_regex(value, ancestor.title) for ancestor in task.project.ancestor_projects)
     )
 
 
@@ -129,7 +129,5 @@ def create_filters(filter_args):
     filters = []
     for filter_name, filter_value in filter_args.items():
         add_filter = _filter_mapping[filter_name](filter_value)
-        filters.extend(
-            add_filter if isinstance(add_filter, (list, tuple)) else [add_filter]
-        )
+        filters.extend(add_filter if isinstance(add_filter, (list, tuple)) else [add_filter])
     return filters

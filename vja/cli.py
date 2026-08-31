@@ -18,9 +18,7 @@ from vja.commands import user as user_module
 logger = logging.getLogger(__name__)
 
 
-@click.group(
-    cls=ClickAliasedGroup, context_settings={"help_option_names": ["-h", "--help"]}
-)
+@click.group(cls=ClickAliasedGroup, context_settings={"help_option_names": ["-h", "--help"]})
 @click.pass_context
 @click.version_option(metadata.version("vja"))
 @click.option(
@@ -31,23 +29,16 @@ logger = logging.getLogger(__name__)
     is_flag=True,
     help="Activate verbose logging",
 )
-@click.option(
-    "-u", "--username", "username", help="Username for initial login (optional)"
-)
-@click.option(
-    "-p", "--password", "password", help="Password for initial login (optional)"
-)
+@click.option("-u", "--username", "username", help="Username for initial login (optional)")
+@click.option("-p", "--password", "password", help="Password for initial login (optional)")
 @click.option(
     "-t",
     "--totp-passcode",
     "--totp_passcode",
     "totp_passcode",
-    help="Time-based one-time passcode from your authenticator app (optional). "
-    "Only if TOTP is enabled on server.",
+    help="Time-based one-time passcode from your authenticator app (optional). Only if TOTP is enabled on server.",
 )
-def cli(
-    ctx: click.Context, verbose=None, username=None, password=None, totp_passcode=None
-):
+def cli(ctx: click.Context, verbose=None, username=None, password=None, totp_passcode=None):
     if verbose:
         logging.basicConfig(
             level=logging.DEBUG,
