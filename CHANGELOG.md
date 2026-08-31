@@ -1,3 +1,13 @@
+## [6.0.3](https://gitlab.com/ce72/vja/compare/6.0.2...6.0.3) (2026-08-31)
+
+### Bug Fixes
+
+* **authenticate:** support vikunja:2.6.0 which may return multiple cookies with the same name ([2136622](https://gitlab.com/ce72/vja/commit/2136622dfa560015d1542f87cedbede31a5d3839))
+
+### Automation
+
+* run tests against vikunja:2.6.0 ([1530b41](https://gitlab.com/ce72/vja/commit/1530b41e7fdb536fb3d69daa32d8e5245afe0563))
+
 ## [6.0.2](https://gitlab.com/ce72/vja/compare/6.0.1...6.0.2) (2026-08-25)
 
 ### Bug Fixes
