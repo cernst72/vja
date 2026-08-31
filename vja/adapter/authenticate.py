@@ -117,10 +117,18 @@ class Login:
 
     def _update_tokens(self, response: Response):
         self._token["access"] = response_to_json(response)["token"]
-        new_refresh_token = response.cookies.get("vikunja_refresh_token")
+        new_refresh_token = self._extract_refresh_cookie(response)
         if new_refresh_token:
             self._token["refresh"] = new_refresh_token
         self._store_tokens_to_file()
+
+    @staticmethod
+    def _extract_refresh_cookie(response: Response):
+        value = None
+        for cookie in response.cookies:
+            if cookie.name == "vikunja_refresh_token":
+                value = cookie.value
+        return value
 
     def _post_login_request(self, username, password, totp_passcode):
         login_url = f"{self._api_url}/login"
