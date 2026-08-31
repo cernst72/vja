@@ -1,11 +1,30 @@
 import dataclasses
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
+from typing import Any
 
 from vja import VjaError
 from vja.parse import html2text, parse_json_date
 
 ID_TITLE = "id={},title={}"
+
+
+def required_fields(json: dict):
+    """Returns a reader for mandatory api response fields."""
+
+    def read(*path: str) -> Any:
+        value = json
+        for key in path:
+            if not isinstance(value, dict) or key not in value:
+                msg = (
+                    f"Field '{'.'.join(path)}' is missing in the api response. "
+                    "Please check whether your Vikunja server version is supported."
+                )
+                raise VjaError(msg)
+            value = value[key]
+        return value
+
+    return read
 
 
 def custom_output(cls):
@@ -64,12 +83,13 @@ class User:
 
     @classmethod
     def from_json(cls, json: dict) -> "User":
+        read = required_fields(json)
         return cls(
-            json,
-            json["id"],
-            json["username"],
-            json["name"],
-            json["settings"]["default_project_id"],
+            json=json,
+            id=read("id"),
+            username=read("username"),
+            name=read("name"),
+            default_project_id=read("settings", "default_project_id"),
         )
 
 
@@ -88,15 +108,16 @@ class ProjectView:
 
     @classmethod
     def from_json(cls, json: dict) -> "ProjectView":
+        read = required_fields(json)
         return cls(
-            json,
-            json["id"],
-            json["title"],
-            json["project_id"],
-            json["view_kind"],
-            json["bucket_configuration_mode"],
-            json["default_bucket_id"],
-            json["done_bucket_id"],
+            json=json,
+            id=read("id"),
+            title=read("title"),
+            project_id=read("project_id"),
+            view_kind=read("view_kind"),
+            bucket_configuration_mode=read("bucket_configuration_mode"),
+            default_bucket_id=read("default_bucket_id"),
+            done_bucket_id=read("done_bucket_id"),
         )
 
     @classmethod
@@ -124,16 +145,17 @@ class Project:
 
     @classmethod
     def from_json(cls, json: dict, ancestor_projects: list["Project"]) -> "Project":
+        read = required_fields(json)
         return cls(
-            json,
-            json["id"],
-            json["title"],
-            json["description"],
-            json["is_favorite"],
-            json["is_archived"],
-            json.get("parent_project_id", 0),
-            ancestor_projects,
-            ProjectView.from_json_array(json["views"]),
+            json=json,
+            id=read("id"),
+            title=read("title"),
+            description=read("description"),
+            is_favorite=read("is_favorite"),
+            is_archived=read("is_archived"),
+            parent_project_id=json.get("parent_project_id", 0),
+            ancestor_projects=ancestor_projects,
+            views=ProjectView.from_json_array(read("views")),
         )
 
     @classmethod
@@ -164,13 +186,14 @@ class Bucket:
 
     @classmethod
     def from_json(cls, json: dict) -> "Bucket":
+        read = required_fields(json)
         return cls(
-            json,
-            json["id"],
-            json["title"],
-            json["limit"],
-            json["position"],
-            json["count"],
+            json=json,
+            id=read("id"),
+            title=read("title"),
+            limit=read("limit"),
+            position=read("position"),
+            count_tasks=read("count"),
         )
 
     @classmethod
@@ -187,7 +210,8 @@ class Label:
 
     @classmethod
     def from_json(cls, json: dict) -> "Label":
-        return cls(json, json["id"], json["title"])
+        read = required_fields(json)
+        return cls(json=json, id=read("id"), title=read("title"))
 
     @classmethod
     def from_json_array(cls, json_array: list[dict] | None) -> list["Label"]:
@@ -207,7 +231,13 @@ class Assignee:
 
     @classmethod
     def from_json(cls, json: dict) -> "Assignee":
-        return cls(json, json["id"], json["username"], json.get("name", ""))
+        read = required_fields(json)
+        return cls(
+            json=json,
+            id=read("id"),
+            username=read("username"),
+            name=json.get("name", ""),
+        )
 
     @classmethod
     def from_json_array(cls, json_array: list[dict] | None) -> list["Assignee"]:
@@ -227,7 +257,13 @@ class TaskBucket:
 
     @classmethod
     def from_json(cls, json: dict) -> "TaskBucket":
-        return cls(json, json["id"], json["project_view_id"], json["title"])
+        read = required_fields(json)
+        return cls(
+            json=json,
+            id=read("id"),
+            project_view_id=read("project_view_id"),
+            title=read("title"),
+        )
 
     @classmethod
     def from_json_array(cls, json_array: list[dict] | None) -> list["TaskBucket"]:
@@ -240,7 +276,6 @@ class TaskBucket:
 @dataclass
 @custom_output
 @data_dict
-# pylint: disable=too-many-instance-attributes
 class TaskReminder:
     json: dict = field(repr=False, compare=False)
     reminder: datetime | None
@@ -249,11 +284,12 @@ class TaskReminder:
 
     @classmethod
     def from_json(cls, json: dict) -> "TaskReminder":
+        read = required_fields(json)
         return cls(
-            json,
-            parse_json_date(json["reminder"]),
-            json["relative_period"],
-            json["relative_to"],
+            json=json,
+            reminder=parse_json_date(read("reminder")),
+            relative_period=read("relative_period"),
+            relative_to=read("relative_to"),
         )
 
     @classmethod
@@ -294,10 +330,20 @@ class TaskRelation:
     @classmethod
     def from_json_map(cls, related_tasks: dict | None) -> list["TaskRelation"]:
         return [
-            cls(task_json, kind, task_json["id"], task_json["title"])
+            cls.from_json(kind, task_json)
             for kind, tasks in (related_tasks or {}).items()
             for task_json in tasks or []
         ]
+
+    @classmethod
+    def from_json(cls, kind: str, json: dict) -> "TaskRelation":
+        read = required_fields(json)
+        return cls(
+            json=json,
+            kind=kind,
+            other_task_id=read("id"),
+            other_task_title=read("title"),
+        )
 
     def short_str(self) -> str:
         return (
@@ -334,7 +380,7 @@ class Task:
     bucket_objects: list[TaskBucket]
     created: datetime | None
     updated: datetime | None
-    urgency: float = field(init=False, compare=False)
+    urgency: float = field(init=False, compare=False, default=0.0)
 
     @property
     def labels(self) -> str:
@@ -354,31 +400,33 @@ class Task:
         json: dict,
         project_object: Project,
     ) -> "Task":
+        read = required_fields(json)
+        description = read("description")
         return cls(
-            json,
-            json["id"],
-            json["title"],
-            json["description"],
-            html2text(json["description"]),
-            json["priority"],
-            json["is_favorite"],
-            parse_json_date(json["due_date"]),
-            TaskReminder.from_json_array(json["reminders"]),
-            json["repeat_mode"],
-            timedelta(seconds=json["repeat_after"]),
-            parse_json_date(json["start_date"]),
-            parse_json_date(json["end_date"]),
-            json["percent_done"],
-            json["done"],
-            parse_json_date(json["done_at"]),
-            Label.from_json_array(json["labels"]),
-            Assignee.from_json_array(json["assignees"]),
-            TaskRelation.from_json_map(json["related_tasks"]),
-            project_object,
-            json["position"],
-            TaskBucket.from_json_array(json.get("buckets", [])),
-            parse_json_date(json["created"]),
-            parse_json_date(json["updated"]),
+            json=json,
+            id=read("id"),
+            title=read("title"),
+            description=description,
+            description_text=html2text(description),
+            priority=read("priority"),
+            is_favorite=read("is_favorite"),
+            due_date=parse_json_date(read("due_date")),
+            reminders=TaskReminder.from_json_array(read("reminders")),
+            repeat_mode=read("repeat_mode"),
+            repeat_after=timedelta(seconds=read("repeat_after")),
+            start_date=parse_json_date(read("start_date")),
+            end_date=parse_json_date(read("end_date")),
+            percent_done=read("percent_done"),
+            done=read("done"),
+            done_at=parse_json_date(read("done_at")),
+            label_objects=Label.from_json_array(read("labels")),
+            assignee_objects=Assignee.from_json_array(read("assignees")),
+            relations=TaskRelation.from_json_map(read("related_tasks")),
+            project=project_object,
+            position=read("position"),
+            bucket_objects=TaskBucket.from_json_array(json.get("buckets", [])),
+            created=parse_json_date(read("created")),
+            updated=parse_json_date(read("updated")),
         )
 
     def has_label(self, label: Label) -> bool:
