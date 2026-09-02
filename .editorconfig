@@ -10,6 +10,7 @@ charset = utf-8
 [*.{py,java,r,R}]
 indent_style = space
 indent_size = 4
+max_line_length = 120
 
 [*.{js,json,y{a,}ml,html,cwl}]
 indent_style = space

@@ -4,6 +4,7 @@ from tests.test_command_helpers import json_for_task_id
 
 class TestRelation:
     def test_add_creates_relation_and_inverse(self, runner):
+        invoke(runner, "relation remove 1 subtask 3", expected_return_code=None, catch_exceptions=True)
         res = invoke(runner, "relation add 1 subtask 3")
         assert res.exit_code == 0
         source = json_for_task_id(runner, 1)
@@ -12,7 +13,7 @@ class TestRelation:
         assert any(r["kind"] == "parenttask" and r["other_task_id"] == 1 for r in target["relations"])
 
     def test_remove_removes_relation_and_inverse(self, runner):
-        invoke(runner, "relation add 1 subtask 3")
+        invoke(runner, "relation add 1 subtask 3", expected_return_code=None, catch_exceptions=True)
         assert invoke(runner, "relation remove 1 subtask 3").exit_code == 0
         source = json_for_task_id(runner, 1)
         assert not any(r["kind"] == "subtask" and r["other_task_id"] == 3 for r in source["relations"])

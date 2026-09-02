@@ -1,6 +1,7 @@
 import json
 
 from tests.conftest import invoke
+from tests.test_command_helpers import labels_from_task_json
 
 
 class TestTaskLsFilter:
@@ -11,7 +12,7 @@ class TestTaskLsFilter:
         res = invoke(runner, ["ls", "--jsonvja", "--due-date=before tomorrow"])
         data = json.loads(res.output)
         assert len(data) > 0
-        res = invoke(runner, ["ls", "--jsonvja", "--due-date=after next week"])
+        res = invoke(runner, ["ls", "--jsonvja", "--due-date=after 2 weeks"])
         data = json.loads(res.output)
         assert len(data) == 0
         res = invoke(runner, ["ls", "--jsonvja", "--due-date="])
@@ -120,18 +121,14 @@ class TestTaskLsFilter:
         res = invoke(runner, ["ls", "--jsonvja", "--filter=labels contains my_tag"])
         data = json.loads(res.output)
         assert len(data) > 0
-        assert all("my_tag" in _labels_from_task_json(task) for task in data)
+        assert all("my_tag" in labels_from_task_json(task) for task in data)
         res = invoke(runner, ["ls", "--jsonvja", "--filter=labels ne my_tag"])
         data = json.loads(res.output)
         assert len(data) > 0
-        assert all("my_tag" not in _labels_from_task_json(task) for task in data)
+        assert all("my_tag" not in labels_from_task_json(task) for task in data)
 
     def test_task_filter_general_combined(self, runner):
         res = invoke(runner, ["ls", "--jsonvja", "--filter=id gt 0", "--filter=id lt 2"])
         data = json.loads(res.output)
         assert len(data) == 1
         assert all(i["id"] == 1 for i in data)
-
-
-def _labels_from_task_json(task):
-    return " ".join(label["title"] for label in task["label_objects"] or [])

@@ -1,5 +1,5 @@
 from tests.conftest import invoke
-from tests.test_command_helpers import json_for_task_id
+from tests.test_command_helpers import edit_task, json_for_task_id
 
 
 class TestToggleDoneTask:
@@ -13,8 +13,7 @@ class TestToggleDoneTask:
         assert done_0 == done_2
 
     def test_toggle_does_not_modify_other_fields(self, runner):
-        invoke(runner, "edit 1 --priority=5")
-        json_0 = json_for_task_id(runner, 1)
+        json_0 = edit_task(runner, 1, "--priority=5")
         invoke(runner, "check 1")
         json_1 = json_for_task_id(runner, 1)
         invoke(runner, "check 1")

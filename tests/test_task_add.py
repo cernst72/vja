@@ -1,4 +1,4 @@
-from tests.conftest import invoke
+from tests.conftest import invoke, invoke_error
 from tests.test_command_helpers import (
     DATE_2_ISO,
     TOMORROW_AT_8_ISO,
@@ -25,7 +25,7 @@ class TestAddTask:
         assert after["due_date"] == TOMORROW_AT_8_ISO
 
     def test_duplicate_task_title_rejected(self, runner):
-        invoke(runner, "add title of new task", 1, catch_exceptions=True)
+        invoke_error(runner, "add title of new task")
 
     def test_default_reminder_uses_due(self, runner):
         res = invoke(

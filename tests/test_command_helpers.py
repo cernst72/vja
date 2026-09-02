@@ -31,6 +31,11 @@ def json_for_task_id(runner, task_id):
     return json.loads(res.output)
 
 
+def edit_task(runner, task_id, *options):
+    invoke(runner, ["edit", str(task_id), *options])
+    return json_for_task_id(runner, task_id)
+
+
 def has_label_with_title(labels, title):
     label_titles = [x["title"] for x in labels]
     return title in label_titles
@@ -38,3 +43,7 @@ def has_label_with_title(labels, title):
 
 def has_assignee_with_username(assignees, username):
     return username in [x["username"] for x in assignees]
+
+
+def labels_from_task_json(task):
+    return " ".join(label["title"] for label in task["label_objects"] or [])

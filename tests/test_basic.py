@@ -2,7 +2,7 @@ import json
 import logging
 import re
 
-from tests.conftest import invoke
+from tests.conftest import invoke, invoke_error
 from vja.config import VjaConfiguration
 
 
@@ -39,12 +39,7 @@ class TestLoginLogout:
     def test_logout_login_wrong_given_password(self, runner, caplog):
         invoke(runner, "logout")
         assert "Logged out" in caplog.text
-        invoke(
-            runner,
-            "-u testxx -p testxx user show",
-            expected_return_code=1,
-            catch_exceptions=True,
-        )
+        invoke_error(runner, "-u testxx -p testxx user show")
         assert "Wrong username or password." in caplog.text
         invoke(runner, "-u test -p test user show")
         assert "Login successful" in caplog.text
@@ -58,12 +53,10 @@ class TestLoginLogout:
     def test_logout_login_wrong_password_from_stdin(self, runner, caplog):
         invoke(runner, "logout")
         assert "Logged out" in caplog.text
-        res = invoke(
+        res = invoke_error(
             runner,
             "user show",
             user_input="testy\ntesty\n",
-            expected_return_code=1,
-            catch_exceptions=True,
         )
         assert "Wrong username or password." in res.output
         invoke(runner, "-u test -p test user show")
@@ -77,11 +70,7 @@ class TestLoginLogout:
         assert "Login successful" in caplog.text
 
     def test_http_error(self, runner, caplog):
-        res = invoke(
-            runner,
-            "show 9999",
-            expected_return_code=1,
-        )
+        res = invoke_error(runner, "show 9999")
         assert "HTTP-Error 404" in res.output
 
     @staticmethod
