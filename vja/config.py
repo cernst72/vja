@@ -31,6 +31,12 @@ class VjaConfiguration:
     def get_token_file(self) -> Path:
         return self._directory / _TOKEN_JSON
 
+    def get_api_token(self) -> str | None:
+        env_token = os.getenv("VJA_API_TOKEN")
+        if env_token:
+            return env_token
+        return self._parser.get("application", "api_token", fallback=None)
+
     def get_custom_format_string(self, template_key):
         return self._parser.get("output", template_key, fallback=None)
 
