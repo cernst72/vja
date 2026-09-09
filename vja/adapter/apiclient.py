@@ -58,7 +58,7 @@ def _handle_http_401(client, response, func, args, kwargs):
 
 
 class ApiClient:
-    def __init__(self, api_url: str, token_file):
+    def __init__(self, api_url: str, token_file, api_token: str | None = None):
         logger.debug("Connecting to api_url %s", api_url)
         if "/v1" in api_url:
             raise VjaError(
@@ -66,7 +66,7 @@ class ApiClient:
             )
         self._api_url = api_url
         self._cache: dict = {"projects": None, "labels": None, "tasks": None}
-        self._login = Login(self._api_url, token_file)
+        self._login = Login(self._api_url, token_file, api_token)
 
     @handle_http_error
     @inject_access_token

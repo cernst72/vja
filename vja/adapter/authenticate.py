@@ -15,13 +15,16 @@ logger = logging.getLogger(__name__)
 
 
 class Login:
-    def __init__(self, api_url, token_file):
+    def __init__(self, api_url, token_file, api_token=None):
         self._api_url = api_url
         self._token_file = token_file
+        self._static_api_token = api_token or None
         self._token: dict[str, str | None] = {"access": None, "refresh": None}
 
     @property
     def _access_token(self):
+        if self._static_api_token:
+            return self._static_api_token
         if not self._token["access"]:
             msg = "access token not set! call authenticate()"
             raise VjaError(msg)
@@ -32,6 +35,8 @@ class Login:
         return self._token["refresh"] or None
 
     def validate_access_token(self, force=False, username=None, password=None, totp_passcode=None):
+        if self._static_api_token:
+            return
         if self._load_tokens_from_file() and not force:
             try:
                 self._refresh_proactively()
