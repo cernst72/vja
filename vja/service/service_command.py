@@ -16,6 +16,10 @@ from vja.service.task_service import TaskService
 logger = logging.getLogger(__name__)
 
 
+def _keep(value):
+    return value
+
+
 class CommandService:
     def __init__(
         self,
@@ -57,34 +61,28 @@ class CommandService:
 
     # tasks
     _arg_to_json = {
-        "title": {"field": "title", "mapping": (lambda x: x)},
-        "note": {"field": "description", "mapping": (lambda x: x)},
-        "prio": {"field": "priority", "mapping": int},
-        "due": {"field": "due_date", "mapping": (lambda x: x)},
-        "start": {
-            "field": "start_date",
-            "mapping": parse_date_arg_to_iso,
-        },
-        "end": {
-            "field": "end_date",
-            "mapping": parse_date_arg_to_iso,
-        },
-        "favorite": {"field": "is_favorite", "mapping": bool},
-        "completed": {"field": "done", "mapping": bool},
-        "position": {"field": "position", "mapping": int},
-        "project_id": {"field": "project_id", "mapping": int},
-        "bucket_id": {"field": "bucket_id", "mapping": int},
-        "kanban_position": {"field": "kanban_position", "mapping": int},
-        "reminder": {"field": "reminders", "mapping": (lambda x: x)},
+        "title": ("title", _keep),
+        "note": ("description", _keep),
+        "prio": ("priority", int),
+        "due": ("due_date", _keep),
+        "start": ("start_date", parse_date_arg_to_iso),
+        "end": ("end_date", parse_date_arg_to_iso),
+        "favorite": ("is_favorite", bool),
+        "completed": ("done", bool),
+        "position": ("position", int),
+        "project_id": ("project_id", int),
+        "bucket_id": ("bucket_id", int),
+        "kanban_position": ("kanban_position", int),
+        "reminder": ("reminders", _keep),
     }
 
     def _args_to_payload(self, args: dict) -> dict:
         payload = {}
         for arg_name, arg_value in args.items():
-            mapper = self._arg_to_json.get(arg_name)
-            if mapper is None:
+            if arg_name not in self._arg_to_json:
                 raise VjaError(f"Unknown argument: {arg_name}")
-            payload[mapper["field"]] = mapper["mapping"](arg_value)
+            api_field, convert = self._arg_to_json[arg_name]
+            payload[api_field] = convert(arg_value)
         return payload
 
     def add_task(self, title: str, args: dict) -> Task:
@@ -128,29 +126,20 @@ class CommandService:
         task_remote = self._api_client.duplicate_task(task_id)
         logger.debug("Duplicated task %s to %s", task_id, task_remote["id"])
 
-        task_remote["title"] = title
-        self._clear_for_update(task_remote)
-        logger.debug("Update duplicated task: %s", task_remote)
-        task_json = self._api_client.update_task(task_remote["id"], task_remote)
+        logger.debug("Patch duplicated task title: %s", title)
+        task_json = self._api_client.patch_task(task_remote["id"], {"title": title}, current_task=task_remote)
         return self._task_service.task_from_json(task_json)
-
-    @staticmethod
-    def _clear_for_update(task_remote: dict):
-        task_remote.pop("max_permission", None)
 
     def edit_task(self, task_id: int, args: dict) -> Task:
         task_remote = self._api_client.get_task(task_id)
-        self._clear_for_update(task_remote)
         label_name = args.pop("label") if args.get("label") else None
         assignee_name = args.pop("assignee") if args.get("assignee") else None
         is_force = args.pop("force_create", False)
 
         self._preprocess_edit_args(args, task_remote)
         payload = self._args_to_payload(args)
-        logger.debug("Edit fields: %s", payload)
-        task_remote.update(payload)
-        logger.debug("Update task: %s", task_remote)
-        task_json = self._api_client.update_task(task_id, task_remote)
+        logger.debug("Patch task fields: %s", payload)
+        task_json = self._api_client.patch_task(task_id, payload, current_task=task_remote)
         task_new = self._task_service.task_from_json(task_json)
 
         self._toggle_label(task_new, label_name, is_force)
@@ -243,9 +232,9 @@ class CommandService:
 
     def toggle_task_done(self, task_id: int) -> Task:
         task_remote = self._api_client.get_task(task_id)
-        self._clear_for_update(task_remote)
-        task_remote["done"] = not task_remote["done"]
-        task_json = self._api_client.update_task(task_id, task_remote)
+        payload = {"done": not task_remote["done"]}
+        logger.debug("Patch task fields: %s", payload)
+        task_json = self._api_client.patch_task(task_id, payload, current_task=task_remote)
         return self._task_service.task_from_json(task_json)
 
     def defer_task(self, task_id: int, delay_by: str) -> Task:
@@ -255,7 +244,6 @@ class CommandService:
         args = {}
 
         task_remote = self._api_client.get_task(task_id)
-        self._clear_for_update(task_remote)
         due_date = parse_json_date(task_remote["due_date"])
         if due_date:
             now = datetime.datetime.now().replace(microsecond=0)
@@ -274,9 +262,8 @@ class CommandService:
                 args["reminder"] = old_reminders
 
         payload = self._args_to_payload(args)
-        logger.debug("Update task: %s", payload)
-        task_remote.update(payload)
-        task_json = self._api_client.update_task(task_id, task_remote)
+        logger.debug("Patch task fields: %s", payload)
+        task_json = self._api_client.patch_task(task_id, payload, current_task=task_remote)
         return self._task_service.task_from_json(task_json)
 
     def delete_task(self, task_id: int) -> None:

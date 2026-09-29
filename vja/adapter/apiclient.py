@@ -110,10 +110,14 @@ class ApiClient:
 
     @handle_http_error
     @inject_access_token
-    def _put_json(self, url: str, payload: dict | None = None, headers: dict | None = None) -> dict:
-        response = requests.put(url, headers=headers, json=payload, timeout=30)
-        logger.debug("PUT response: %s - %s", response, response.text)
+    def _patch_json(self, url: str, payload: dict | None = None, headers: dict | None = None) -> dict | None:
+        patch_headers = {**(headers or {}), "Content-Type": "application/merge-patch+json"}
+        response = requests.patch(url, headers=patch_headers, json=payload, timeout=30)
+        logger.debug("PATCH response: %s - %s", response, response.text)
         response.raise_for_status()
+        # A 304 (or an otherwise empty body) means the server made no change and returns no task.
+        if response.status_code == 304 or not response.text:
+            return None
         return response_to_json(response)
 
     @handle_http_error
@@ -200,8 +204,16 @@ class ApiClient:
         response = self._post_json(f"{self._api_url}/tasks/{task_id}/duplicate")
         return response["duplicated_task"]
 
-    def update_task(self, task_id: int, payload: dict) -> dict:
-        return self._put_json(f"{self._api_url}/tasks/{task_id}", payload=payload)
+    def patch_task(self, task_id: int, payload: dict, current_task: dict | None = None) -> dict:
+        # The server returns 304 with an empty body when nothing changed (including an empty patch).
+        # In that case fall back to the task the caller already holds, or re-fetch it as a last resort.
+        def unchanged() -> dict:
+            return current_task if current_task is not None else self.get_task(task_id)
+
+        if not payload:
+            return unchanged()
+        updated = self._patch_json(f"{self._api_url}/tasks/{task_id}", payload=payload)
+        return updated if updated is not None else unchanged()
 
     def delete_task(self, task_id: int) -> None:
         self._delete_json(f"{self._api_url}/tasks/{task_id}")
