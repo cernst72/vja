@@ -1,3 +1,23 @@
+## [6.0.4](https://gitlab.com/ce72/vja/compare/6.0.3...6.0.4) (2026-09-29)
+
+### Bug Fixes
+
+* **task clone:** use Vikunjas duplicate endpoint ([8e808a0](https://gitlab.com/ce72/vja/commit/8e808a07faf505f521d2be132b5d970d288ebd16))
+* **task edit:** use Vikunjas Partial Updates (PATCH) endpoint ([e6f67c7](https://gitlab.com/ce72/vja/commit/e6f67c750386359ff8d5365141eb628e201d88e6))
+
+### Misc
+
+* cleanup dev dependencies ([85af0ae](https://gitlab.com/ce72/vja/commit/85af0ae3e1f0404db6d13ddb02e4e4a91439ae90))
+* **deps:** update all dependencies ([c28ed30](https://gitlab.com/ce72/vja/commit/c28ed30ef79395a3fafb632785cc5326933d6f39))
+* refactor class instantiation in model.py ([aba151a](https://gitlab.com/ce72/vja/commit/aba151aa20d328ec82e8f8914ffb678c9e3cb6f2))
+* refactor paging ([de5f4da](https://gitlab.com/ce72/vja/commit/de5f4da9a6dce9cf871bac76540cc9c9e35f25eb))
+* refactor tests ([877a97c](https://gitlab.com/ce72/vja/commit/877a97ca419bcc412020f073934a4791bb1814db))
+* use ruff instead of pylint and flake8 ([a852aea](https://gitlab.com/ce72/vja/commit/a852aea5768a0ea4d0d20b03e35440f4c39f08cf))
+
+### Automation
+
+* pin versions in release step ([6f88639](https://gitlab.com/ce72/vja/commit/6f8863999b8278168ec13cc6784900948365ef1c))
+
 ## [6.0.3](https://gitlab.com/ce72/vja/compare/6.0.2...6.0.3) (2026-08-31)
 
 ### Bug Fixes
