@@ -122,17 +122,17 @@ integration-test-unstable:
 
 release:
   resource_group: semantic-release
-  image: node:lts-slim
+  image: node:24-slim
   stage: release
   variables:
     PYPI_USERNAME: __token__
     PYPI_TOKEN: ${PYPI_VJA_TOKEN}
   before_script:
-    - apt-get update && apt-get install -y --no-install-recommends git-core ca-certificates python3-full python-is-python3 twine
+    - apt-get update && apt-get install -y --no-install-recommends git-core ca-certificates python3-full
     - python3 --version
-    - npm install -g semantic-release @semantic-release/gitlab @semantic-release/changelog conventional-changelog-conventionalcommits@9 @semantic-release/commit-analyzer @semantic-release/git semantic-release-pypi
+    - npm ci
   script:
-    - semantic-release
+    - npx semantic-release
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "beta" || $CI_COMMIT_BRANCH == "rc"
       when: manual
