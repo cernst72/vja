@@ -23,7 +23,6 @@ class TestEditGeneral:
         assert after["updated"] >= before["updated"]
         assert after["due_date"] == before["due_date"]
         assert after["reminders"] == before["reminders"]
-        assert after["position"] == before["position"]
         assert after["project"]["id"] == before["project"]["id"]
         assert after["created"] == before["created"]
 

@@ -69,10 +69,7 @@ class CommandService:
         "end": ("end_date", parse_date_arg_to_iso),
         "favorite": ("is_favorite", bool),
         "completed": ("done", bool),
-        "position": ("position", int),
         "project_id": ("project_id", int),
-        "bucket_id": ("bucket_id", int),
-        "kanban_position": ("kanban_position", int),
         "reminder": ("reminders", _keep),
     }
 

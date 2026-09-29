@@ -369,7 +369,6 @@ class Task:
     assignee_objects: list[Assignee]
     relations: list[TaskRelation]
     project: Project
-    position: int
     bucket_objects: list[TaskBucket]
     created: datetime | None
     updated: datetime | None
@@ -416,7 +415,6 @@ class Task:
             assignee_objects=Assignee.from_json_array(read("assignees")),
             relations=TaskRelation.from_json_map(read("related_tasks")),
             project=project_object,
-            position=read("position"),
             bucket_objects=TaskBucket.from_json_array(json.get("buckets", [])),
             created=parse_json_date(read("created")),
             updated=parse_json_date(read("updated")),

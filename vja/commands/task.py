@@ -191,22 +191,6 @@ def task_clone(
     help="Move to project (id or title)",
 )
 @click.option(
-    "position",
-    "--project-position",
-    "--project_position",
-    "--position",
-    type=click.INT,
-    help="Set project position",
-)
-@click.option("bucket_id", "--bucket-id", "--bucket_id", type=click.INT, help="Set bucket id")
-@click.option(
-    "kanban_position",
-    "--kanban-position",
-    "--kanban_position",
-    type=click.INT,
-    help="Set kanban position",
-)
-@click.option(
     "due",
     "-d",
     "--due",
