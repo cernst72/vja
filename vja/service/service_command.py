@@ -125,19 +125,14 @@ class CommandService:
             self._api_client.add_assignee_to_task(task.id, assignee.id)
 
     def clone_task(self, task_id: int, title: str) -> Task:
-        task_remote = self._api_client.get_task(task_id)
-        task_remote.update({"id": None, "title": title, "position": 0, "bucket_id": 0})
+        task_remote = self._api_client.duplicate_task(task_id)
+        logger.debug("Duplicated task %s to %s", task_id, task_remote["id"])
+
+        task_remote["title"] = title
         self._clear_for_update(task_remote)
-
-        logger.debug("Create task: %s", task_remote)
-        task_json = self._api_client.create_task(task_remote["project_id"], task_remote)
-        task = self._task_service.task_from_json(task_json)
-
-        for label in task_remote["labels"] or []:
-            self._api_client.add_label_to_task(task.id, label["id"])
-        for assignee in task_remote["assignees"] or []:
-            self._api_client.add_assignee_to_task(task.id, assignee["id"])
-        return task
+        logger.debug("Update duplicated task: %s", task_remote)
+        task_json = self._api_client.update_task(task_remote["id"], task_remote)
+        return self._task_service.task_from_json(task_json)
 
     @staticmethod
     def _clear_for_update(task_remote: dict):

@@ -196,6 +196,10 @@ class ApiClient:
     def create_task(self, project_id: int, payload: dict) -> dict:
         return self._post_json(f"{self._api_url}/projects/{project_id}/tasks", payload=payload)
 
+    def duplicate_task(self, task_id: int) -> dict:
+        response = self._post_json(f"{self._api_url}/tasks/{task_id}/duplicate")
+        return response["duplicated_task"]
+
     def update_task(self, task_id: int, payload: dict) -> dict:
         return self._put_json(f"{self._api_url}/tasks/{task_id}", payload=payload)
 
