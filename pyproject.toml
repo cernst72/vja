@@ -30,8 +30,14 @@ dependencies = [
   "PyJWT>=2.8",
 ]
 
+[project.optional-dependencies]
+mcp = [
+  "mcp>=2",
+]
+
 [project.scripts]
 vja = "vja.cli:cli"
+vja-mcp = "vja.mcp_server:main"
 
 [project.urls]
 Homepage = "https://gitlab.com/ce72/vja"
