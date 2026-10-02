@@ -1,4 +1,4 @@
-coverage==7.16.1
+coverage==7.16.2
 pip==26.2.1
 pytest==9.1.1
-ruff==0.16.9
+ruff==0.16.10
