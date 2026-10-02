@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "vja": {
+      "command": "vja-mcp",
+      "disabled": false,
+      "autoApprove": [
+        "get_current_user",
+        "list_projects",
+        "list_labels",
+        "list_tasks",
+        "get_task"
+      ]
+    }
+  }
+}

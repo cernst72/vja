@@ -1,3 +1,13 @@
+## [6.1.0](https://gitlab.com/ce72/vja/compare/6.0.4...6.1.0) (2026-10-02)
+
+### Features
+
+* add MCP server ([10d9d3e](https://gitlab.com/ce72/vja/commit/10d9d3e3e6f75975501f61980b00aa056914b2a8))
+
+### Bug Fixes
+
+* **edit:** remove unsupported options position and bucket_id ([fab5724](https://gitlab.com/ce72/vja/commit/fab572401445e5456864379f2079ef4b50053ddf))
+
 ## [6.0.4](https://gitlab.com/ce72/vja/compare/6.0.3...6.0.4) (2026-09-29)
 
 ### Bug Fixes

@@ -1,23 +1,27 @@
 # Features
 
+This is the command reference for `vja`. For installation and configuration, see
+[README.md](README.md). Most examples use the short command form (`vja add`, `vja ls`, ...); every
+command also accepts `--help`, and the [Appendix](#appendix) shows some handy shell aliases.
+
 <!-- TOC -->
 * [Features](#features)
   * [Login](#login)
     * [API token](#api-token)
   * [Tasks](#tasks)
-    * [Add Task](#add-task)
+    * [Add a task](#add-a-task)
       * [Clone](#clone)
     * [List tasks](#list-tasks)
       * [Urgency](#urgency)
       * [Sort](#sort)
       * [Filter](#filter)
-      * [Select](#select)
-    * [Show single task](#show-single-task)
+      * [Select columns](#select-columns)
+    * [Show a single task](#show-a-single-task)
     * [Edit tasks](#edit-tasks)
-      * [Defer task](#defer-task)
+      * [Defer a task](#defer-a-task)
       * [Reminders](#reminders)
       * [Batch editing](#batch-editing)
-    * [Delete task](#delete-task)
+    * [Delete a task](#delete-a-task)
     * [Task relations](#task-relations)
   * [Open Vikunja in browser](#open-vikunja-in-browser)
   * [Manage projects, labels, buckets](#manage-projects-labels-buckets)
@@ -27,6 +31,7 @@
   * [Output format](#output-format)
     * [Example](#example)
   * [Terminate session](#terminate-session)
+  * [MCP server (use vja from AI agents)](#mcp-server-use-vja-from-ai-agents)
 * [Appendix](#appendix)
 <!-- TOC -->
 
@@ -52,18 +57,16 @@ operations, depending on what you want to use vja for.
 
 ## Tasks
 
-All task related commands are supported in two variants:
-`vja add`, `vja ls`, ...
-as well as
-`vja task add`, `vja task ls`, ... (and even `vja tasks...`).
+All task-related commands come in two equivalent forms: the short form `vja add`, `vja ls`, ... and
+the explicit form `vja task add`, `vja task ls`, ... (`vja tasks ...` works too). The examples below
+use the short form.
 
-### Add Task
+### Add a task
 
-`vja add <Tasktitle>` allows to quickly add a new task to the default project. Several options exist to provide more
-context:
+`vja add <title>` quickly adds a new task to the default project. Several options add more context:
 
 ```shell
-vja add Getting things done --note="find out how" -priority=3 --favorite --due="tomorrow at 11:00" --reminder --label=@work
+vja add Getting things done --note="find out how" --priority=3 --favorite --due="tomorrow at 11:00" --reminder --label=@work
 ```
 
 or more concise
@@ -72,38 +75,28 @@ or more concise
 vja add One more task -o 1 -p 4 -l "Label1" -n "my note" -d "23:00" -f
 ```
 
-See
-
-```shell
-vja add --help
-```
-
-for more.
+See `vja add --help` for the full list of options.
 
 #### Clone
 
-Another option to create a new task is cloning an existing task
+You can also create a task by cloning an existing one:
 
 ```shell
 vja clone 1 Copy a task with this new title
 ```
 
-See
-
-```shell
-vja clone --help
-```
+See `vja clone --help` for more.
 
 ### List tasks
 
-List all active tasks
+List all active tasks:
 
 ```shell
 vja ls
 vja ls --json
 ```
 
-You may limit the output by giving task ids
+Limit the output to specific task ids:
 
 ```shell
 vja ls 10 13 14
@@ -113,8 +106,8 @@ vja ls 10 13 14
 
 By default, tasks are sorted (amongst others) by their urgency, which is displayed in the last column. Urgency is
 calculated by regarding due_date, priority and is_favorite of the task, as well as the occurrence of keywords in the
-project title or the label titles. The weights of each factor and the keywords can be specified in the configuration
-file `~/.vjacli/vja.rc`. See Configuration section in [README.md](README.md). 
+project title or the label titles. The weights of each factor and the keywords can be specified in your configuration
+file (`config.rc`). See the Configuration section in [README.md](README.md#configuration).
 
 #### Sort
 
@@ -135,23 +128,23 @@ See `vja ls --help` for more.
 
 #### Filter
 
-The displayed tasks may be filtered by several arguments like project or title, base_project and label
+The displayed tasks may be filtered by several shortcut options, for example by project, base
+project, label, title, due date, favorite, priority or urgency:
 
 ```shell
-vja ls --project=1
-vja ls -o=projec # matches regex string
-vja ls --base-project=myproject
-vja ls -t=projec # matches regex string
+vja ls --project=1               # -o, by project id or title-regex
+vja ls -o=projec                 # matches the project title as a regex
+vja ls --base-project=myproject  # -t, filter by an ancestor (base) project
+vja ls --label=@work             # -l, by label id or title-regex
+vja ls -l=work                   # matches the label title as a regex
+vja ls --title=ask               # -i, matches the task title as a regex
 vja ls --due-date="before today"
 vja ls --due-date="ge in 0 days" --due-date="before 5 days"
 vja ls --favorite=True
-vja ls --label=@work
-vja ls -l=work # matches regex string
 vja ls --priority="gt 3"
 vja ls --priority="eq 5"
-vja ls --title=ask # matches regex string
-vja ls -u   # show Tasks with minimum urgency of 3
-vja ls --urgency=8 # show only quite urgent tasks
+vja ls -u                        # tasks with a minimum urgency of 3
+vja ls --urgency=8               # only quite urgent tasks
 ```
 
 In addition to these shortcut filters, more general filtering can be done by `--filter=<field_name> <operator> <value>`:
@@ -173,20 +166,17 @@ vja ls --filter="labels ne @work" --project=1 --urgent
 
 See `vja ls --help` for more.
 
-#### Select
+#### Select columns
 
-Columns may be selected and formatted in `.vjarc` and activated via `--custom-format`.
-See [Output format](#output-format)
+Columns may be selected and formatted in the `[output]` section of your `config.rc` and activated via
+`--custom-format`. See [Output format](#output-format) for details.
 
-See `vja ls --help` for more.
-
-### Show single task
+### Show a single task
 
 ```shell
 vja show 1
 vja show 1 --json
 vja show 1 2 3
-
 ```
 
 ### Edit tasks
@@ -218,24 +208,19 @@ vja edit 1 --done="true"
 vja check 1 # Shortcut to toggle the done flag of task 1
 ```
 
-See
+Called without any options, `vja edit <id>` opens the task in the browser (like `vja open <id>`).
 
-```shell
-vja edit --help
-```
+See `vja edit --help` for the full list of options.
 
-for more.
+#### Defer a task
 
-#### Defer task
-
-There is a shortcut for setting a delay on a task by giving a timedelta expression.
+`vja defer` is a shortcut for pushing a task back by a timedelta expression. It moves the due_date and
+the first reminder ahead in time.
 
 ```shell
 vja defer 1 1d
 vja defer --help
 ```
-
-This command moves the due_date and the first reminder ahead in time.
 
 #### Reminders
 
@@ -280,7 +265,7 @@ vja edit 1 5 8 --due="next monday 14:00"
 vja defer 1 2 3 1d
 ```
 
-### Delete task
+### Delete a task
 
 ```shell
 vja delete 1
@@ -326,16 +311,16 @@ Open task 42 and 43 in browser
 
 ```shell
 vja open 42 43
-vja edit 42 43
 ```
 
 ## Manage projects, labels, buckets
 
-There is only a very basic support for managing entities other than tasks. I believe it is better to use the frontend.
+Support for entities other than tasks is intentionally basic; for anything more involved the web
+frontend is usually the better choice.
 
 ### Manage projects
 
-Projects can be added and be shown, but not be modified:
+Projects can be added and shown, but not modified:
 
 ```shell
 vja project add New Project
@@ -383,10 +368,11 @@ vja label ls
 ## Output format
 
 You may specify custom list output formats (selecting and formatting columns).
-Run with `--custom-format=<template-name>` to refer a format string in your `vja.rc`.
+Define them in the `[output]` section of your `config.rc` and run with
+`--custom-format=<template-name>` to reference one.
 
-See [vja.rc](https://gitlab.com/ce72/vja/-/blob/main/.vjacli/vja.rc). This can be activated e.g.
-with `vja ls --custom-format=ids_only`.
+See the example [config.rc](https://gitlab.com/ce72/vja/-/blob/main/.config/vja/config.rc). A format can be
+activated e.g. with `vja ls --custom-format=ids_only`.
 
 Be careful: The format string may contain arbitrary code, which gets executed at runtime (python eval()).
 Do not use `--custom-format` if you feel uncomfortable with that.
@@ -410,10 +396,55 @@ vja will prompt you again.
 ```shell
 vja logout
 ```
-# Appendix
-I have some aliases which might demonstrate how to use vja:
+
+## MCP server (use vja from AI agents)
+
+`vja` ships an [MCP](https://modelcontextprotocol.io) server that exposes task
+operations as tools for AI agents (Claude, Kiro, Cursor, ...). It shares the
+same service layer as the CLI, so the tools behave exactly like the matching
+`vja task ...` commands.
+
+Install the optional `mcp` dependency and use the same configuration as the CLI
+(a `config.rc` with a valid token, see [README.md](README.md#configuration)):
+
 ```shell
-vadd='vja add -v -o Next --priority=1  --reminder --due-date="tomorrow 08:00"'
+pipx install "vja[mcp]"   # or: pip install "vja[mcp]"
+```
+
+The server is started over stdio (the transport MCP clients expect for a local
+server) via the `vja-mcp` entry point. Most clients start it for you from a JSON
+config using the shared `mcpServers` schema:
+
+```json
+{
+  "mcpServers": {
+    "vja": {
+      "command": "vja-mcp"
+    }
+  }
+}
+```
+
+Only set `VJA_CONFIGDIR` when your config lives outside the default locations.
+If `vja-mcp` is not on `PATH`, point `command` at the executable in the
+environment you installed it into (e.g. `.../venv/bin/vja-mcp`, or
+`...\Scripts\vja-mcp.exe` on Windows).
+
+The exposed tools mirror the CLI:
+
+- read: `get_current_user`, `list_projects`, `list_labels`, `list_tasks`, `get_task`
+- write: `add_task`, `edit_task`, `toggle_task_done`, `defer_task`, `clone_task`
+
+Tools return the same application JSON as `vja ls --json`. For agent-specific
+guidance (registration details, handling large tool output, date filters) see
+[AGENTS.md](https://gitlab.com/ce72/vja/-/blob/main/AGENTS.md).
+
+# Appendix
+
+Some shell aliases that show how these commands fit into a daily workflow:
+
+```shell
+vadd='vja add -v -o Next --priority=1 --reminder --due-date="tomorrow 08:00"'
 vadda='vja add -v -o Next --priority=1 --reminder --due-date="tomorrow 08:00" --label="@arbeit"'
 vaddc='vja add -v -o Next --priority=1 --reminder --due-date="tomorrow 08:00" --label="@computer"'
 vaddh='vja add -v -o Next --priority=1 --reminder --due-date="tomorrow 08:00" --label="@zuhause"'

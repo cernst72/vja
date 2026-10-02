@@ -1,4 +1,4 @@
 coverage==7.16.2
-pip==26.2.1
+mcp==2.2.0
 pytest==9.1.1
 ruff==0.16.10
