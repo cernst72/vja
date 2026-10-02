@@ -64,15 +64,42 @@ Highlights:
 pipx install vja
 ```
 
+To install vja with MCP support from the start, install the optional extra instead:
+
+```shell
+pipx install "vja[mcp]"
+```
+
+To add MCP support to an existing pipx installation of vja, install its dependency into that
+environment:
+
+```shell
+pipx inject vja "mcp>=2"
+```
+
 Upgrade an existing version:
 
 ```shell
 pipx upgrade vja
 ```
 
+This upgrades vja and its dependencies as needed. If MCP support was added with `pipx inject`,
+upgrade the injected MCP dependency as well:
+
+```shell
+pipx upgrade vja --include-injected
+```
+
+To explicitly upgrade the MCP package even when its installed version already satisfies the
+`mcp>=2` requirement, run:
+
+```shell
+pipx runpip vja install --upgrade mcp
+```
+
 ### Install with pip
 
-Not recommended as it might break system dependencies.
+Not recommended because it does not isolate vja's dependencies from other Python packages.
 
 ```shell
 python -m pip install --user vja
@@ -182,8 +209,10 @@ Besides the CLI, `vja` can act as an [MCP](https://modelcontextprotocol.io) serv
 register the `vja-mcp` command with your client:
 
 ```shell
-pipx install "vja[mcp]"   # or: pip install "vja[mcp]"
+pipx install "vja[mcp]"   # or: python -m pip install --user "vja[mcp]"
 ```
+For client configuration, available tools, and other MCP details, see the
+[MCP server documentation in Features.md](Features.md#mcp-server-use-vja-from-ai-agents).
 
 ```json
 {
