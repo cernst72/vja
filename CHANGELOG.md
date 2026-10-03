@@ -1,3 +1,17 @@
+## [6.1.1](https://gitlab.com/ce72/vja/compare/6.1.0...6.1.1) (2026-10-03)
+
+### Bug Fixes
+
+* correct urgency coefficient keys for project and label scores ([52cdf23](https://gitlab.com/ce72/vja/commit/52cdf2360646c16bdb4e70d64f455cdebbf29679))
+
+### Documentation
+
+* fix documentation of MCP installation ([3526e5e](https://gitlab.com/ce72/vja/commit/3526e5efc7a8b4db3fa1a9fdef613a6fbabfc88b))
+
+### Automation
+
+* test based on vikunja:2.7.0 ([3304baf](https://gitlab.com/ce72/vja/commit/3304baf0880810ec183c823364a3e085ed63d721))
+
 ## [6.1.0](https://gitlab.com/ce72/vja/compare/6.0.4...6.1.0) (2026-10-02)
 
 ### Features
