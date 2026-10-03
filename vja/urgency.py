@@ -16,10 +16,10 @@ class Urgency:
         due_date_score = self._get_due_date_score(task) * self._urgency_coefficients.get("due_date_weight", 1.0)
         priority_score = task.priority * self._urgency_coefficients.get("priority_weight", 1.0)
         favorite_score = int(task.is_favorite) * self._urgency_coefficients.get("favorite_weight", 1.0)
-        project_name_score = self._get_project_score(task) * self._urgency_coefficients.get("project_keyword", 1.0)
-        lable_name_score = self._get_label_score(task) * self._urgency_coefficients.get("label_keyword", 1.0)
+        project_name_score = self._get_project_score(task) * self._urgency_coefficients.get("project_weight", 1.0)
+        label_name_score = self._get_label_score(task) * self._urgency_coefficients.get("label_weight", 1.0)
 
-        return 1 + due_date_score + priority_score + favorite_score + project_name_score + lable_name_score
+        return 1 + due_date_score + priority_score + favorite_score + project_name_score + label_name_score
 
     def _get_label_score(self, task):
         task_label_title = task.labels.lower()
