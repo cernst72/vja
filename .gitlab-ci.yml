@@ -25,13 +25,13 @@ stages:
   - sleep 1s
   - curl --retry 5 --retry-all-errors --retry-delay 1 "http://docker:3456/api/v2/info"
 
-old-python-versions:
+python-versions:
   stage: test
   image: python:${PYTHON_VERSION}-slim
   allow_failure: true
   parallel:
     matrix:
-      - PYTHON_VERSION: [ "3.12", "3.13" ]
+      - PYTHON_VERSION: [ "3.12", "3.13", "3.14", "3.15" ]
   script:
     - python3 -m venv ./venv
     - . ./venv/bin/activate
