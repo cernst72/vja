@@ -1,7 +1,7 @@
 # Contributing to vja
 
-`vja` is a CLI client (and MCP server) for the [Vikunja](https://vikunja.io/)
-todo API. Contributions of any kind are welcome.
+`vja` is a CLI client for the [Vikunja](https://vikunja.io/) todo API.
+Contributions of any kind are welcome.
 
 - Report issues: https://gitlab.com/ce72/vja/-/issues
 - Submit merge requests: https://gitlab.com/ce72/vja/-/merge_requests
@@ -15,10 +15,8 @@ mode together with the development dependencies:
 python -m venv ./venv
 source venv/bin/activate          # venv/Scripts/activate on Windows
 python -m pip install -r requirements_dev.txt
-python -m pip install -e ".[mcp]"
+python -m pip install -e .
 ```
-
-`.[mcp]` also pulls in the optional `mcp` dependency needed for the MCP server.
 
 ## Commit messages
 

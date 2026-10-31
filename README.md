@@ -8,8 +8,7 @@
 A command line interface for [Vikunja](https://vikunja.io/), the open-source todo app to organize your life.
 
 `vja` lets you add, view and edit your Vikunja tasks and projects directly from the terminal. The goal
-is a fast, command line based task workflow, similar in spirit to taskwarrior. It also ships an
-[MCP server](#mcp-server) so AI agents can manage your tasks.
+is a fast, command line based task workflow, similar in spirit to taskwarrior.
 
 ```shell
 vja add "Buy milk" --due=tomorrow --priority=3   # add a task
@@ -23,7 +22,6 @@ Highlights:
 - Powerful filtering and sorting, plus an urgency score you can tune
 - Manage projects, labels and kanban buckets
 - Custom output formats for scripting
-- Optional MCP server to drive vja from AI agents
 
 **More user documentation is in [Features.md](https://gitlab.com/ce72/vja/-/blob/main/Features.md).**
 
@@ -46,7 +44,6 @@ Highlights:
     * [Bash](#bash)
     * [Zsh](#zsh)
     * [Fish](#fish)
-  * [MCP server](#mcp-server)
   * [Development](#development)
     * [Prepare python virtual environment](#prepare-python-virtual-environment)
     * [Local build](#local-build)
@@ -64,38 +61,13 @@ Highlights:
 pipx install vja
 ```
 
-To install vja with MCP support from the start, install the optional extra instead:
-
-```shell
-pipx install "vja[mcp]"
-```
-
-To add MCP support to an existing pipx installation of vja, install its dependency into that
-environment:
-
-```shell
-pipx inject vja "mcp>=2"
-```
-
 Upgrade an existing version:
 
 ```shell
 pipx upgrade vja
 ```
 
-This upgrades vja and its dependencies as needed. If MCP support was added with `pipx inject`,
-upgrade the injected MCP dependency as well:
-
-```shell
-pipx upgrade vja --include-injected
-```
-
-To explicitly upgrade the MCP package even when its installed version already satisfies the
-`mcp>=2` requirement, run:
-
-```shell
-pipx runpip vja install --upgrade mcp
-```
+This upgrades vja and its dependencies as needed.
 
 ### Install with pip
 
@@ -201,33 +173,6 @@ If you use [ohmyzsh](https://ohmyz.sh), place completion scripts under
 _VJA_COMPLETE=fish_source vja > ~/.config/fish/completions/vja.fish
 ```
 Note: Fish completions in the directory above will be automatically loaded for new sessions.
-
-## MCP server
-
-Besides the CLI, `vja` can act as an [MCP](https://modelcontextprotocol.io) server so AI agents
-(Claude, Kiro, Cursor, ...) can manage your Vikunja tasks. Install the optional dependency and
-register the `vja-mcp` command with your client:
-
-```shell
-pipx install "vja[mcp]"   # or: python -m pip install --user "vja[mcp]"
-```
-For client configuration, available tools, and other MCP details, see the
-[MCP server documentation in Features.md](Features.md#mcp-server-use-vja-from-ai-agents).
-
-```json
-{
-  "mcpServers": {
-    "vja": {
-      "command": "vja-mcp"
-    }
-  }
-}
-```
-
-The server uses the same configuration as the CLI. See
-[Features.md](https://gitlab.com/ce72/vja/-/blob/main/Features.md#mcp-server-use-vja-from-ai-agents)
-for the available tools and [AGENTS.md](https://gitlab.com/ce72/vja/-/blob/main/AGENTS.md) for
-agent-specific guidance.
 
 ## Development
 
