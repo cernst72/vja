@@ -31,7 +31,6 @@ command also accepts `--help`, and the [Appendix](#appendix) shows some handy sh
   * [Output format](#output-format)
     * [Example](#example)
   * [Terminate session](#terminate-session)
-  * [MCP server (use vja from AI agents)](#mcp-server-use-vja-from-ai-agents)
 * [Appendix](#appendix)
 <!-- TOC -->
 
@@ -396,48 +395,6 @@ vja will prompt you again.
 ```shell
 vja logout
 ```
-
-## MCP server (use vja from AI agents)
-
-`vja` ships an [MCP](https://modelcontextprotocol.io) server that exposes task
-operations as tools for AI agents (Claude, Kiro, Cursor, ...). It shares the
-same service layer as the CLI, so the tools behave exactly like the matching
-`vja task ...` commands.
-
-Install the optional `mcp` dependency and use the same configuration as the CLI
-(a `config.rc` with a valid token, see [README.md](README.md#configuration)):
-
-```shell
-pipx install "vja[mcp]"   # or: pip install "vja[mcp]"
-```
-
-The server is started over stdio (the transport MCP clients expect for a local
-server) via the `vja-mcp` entry point. Most clients start it for you from a JSON
-config using the shared `mcpServers` schema:
-
-```json
-{
-  "mcpServers": {
-    "vja": {
-      "command": "vja-mcp"
-    }
-  }
-}
-```
-
-Only set `VJA_CONFIGDIR` when your config lives outside the default locations.
-If `vja-mcp` is not on `PATH`, point `command` at the executable in the
-environment you installed it into (e.g. `.../venv/bin/vja-mcp`, or
-`...\Scripts\vja-mcp.exe` on Windows).
-
-The exposed tools mirror the CLI:
-
-- read: `get_current_user`, `list_projects`, `list_labels`, `list_tasks`, `get_task`
-- write: `add_task`, `edit_task`, `toggle_task_done`, `defer_task`, `clone_task`
-
-Tools return the same application JSON as `vja ls --json`. For agent-specific
-guidance (registration details, handling large tool output, date filters) see
-[AGENTS.md](https://gitlab.com/ce72/vja/-/blob/main/AGENTS.md).
 
 # Appendix
 

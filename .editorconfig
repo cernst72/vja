@@ -12,7 +12,7 @@ indent_style = space
 indent_size = 4
 max_line_length = 120
 
-[*.{js,json,y{a,}ml,html,cwl}]
+[*.{js,json,yaml,yml,html,cwl,toml}]
 indent_style = space
 indent_size = 2
 
