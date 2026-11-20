@@ -123,7 +123,7 @@ integration-test-unstable:
 
 release:
   resource_group: semantic-release
-  image: node:24-slim
+  image: node:26-slim
   stage: release
   variables:
     PYPI_USERNAME: __token__
